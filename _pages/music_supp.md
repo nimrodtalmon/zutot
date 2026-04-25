@@ -2,7 +2,7 @@
 layout: page
 title: supp
 permalink: /music/supp/
-nav: true
+nav: false
 nav_order: 8
 ---
 

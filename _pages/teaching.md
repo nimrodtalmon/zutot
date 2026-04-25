@@ -11,7 +11,7 @@ nav_order: 5
 Undergraduate / graduate course. Introduction to discrete-event simulation: modeling, random-variate
 generation, output analysis, and verification. Tools include Python-based simulation frameworks.
 
-<!-- TODO: add semester, course number, links to materials -->
+[Course site](https://sites.google.com/view/eventbasedsimulation)
 
 ---
 
@@ -20,4 +20,4 @@ generation, output analysis, and verification. Tools include Python-based simula
 Undergraduate / graduate course. Distributed ledgers, consensus protocols, smart contracts,
 and decentralized applications. Covers both technical foundations and governance implications.
 
-<!-- TODO: add semester, course number, links to materials -->
+[Course site](https://sites.google.com/view/blockchain26)

@@ -2,9 +2,7 @@
 layout: about
 title: about
 permalink: /
-subtitle: >
-  <a href="https://in.bgu.ac.il/en/iem/">Department of Industrial Engineering and Management</a>,
-  Ben-Gurion University of the Negev &mdash; Science &amp; Music.
+subtitle: Science &amp; Music
 
 profile:
   align: right
