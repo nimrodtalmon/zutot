@@ -24,25 +24,30 @@ I welcome inquiries from motivated students interested in **computational social
 
 **Topical introduction:**
 
-- [Handbook of Computational Social Choice](https://www.cambridge.org/core/books/handbook-of-computational-social-choice/8AF63E87F76A5FC974D5E73536C52BD6) (Brandt, Conitzer, Endriss, Lang, Procaccia) — [free PDF](https://cgi.cse.unsw.edu.au/~haziz/comsoc.pdf)
+- [Handbook of Computational Social Choice](https://cgi.cse.unsw.edu.au/~haziz/comsoc.pdf) (Brandt, Conitzer, Endriss, Lang, Procaccia)
 - [Trends in Computational Social Choice](https://archive.illc.uva.nl/COST-IC1205/BookDocs/TrendsCOMSOC.pdf) (Endriss, ed.)
 
 ---
 
 ### Science communication
 
-**How to present:**
-
-<!-- TODO: add links/notes on giving good talks -->
+**How to present:** [slides and notes](https://docs.google.com/document/d/1VsISAFIiwwrJFxfeE_crbbW1TCbW_-gT-UAfyHe6qX8/edit?tab=t.0#heading=h.3t29dgwy891k)
 
 ---
 
-### Getting started at BGU
+**How to write?**
 
-<!-- TODO: add practical onboarding notes — VPN, email setup, library access, HPC cluster, etc. -->
+*Philosophy*
 
----
+- Keep in mind that readers did not read the paper. Try to see your report from the point of view of the audience: explain what needs to be explained (and only this).
+- Keep in mind that readers (as well as you) want to have fun!
+- Keep in mind that readers want to first get the gist; and some of them want to really understand — so don't *only* handwave. Start with intuition, then give the real stuff.
+- Recall Aristotle: *"A whole [story] is what has a beginning and middle and end."*
 
-### Writing and publishing
+*Structure*
 
-<!-- TODO: add tips on LaTeX, BibTeX, arXiv, conference vs. journal submission, etc. -->
+- **Introduction**: What is this about? Why is this interesting?
+- **Structure**: Give a roadmap — what are we going to read?
+- **Related work**: What similar things exist? What is special here?
+- **Content**: Write some interesting, serious stuff.
+- **Conclusion**: (1) Recall what we've learned and give the bottom line. (2) Discuss avenues for future research.

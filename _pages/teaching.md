@@ -15,7 +15,7 @@ generation, output analysis, and verification. Tools include Python-based simula
 
 ---
 
-### Blockchain Technologies
+### Blockchain Governance
 
 Undergraduate / graduate course. Distributed ledgers, consensus protocols, smart contracts,
 and decentralized applications. Covers both technical foundations and governance implications.
