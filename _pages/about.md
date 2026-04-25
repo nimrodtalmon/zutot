@@ -26,6 +26,6 @@ My research sits at the intersection of computer science, economics, and social 
 **computational social choice**, **AI &amp; governance**, and **decentralized systems** (blockchain, DAOs, trust networks).
 I am also a musician.
 
-Use the navigation above to find [research](/zutot/research/),
+Use the navigation above to find [news](/zutot/news/), [research](/zutot/research/),
 [people](/zutot/people/), [teaching](/zutot/teaching/),
-and [music](/zutot/music/).
+[tips](/zutot/tips/), and [music](/zutot/music/).

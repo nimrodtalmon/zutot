@@ -31,11 +31,33 @@ I welcome inquiries from motivated students interested in **computational social
 
 ### Science communication
 
-**How to present:** [slides and notes](https://docs.google.com/document/d/1VsISAFIiwwrJFxfeE_crbbW1TCbW_-gT-UAfyHe6qX8/edit?tab=t.0#heading=h.3t29dgwy891k)
+<details>
+<summary><strong>How to present</strong></summary>
+<div markdown="1">
 
----
+*Philosophy*
 
-**How to write?**
+- Keep in mind that people in the audience did not read the paper. Try to see your presentation from the point of view of the audience: explain what needs to be explained.
+- Keep in mind that people in the audience (as well as you) want to have fun!
+- Keep in mind that people will probably not pay 100% attention; so, it's very important that they can easily understand the gist — the bottom line.
+- Recall Aristotle: *"A whole [story] is what has a beginning and middle and end."*
+
+*Structure*
+
+- **Introduction**: The title of the paper/project; what is the general field (algorithms? economics? a blockchain platform? a DAO?). Give context — e.g., number of users, market share, publication venue, citation count.
+- **Structure**: What are we going to discuss?
+- **Overview**: What's going on in the text? Give an overview (no need to cover everything).
+- **Preliminaries** (if needed): Only what's truly relevant (e.g., basics of cryptography or mechanism design).
+- **Technical content**: Tokenomics, consensus mechanism, governance, etc.
+- **Depth**: Pick 1–2 things that are important and technically challenging and explain them fully — including proofs if relevant.
+- **Conclusion**: (1) Recall what we've learned and give the bottom line. (2) Discuss avenues for future research, or how you would improve the project given, say, 5 million dollars.
+
+</div>
+</details>
+
+<details>
+<summary><strong>How to write</strong></summary>
+<div markdown="1">
 
 *Philosophy*
 
@@ -51,3 +73,6 @@ I welcome inquiries from motivated students interested in **computational social
 - **Related work**: What similar things exist? What is special here?
 - **Content**: Write some interesting, serious stuff.
 - **Conclusion**: (1) Recall what we've learned and give the bottom line. (2) Discuss avenues for future research.
+
+</div>
+</details>
