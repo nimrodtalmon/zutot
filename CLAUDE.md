@@ -7,7 +7,7 @@ Read it at the start of every session.
 
 ## Who
 
-**Nimrod Talmon** — Faculty, Department of Computer Science, Ben-Gurion University of the Negev.
+**Nimrod Talmon** — Faculty, Department of Industrial Engineering and Management (IEM), Ben-Gurion University of the Negev.
 Research: computational social choice, AI & governance, decentralized systems (blockchain, DAOs, trust networks).
 Also a home-recording musician. The site reflects both identities.
 

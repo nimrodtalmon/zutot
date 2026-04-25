@@ -7,7 +7,7 @@ first_name: Nimrod
 middle_name:
 last_name: Talmon
 description: > # the ">" symbol means to ignore newlines until "footer_text:"
-  Faculty at the Department of Computer Science, Ben-Gurion University of the Negev.
+  Faculty at the Department of Industrial Engineering and Management, Ben-Gurion University of the Negev.
   Research in computational social choice, AI &amp; governance, and decentralized systems.
   Also a home-recording musician.
 footer_text: >

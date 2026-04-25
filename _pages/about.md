@@ -3,15 +3,13 @@ layout: about
 title: about
 permalink: /
 subtitle: >
-  <a href="https://www.cs.bgu.ac.il/">Department of Computer Science</a>,
+  <a href="https://in.bgu.ac.il/en/iem/">Department of Industrial Engineering and Management</a>,
   Ben-Gurion University of the Negev &mdash; Science &amp; Music.
 
 profile:
   align: right
   image: prof_pic.jpg
   image_circular: false
-  more_info: >
-    <p>Beer-Sheva, Israel</p>
 
 selected_papers: false
 social: true
