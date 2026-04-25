@@ -20,15 +20,26 @@ I welcome inquiries from motivated students interested in **computational social
 
 ---
 
-### Getting started at BGU
+### Getting started with COMSOC
 
-<!-- TODO: add practical onboarding notes — VPN, email setup, library access, HPC cluster, etc. -->
+**Topical introduction:**
+
+- [Handbook of Computational Social Choice](https://www.cambridge.org/core/books/handbook-of-computational-social-choice/8AF63E87F76A5FC974D5E73536C52BD6) (Brandt, Conitzer, Endriss, Lang, Procaccia) — [free PDF](https://cgi.cse.unsw.edu.au/~haziz/comsoc.pdf)
+- [Trends in Computational Social Choice](https://archive.illc.uva.nl/COST-IC1205/BookDocs/TrendsCOMSOC.pdf) (Endriss, ed.)
 
 ---
 
-### Tools and resources
+### Science communication
 
-<!-- TODO: add recommended tools, readings, paper-writing tips, etc. -->
+**How to present:**
+
+<!-- TODO: add links/notes on giving good talks -->
+
+---
+
+### Getting started at BGU
+
+<!-- TODO: add practical onboarding notes — VPN, email setup, library access, HPC cluster, etc. -->
 
 ---
 

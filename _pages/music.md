@@ -6,6 +6,5 @@ nav: true
 nav_order: 7
 ---
 
-<!-- TODO: add recordings, links, descriptions of projects -->
-
-*Music content coming soon.*
+- [Bandcamp](https://nimrodbandleb.bandcamp.com/)
+- [Library](#) <!-- TODO: replace # with the library link -->

@@ -6,6 +6,7 @@ subtitle: Science &amp; Music
 
 profile:
   align: right
+  image: prof_pic.jpg
   image_circular: false
 
 selected_papers: false
@@ -27,6 +28,6 @@ My research sits at the intersection of computer science, economics, and social 
 **computational social choice**, **AI &amp; governance**, and **decentralized systems** (blockchain, DAOs, trust networks).
 I am also a musician.
 
-Use the navigation above to find [research](/zutot/research/), [publications](/zutot/publications/),
+Use the navigation above to find [research](/zutot/research/),
 [people](/zutot/people/), [teaching](/zutot/teaching/),
 and [music](/zutot/music/).
