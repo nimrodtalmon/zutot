@@ -6,8 +6,6 @@ nav: true
 nav_order: 7
 ---
 
-[elektronaj.bandcamp.com](https://elektronaj.bandcamp.com/)
-
 <iframe style="border: 0; width: 100%; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=2504516911/size=large/bgcol=ffffff/linkcol=e99708/tracklist=false/artwork=small/transparent=true/" seamless><a href="http://elektronaj.bandcamp.com/album/kapara">KAPARA by eleKtronaj</a></iframe>
 
 <iframe style="border: 0; width: 100%; height: 120px;" src="https://bandcamp.com/EmbeddedPlayer/album=2119924672/size=large/bgcol=ffffff/linkcol=e99708/tracklist=false/artwork=small/transparent=true/" seamless><a href="http://elektronaj.bandcamp.com/album/the-fourth-dimension">The Fourth Dimension by eleKtronaj</a></iframe>

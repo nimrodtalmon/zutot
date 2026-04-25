@@ -24,8 +24,8 @@ I welcome inquiries from motivated students interested in **computational social
 
 **Topical introduction:**
 
-- [Handbook of Computational Social Choice](https://cgi.cse.unsw.edu.au/~haziz/comsoc.pdf) (Brandt, Conitzer, Endriss, Lang, Procaccia)
-- [Trends in Computational Social Choice](https://archive.illc.uva.nl/COST-IC1205/BookDocs/TrendsCOMSOC.pdf) (Endriss, ed.)
+- [Handbook of Computational Social Choice](https://cgi.cse.unsw.edu.au/~haziz/comsoc.pdf)
+- [Trends in Computational Social Choice](https://archive.illc.uva.nl/COST-IC1205/BookDocs/TrendsCOMSOC.pdf)
 
 ---
 
