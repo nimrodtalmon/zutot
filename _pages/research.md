@@ -11,6 +11,8 @@ I study how groups of agents can make collective decisions in a principled, algo
 and how these ideas apply to emerging institutions such as DAOs, participatory budgeting platforms,
 and AI-mediated governance.
 
+[Google Scholar](https://scholar.google.com/citations?user=dSfOjCQAAAAJ) &middot; [DBLP](https://dblp.org/pid/53/11268)
+
 <!-- TODO: expand with research program narrative, links to projects/papers -->
 
 ---
