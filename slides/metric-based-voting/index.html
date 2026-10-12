@@ -1,0 +1,365 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Metric-Based Voting · Nimrod Talmon</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300..900&display=swap">
+<link rel="stylesheet" href="../assets/deck.css">
+</head>
+<body>
+<div id="stage">
+
+<!-- 1 · title -->
+<section class="slide dark center">
+  <p class="eyebrow">MidChain DeFi Conference</p>
+  <h1>Metric-Based Voting</h1>
+  <p class="big muted">Designing Rules for Ecosystem Resource Allocation</p>
+  <p class="ref" style="bottom:128px;font-size:32px">Nimrod Talmon · joint work with Eyal Briman</p>
+  <p class="ref">Ben-Gurion University of the Negev · October 26, 2026</p>
+  <img class="deco" src="../assets/img/deco-network.svg" alt="">
+</section>
+
+<!-- 2 -->
+<section class="slide light center">
+  <h1 class="q">A pot of money,<br>many projects.<br>Who gets what?</h1>
+  <aside>Ecosystem funding: the community decides how to split a budget among projects.</aside>
+</section>
+
+<!-- 3 -->
+<section class="slide dark">
+  <h2>Optimism Retro Funding</h2>
+  <p class="big">Over $100M in four rounds</p>
+  <p class="muted">and a different voting rule in every round</p>
+  <div class="chips">
+    <span class="chip">Quadratic</span><span class="arrow">→</span>
+    <span class="chip">Mean</span><span class="arrow">→</span>
+    <span class="chip">Quorum median</span><span class="arrow">→</span>
+    <span class="chip on">Capped median</span>
+  </div>
+  <p class="ref">Briman, Talmon, Kreitenweis, Idrees 2025</p>
+  <aside>Rounds 1–4: quadratic voting, mean, quorum median, capped median. Choosing a rule is not obvious, even for a careful community.</aside>
+</section>
+
+<!-- 4 -->
+<section class="slide accent center">
+  <h1 class="q">Which rule is the right one?</h1>
+  <p class="big">This is what social choice studies</p>
+</section>
+
+<!-- 5 -->
+<section class="slide light">
+  <h2>We looked at Optimism's rules</h2>
+  <div class="rows ruled">
+    <div class="row"><span class="k">Found</span><p>The median rules of rounds 3–4 invite strategic voting</p></div>
+    <div class="row"><span class="k">Suggested</span><p>Moving phantoms: strategyproof and welfare-maximizing</p></div>
+  </div>
+  <p class="ref">Freeman, Pennock, Peters, Wortman Vaughan 2019 · Briman, Talmon, Kreitenweis, Idrees 2025</p>
+  <aside>Our analysis of RetroPGF: rounds 3 and 4 are not strategyproof; we recommended the utilitarian moving-phantoms mechanism.</aside>
+</section>
+
+<!-- 6 -->
+<section class="slide dark">
+  <h2>Round 4: vote on metrics, not projects</h2>
+  <div class="cards">
+    <div class="card top"><span class="num">108</span><span class="label">badgeholders</span></div>
+    <div class="card top"><span class="num">16</span><span class="label">impact metrics</span></div>
+    <div class="card top"><span class="num">230</span><span class="label">projects</span></div>
+    <div class="card top"><span class="num">10M</span><span class="label">OP</span></div>
+  </div>
+  <p class="muted">Badgeholders weighted metrics; the data scored the projects</p>
+  <aside>Metric values were pre-computed from onchain data. Ballots were public.</aside>
+</section>
+
+<!-- 7 -->
+<section class="slide light">
+  <h2>Not only crypto</h2>
+  <div class="cards">
+    <div class="card top"><h3>Composite indices</h3><p>Experts split points over indicators</p><div style="flex:1"></div><p class="muted small">OECD/JRC handbook</p></div>
+    <div class="card top"><h3>ERC grants</h3><p>Excellence = ambition, feasibility, PI</p><div style="flex:1"></div><p class="muted small">ERC 2024</p></div>
+    <div class="card top"><h3>Gitcoin</h3><p>Metrics-driven retro funding</p><div style="flex:1"></div><p class="muted small">Gitcoin 2025 strategy</p></div>
+  </div>
+  <aside>OECD/JRC budget allocation: each expert distributes points over sub-indicators; weights typically averaged. ERC: excellence decomposed into sub-criteria. Gitcoin 2025 plan includes metrics-driven retroactive funding.</aside>
+</section>
+
+<!-- 8 -->
+<section class="slide dark center">
+  <p class="eyebrow">The model</p>
+  <h1>Metric-based voting</h1>
+</section>
+
+<!-- 9 -->
+<section class="slide light">
+  <h2>Three steps</h2>
+  <div class="flow">
+    <div class="step"><b>Data</b><span>every project has a value on every metric</span></div><span class="arrow">→</span>
+    <div class="step"><b>Ballots</b><span>every voter says how much each metric matters</span></div><span class="arrow">→</span>
+    <div class="step on"><b>Aggregate</b><span>one weight per metric</span></div><span class="arrow">→</span>
+    <div class="step"><b>Score</b><span>weighted sum of the project's values</span></div>
+  </div>
+  <p class="muted">The data is public and fixed; only the weights are voted on</p>
+</section>
+
+<!-- 10 -->
+<section class="slide dark">
+  <h2>What a ballot looks like</h2>
+  <div class="cards">
+    <div class="card top"><h3>Fractional</h3><p>any weight in [0,1]</p></div>
+    <div class="card top"><h3>Cumulative</h3><p>split a budget of 1</p></div>
+    <div class="card top"><h3>Approval</h3><p>each metric in or out</p></div>
+    <div class="card top"><h3>Plurality</h3><p>pick one metric</p></div>
+  </div>
+</section>
+
+<!-- 11 -->
+<section class="slide light">
+  <h2>Mean or median, metric by metric</h2>
+  <div class="cols">
+    <div>
+      <p class="eyebrow">Mean</p>
+      <p>What composite indices do</p>
+    </div>
+    <div>
+      <p class="eyebrow">Median</p>
+      <p>What social choice usually recommends</p>
+    </div>
+  </div>
+  <p class="muted">Same ballots, different rule: different scores</p>
+  <aside>Toy example from the paper: 2 projects, 3 metrics, 3 cumulative ballots. Mean scores ≈ (0.68, 0.51); median scores (0.86, 0.67).</aside>
+</section>
+
+<!-- 12 -->
+<section class="slide dark center">
+  <p class="eyebrow">Strategic voting</p>
+  <h1>Can a voter gain by lying?</h1>
+</section>
+
+<!-- 13 -->
+<section class="slide light">
+  <h2>The office thermostat</h2>
+  <div class="chips">
+    <span class="chip">Ann: 18°</span><span class="chip">Ben: 22°</span><span class="chip">Cat: 26°</span>
+  </div>
+  <p class="big">Average: <span class="hl">22°</span></p>
+</section>
+
+<!-- 14 -->
+<section class="slide light">
+  <h2>Cat says 32°</h2>
+  <div class="chips">
+    <span class="chip">Ann: 18°</span><span class="chip">Ben: 22°</span><span class="chip on">Cat: 32°</span>
+  </div>
+  <p class="big">Average: <span class="hl">24°</span> — closer to what Cat wants</p>
+  <p class="muted">The mean rewards exaggeration. Not surprising.</p>
+</section>
+
+<!-- 15 -->
+<section class="slide light">
+  <h2>The median fixes it</h2>
+  <div class="chips">
+    <span class="chip">Ann: 18°</span><span class="chip on">Ben: 22°</span><span class="chip">Cat: 32°</span>
+  </div>
+  <p class="big">Median: <span class="hl">22°</span>, whatever Cat says</p>
+  <p class="muted">On one dimension, the median is strategyproof</p>
+</section>
+
+<!-- 16 -->
+<section class="slide accent center">
+  <h1 class="q">So the median of each metric is strategyproof too?</h1>
+</section>
+
+<!-- 17 -->
+<section class="slide light">
+  <h2>No</h2>
+  <p>One project, worth 1 on metric A and 1 on metric B</p>
+  <table class="t">
+    <tr><th class="rh"></th><th>A</th><th>B</th><th>score</th></tr>
+    <tr><th class="rh">Ann (truth)</th><td>1</td><td>0</td><td>1</td></tr>
+    <tr><th class="rh">Ben</th><td>0</td><td>1</td><td></td></tr>
+    <tr><th class="rh">Cat</th><td>0</td><td>0</td><td></td></tr>
+    <tr><th class="rh">Median</th><td>0</td><td>0</td><td class="x">0</td></tr>
+  </table>
+  <aside>Ann wants the project to get score 1. Truthfully, the medians are 0 and 0: score 0.</aside>
+</section>
+
+<!-- 18 -->
+<section class="slide light">
+  <h2>Ann lies about B</h2>
+  <p>&nbsp;</p>
+  <table class="t">
+    <tr><th class="rh"></th><th>A</th><th>B</th><th>score</th></tr>
+    <tr><th class="rh">Ann (lie)</th><td>1</td><td class="x">1</td><td></td></tr>
+    <tr><th class="rh">Ben</th><td>0</td><td>1</td><td></td></tr>
+    <tr><th class="rh">Cat</th><td>0</td><td>0</td><td></td></tr>
+    <tr><th class="rh">Median</th><td>0</td><td>1</td><td class="x">1</td></tr>
+  </table>
+  <aside>Ann says B matters. Median of B becomes 1; the score becomes 1, exactly what Ann wanted.</aside>
+</section>
+
+<!-- 19 -->
+<section class="slide dark">
+  <h2>Why</h2>
+  <p class="big">Voters care about project scores, not about weights</p>
+  <p class="muted big">Losing on one metric can be bought back on another</p>
+  <p class="hl big">No reasonable metric-by-metric rule is strategyproof</p>
+  <p class="ref">"Reasonable": treats voters and metrics alike, ignores the data, respects unanimity</p>
+  <aside>Theorem: no rule on fractional ballots is simultaneously value-blind, metric-wise separable, metric-neutral, anonymous, unanimous, and strategyproof. Also: no value-blind rule maximizes score-distance welfare for every value matrix.</aside>
+</section>
+
+<!-- 20 -->
+<section class="slide dark center">
+  <p class="eyebrow">Beyond one liar</p>
+  <h1>Four levers</h1>
+</section>
+
+<!-- 21 -->
+<section class="slide light">
+  <h2>Four levers, all pulled in practice</h2>
+  <div class="cards">
+    <div class="card top"><h3>Ballot</h3><p>one voter picks a report</p><div style="flex:1"></div><p class="muted small">RF4 showed each voter the outcome</p></div>
+    <div class="card top"><h3>Select</h3><p>which metrics are on the menu</p><div style="flex:1"></div><p class="muted small">OECD: at most 10–12</p></div>
+    <div class="card top"><h3>Clone</h3><p>near-duplicate metrics</p><div style="flex:1"></div><p class="muted small">RF4: linear + log gas fees, both on 94 of 108 ballots</p></div>
+    <div class="card top"><h3>Edit</h3><p>change some ballots, within a budget</p><div style="flex:1"></div><p class="muted small">public ballots: recompute any sub-panel</p></div>
+  </div>
+</section>
+
+<!-- 22 -->
+<section class="slide accent center">
+  <h1 class="q">Can a lever produce a given scorecard?</h1>
+  <p class="big">The auditor's question, and the designer's</p>
+  <aside>Exact score reachability. Auditor: are the published scores consistent with the claimed metric set / one disputed ballot / a bounded correction? Designer: can a benchmark scorecard be implemented at all?</aside>
+</section>
+
+<!-- 23 · table -->
+<section class="slide light">
+  <h2>The full picture</h2>
+  <div class="cols" style="gap:64px;align-items:flex-start;flex:none">
+    <div>
+      <p class="eyebrow" style="margin-bottom:20px">Mean</p>
+      <div style="display:grid;grid-template-columns:230px repeat(4,160px);gap:10px">
+        <span></span><span class="cell lab">Ballot</span><span class="cell lab">Select</span><span class="cell lab">Clone</span><span class="cell lab">Edit</span>
+        <span class="rowlab">Fractional</span><span class="cell e">easy</span><span class="cell h">hard</span><span class="cell h">hard</span><span class="cell e">easy</span>
+        <span class="rowlab">Cumulative</span><span class="cell e">easy</span><span class="cell h">hard</span><span class="cell i">no effect</span><span class="cell e">easy</span>
+        <span class="rowlab">Approval</span><span class="cell h">hard</span><span class="cell h">hard</span><span class="cell h">hard</span><span class="cell h">hard</span>
+        <span class="rowlab">Plurality</span><span class="cell e">easy</span><span class="cell h">hard</span><span class="cell i">no effect</span><span class="cell h">hard</span>
+      </div>
+    </div>
+    <div>
+      <p class="eyebrow" style="margin-bottom:20px">Median</p>
+      <div style="display:grid;grid-template-columns:repeat(4,160px);gap:10px">
+        <span class="cell lab">Ballot</span><span class="cell lab">Select</span><span class="cell lab">Clone</span><span class="cell lab">Edit</span>
+        <span class="cell e">easy</span><span class="cell h">hard</span><span class="cell h">hard</span><span class="cell e">easy</span>
+        <span class="cell h">hard</span><span class="cell h">hard</span><span class="cell h">hard</span><span class="cell h">hard</span>
+        <span class="cell h">hard</span><span class="cell h">hard</span><span class="cell h">hard</span><span class="cell h">hard</span>
+        <span class="cell e">easy</span><span class="cell e">easy</span><span class="cell e">easy</span><span class="cell e">easy</span>
+      </div>
+    </div>
+  </div>
+  <p class="ref">easy: polynomial time · hard: NP-hard · no effect: cloning cannot change any score</p>
+</section>
+
+<!-- 24 -->
+<section class="slide dark">
+  <h2>Mean: mostly linear</h2>
+  <p class="big">Continuous ballots: a linear program finds the lever</p>
+  <p class="big">Cloning cannot change anything <span class="muted">(cumulative, plurality)</span></p>
+  <aside>Under the mean, aggregating then scoring = scoring then averaging. Clone groups conserve mass, so the mean score is invariant.</aside>
+</section>
+
+<!-- 25 -->
+<section class="slide dark">
+  <h2>Hard, already with one voter</h2>
+  <p class="big">Keep a few metrics so every project scores exactly 1?</p>
+  <p class="muted big">Metrics cover projects; this is an exact-cover puzzle</p>
+  <p class="hl big">The hardness comes from the data, not the rule</p>
+  <aside>With one voter, mean and median coincide. Reductions from Exact Cover by 3-Sets with binary values: projects = elements, metrics = triples.</aside>
+</section>
+
+<!-- 26 -->
+<section class="slide light">
+  <h2>Median: the ballot format decides</h2>
+  <div class="rows ruled">
+    <div class="row"><span class="k">Fractional</span><p>each median moves within an interval: easy</p></div>
+    <div class="row"><span class="k">Plurality</span><p>at most two metrics survive the median: easy</p></div>
+    <div class="row"><span class="k">Cumulative</span><p>budgets of 1 force either-or choices: all hard</p></div>
+  </div>
+  <aside>Fractional: achievable-median intervals and convex modification costs give LPs. Plurality: sparse median support. Cumulative: the simplex constraint couples coordinates and encodes discrete choices.</aside>
+</section>
+
+<!-- 27 · experiment -->
+<section class="slide light">
+  <h2>Reachable is not profitable</h2>
+  <div class="cols" style="gap:64px">
+    <svg viewBox="0 0 1400 560" style="width:1300px;flex:none" font-family="Heebo, Arial, sans-serif">
+      <g transform="translate(60,40)">
+        <text x="330" y="0" font-size="34" font-weight="700" text-anchor="middle" fill="#26282C">Fractional</text>
+        <line x1="60" y1="380" x2="620" y2="380" stroke="#B9BCC1" stroke-width="2"/>
+        <line x1="60" y1="60" x2="620" y2="60" stroke="#E2E3E5" stroke-width="1"/>
+        <line x1="60" y1="220" x2="620" y2="220" stroke="#E2E3E5" stroke-width="1"/>
+        <text x="50" y="390" font-size="26" text-anchor="end" fill="#5F6368">0</text>
+        <text x="50" y="230" font-size="26" text-anchor="end" fill="#5F6368">0.2</text>
+        <text x="50" y="70" font-size="26" text-anchor="end" fill="#5F6368">0.4</text>
+        <polyline points="80,97.6 330,224 580,297.6" fill="none" stroke="#5F6368" stroke-width="6"/>
+        <polyline points="80,80 330,231.2 580,300.8" fill="none" stroke="#F7941D" stroke-width="6"/>
+        <g fill="#5F6368"><circle cx="80" cy="97.6" r="10"/><circle cx="330" cy="224" r="10"/><circle cx="580" cy="297.6" r="10"/></g>
+        <g fill="#F7941D"><circle cx="80" cy="80" r="10"/><circle cx="330" cy="231.2" r="10"/><circle cx="580" cy="300.8" r="10"/></g>
+        <g font-size="28" fill="#5F6368" text-anchor="middle"><text x="80" y="420">5</text><text x="330" y="420">11</text><text x="580" y="420">21</text></g>
+      </g>
+      <g transform="translate(720,40)">
+        <text x="330" y="0" font-size="34" font-weight="700" text-anchor="middle" fill="#26282C">Cumulative</text>
+        <line x1="60" y1="380" x2="620" y2="380" stroke="#B9BCC1" stroke-width="2"/>
+        <line x1="60" y1="60" x2="620" y2="60" stroke="#E2E3E5" stroke-width="1"/>
+        <line x1="60" y1="220" x2="620" y2="220" stroke="#E2E3E5" stroke-width="1"/>
+        <polyline points="80,147.2 330,261.6 580,319.2" fill="none" stroke="#5F6368" stroke-width="6"/>
+        <polyline points="80,94.4 330,216.8 580,292.8" fill="none" stroke="#F7941D" stroke-width="6" stroke-dasharray="16 10"/>
+        <g fill="#5F6368"><circle cx="80" cy="147.2" r="10"/><circle cx="330" cy="261.6" r="10"/><circle cx="580" cy="319.2" r="10"/></g>
+        <g fill="#F7941D"><circle cx="80" cy="94.4" r="10"/><circle cx="330" cy="216.8" r="10"/><circle cx="580" cy="292.8" r="10"/></g>
+        <g font-size="28" fill="#5F6368" text-anchor="middle"><text x="80" y="420">5</text><text x="330" y="420">11</text><text x="580" y="420">21</text></g>
+      </g>
+      <text x="700" y="510" font-size="28" text-anchor="middle" fill="#5F6368">number of voters</text>
+      <g font-size="28" font-weight="700">
+        <circle cx="500" cy="548" r="10" fill="#5F6368"/><text x="520" y="557" fill="#26282C">mean</text>
+        <circle cx="680" cy="548" r="10" fill="#F7941D"/><text x="700" y="557" fill="#26282C">median</text>
+      </g>
+    </svg>
+    <div>
+      <p>Typical gain of one liar shrinks as the electorate grows</p>
+      <p class="muted small">gain = how much closer a lie gets the voter to their own scores (0 to 1)</p>
+    </div>
+  </div>
+  <p class="ref">Synthetic data, median over instances; dashed: cumulative median is a search lower bound</p>
+  <aside>Fractional: mean .353 → .195 → .103; median .375 → .186 → .099. Cumulative: mean .291 → .148 → .076; median (lower bound) .357 → .204 → .109.</aside>
+</section>
+
+<!-- 28 -->
+<section class="slide dark">
+  <h2>Hard is not safe, easy is not dangerous</h2>
+  <div class="rows ruled">
+    <div class="row"><span class="k">Approval</span><p>finding a lie is hard, yet useful lies are common</p></div>
+    <div class="row"><span class="k">Plurality</span><p>finding a lie is easy, yet the typical gain is zero</p></div>
+  </div>
+  <aside>Approval-mean: beneficial deviation in 64.3% → 79.6% of evaluations. Plurality (both rules): median gain zero.</aside>
+</section>
+
+<!-- 29 · takeaway -->
+<section class="slide accent center">
+  <h1 class="q">Metric-based voting is effective,<br>but not easy to do right</h1>
+  <aside>The rule, the ballot format, and the metric list all change what can go wrong.</aside>
+</section>
+
+<!-- 30 · closing -->
+<section class="slide dark center">
+  <p class="eyebrow">MidChain DeFi Conference</p>
+  <h1>Metric-Based Voting</h1>
+  <p class="big muted">Designing Rules for Ecosystem Resource Allocation</p>
+  <p class="ref" style="bottom:128px;font-size:32px">Nimrod Talmon · joint work with Eyal Briman</p>
+  <p class="ref">Ben-Gurion University of the Negev · October 26, 2026</p>
+  <img class="deco" src="../assets/img/deco-network.svg" alt="">
+</section>
+
+</div>
+<script src="../assets/deck.js"></script>
+</body>
+</html>
