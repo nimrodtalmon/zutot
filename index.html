@@ -6,38 +6,36 @@
 <title>Nimrod Talmon</title>
 <meta name="description" content="Nimrod Talmon, Ben-Gurion University of the Negev. Science and music.">
 <style>
-  :root {
-    --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #e4e1da; --accent: #b4520f;
-  }
+  :root { --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #e4e1da; --accent: #b4520f; --chip: #f1eee7; }
   @media (prefers-color-scheme: dark) {
-    :root { --bg: #161615; --fg: #e9e7e2; --muted: #9b9890; --line: #2e2d2a; --accent: #f08a3e; }
+    :root { --bg: #161615; --fg: #e9e7e2; --muted: #9b9890; --line: #2e2d2a; --accent: #f08a3e; --chip: #232220; }
   }
   * { box-sizing: border-box; }
-  body {
-    margin: 0; background: var(--bg); color: var(--fg);
-    font: 17px/1.6 Georgia, "Times New Roman", serif;
-  }
-  main { max-width: 640px; margin: 0 auto; padding: 56px 16px 72px; }
-  header { display: flex; gap: 20px; align-items: center; margin-bottom: 28px; }
-  header img { width: 88px; height: 88px; object-fit: cover; border-radius: 4px; }
-  h1 { font-size: 30px; margin: 0; font-weight: normal; letter-spacing: .2px; }
-  .tag { color: var(--muted); margin: 2px 0 0; }
-  h2 {
-    font: 600 12px/1 system-ui, sans-serif; text-transform: uppercase; letter-spacing: 1.5px;
-    color: var(--muted); margin: 40px 0 12px; padding-bottom: 8px; border-bottom: 1px solid var(--line);
-  }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 Georgia, "Times New Roman", serif; }
+  main { max-width: 860px; margin: 0 auto; padding: 40px 16px 32px; }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
-  blockquote { margin: 0 0 20px; color: var(--muted); font-style: italic; }
-  p { margin: 0 0 12px; }
-  .links a { margin-right: 14px; white-space: nowrap; }
+  header { display: flex; gap: 18px; align-items: center; }
+  header img { width: 76px; height: 76px; object-fit: cover; border-radius: 4px; flex: none; }
+  h1 { font-size: 28px; margin: 0; font-weight: normal; }
+  .muted { color: var(--muted); }
+  .links { margin-top: 2px; font-size: 15px; }
+  .links a + a::before { content: "·"; color: var(--muted); margin: 0 7px; }
+  .intro { margin: 18px 0 0; }
+  .intro em { color: var(--muted); }
+  .cols { display: grid; gap: 8px 48px; margin-top: 12px; }
+  @media (min-width: 720px) { .cols { grid-template-columns: 1fr 1fr; } }
+  h2 { font: 600 12px/1 system-ui, sans-serif; text-transform: uppercase; letter-spacing: 1.5px;
+       color: var(--muted); margin: 24px 0 10px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
   ul { list-style: none; padding: 0; margin: 0; }
-  li { padding: 6px 0; }
-  li .sub { color: var(--muted); font-size: 15px; }
-  .past { color: var(--muted); font-size: 15px; margin-top: 10px; }
-  details summary { cursor: pointer; color: var(--accent); }
-  details iframe { border: 0; width: 100%; height: 120px; margin-top: 10px; display: block; }
-  footer { margin-top: 56px; color: var(--muted); font-size: 14px; }
+  li { padding: 3px 0; }
+  .past { font-size: 15px; margin-top: 8px; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chips button { font: 14px/1 system-ui, sans-serif; color: var(--fg); background: var(--chip);
+                  border: 1px solid var(--line); border-radius: 999px; padding: 6px 11px; cursor: pointer; }
+  .chips button[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+  #player { border: 0; width: 100%; height: 42px; margin-top: 12px; display: block; }
+  footer { margin-top: 32px; font-size: 13px; }
 </style>
 </head>
 <body>
@@ -46,57 +44,67 @@
     <img src="https://israelscientometrics.com/assets/images/members/nimrod.png" alt="Nimrod Talmon">
     <div>
       <h1>Nimrod Talmon</h1>
-      <p class="tag">Science &amp; music</p>
+      <div class="links">
+        <a href="https://bgulab.onrender.com">Lab</a><a href="https://dblp.org/pid/53/11268">DBLP</a><a href="https://scholar.google.com/citations?user=dSfOjCQAAAAJ">Scholar</a>
+      </div>
+      <div class="muted links">nimrodtalmon77 at gmail dot com</div>
     </div>
   </header>
 
-  <blockquote><a href="https://en.wikipedia.org/wiki/You_Are_What_You_Is">“You Are What You Is”</a> — Frank Zappa</blockquote>
+  <p class="intro">Associate Professor, Industrial Engineering and Management, Ben-Gurion University.
+  Computational social choice, cooperative AI, decentralized systems. And music.
+  <em>— <a href="https://en.wikipedia.org/wiki/You_Are_What_You_Is">You Are What You Is</a></em></p>
 
-  <p>Associate Professor at the Department of Industrial Engineering and Management,
-  Ben-Gurion University of the Negev. I work on computational social choice,
-  AI and governance, and decentralized systems, and lead the
-  <a href="https://bgulab.onrender.com">Digital Cooperation Lab</a>.
-  I am also a musician.</p>
+  <div class="cols">
+    <section>
+      <h2>Teaching</h2>
+      <ul>
+        <li><a href="https://nimrodtalmon.github.io/studiobgu/">Research Studio</a></li>
+        <li><a href="https://nimrodtalmon.github.io/sim-class/">Event-based Simulation</a></li>
+      </ul>
+      <p class="past muted">Past:
+        <a href="https://sites.google.com/view/blockchain26">Blockchain Governance</a>,
+        <a href="https://sites.google.com/view/edemocracycourse">e-Democracy</a>,
+        <a href="https://sites.google.com/view/combinatorialoptimization1">Combinatorial Optimization</a>,
+        <a href="https://www.dropbox.com/sh/fj922ujhii7d9xz/AAAjjQPixZ4e-vQAJ4pgAkQNa?dl=0">Computational Intelligence</a>.
+      </p>
+    </section>
 
-  <p class="links">
-    <a href="https://bgulab.onrender.com">Lab</a>
-    <a href="https://dblp.org/pid/53/11268">DBLP</a>
-    <a href="https://scholar.google.com/citations?user=dSfOjCQAAAAJ">Scholar</a>
-    <a href="https://cris.bgu.ac.il/en/persons/nimrod-talmon">BGU</a>
-    <a href="https://linkedin.com/in/nimrod-talmon-08841210">LinkedIn</a>
-  </p>
-  <p class="tag">nimrodtalmon77 at gmail dot com</p>
+    <section>
+      <h2>Music</h2>
+      <div class="chips" id="albums">
+        <button data-id="2504516911">KAPARA</button>
+        <button data-id="2119924672">The Fourth Dimension</button>
+        <button data-id="1673524058">Lotem Dub</button>
+        <button data-id="3161326326">One Band</button>
+        <button data-id="3617086603">Dubonaj</button>
+        <button data-id="3524899160">Klasteron in Gadera</button>
+        <button data-id="2093350579">41</button>
+        <button data-id="149601283">42</button>
+        <button data-id="156660366">Loneliness</button>
+        <button data-id="451134584">43</button>
+      </div>
+      <iframe id="player" title="Music player" seamless></iframe>
+    </section>
+  </div>
 
-  <h2>Teaching</h2>
-  <ul>
-    <li><a href="https://nimrodtalmon.github.io/studiobgu/">Research Studio</a>
-      <span class="sub">· MSc, IEM</span></li>
-    <li><a href="https://sites.google.com/view/eventbasedsimulation">Event-based Simulation</a>
-      <span class="sub">· <a href="https://nimrodtalmon.github.io/sim-class/">class exercises</a></span></li>
-    <li><a href="https://sites.google.com/view/blockchain26">Blockchain Governance</a></li>
-  </ul>
-  <p class="past">Past:
-    <a href="https://sites.google.com/view/edemocracycourse">e-Democracy</a>,
-    <a href="https://sites.google.com/view/combinatorialoptimization1">Combinatorial Optimization</a>,
-    <a href="https://www.dropbox.com/sh/fj922ujhii7d9xz/AAAjjQPixZ4e-vQAJ4pgAkQNa?dl=0">Computational Intelligence</a>.
-  </p>
-
-  <h2>Music</h2>
-  <details>
-    <summary>Albums, as eleKtronaj and friends</summary>
-    <iframe loading="lazy" title="KAPARA" src="https://bandcamp.com/EmbeddedPlayer/album=2504516911/size=large/bgcol=ffffff/linkcol=b4520f/tracklist=false/artwork=small/transparent=true/" seamless></iframe>
-    <iframe loading="lazy" title="The Fourth Dimension" src="https://bandcamp.com/EmbeddedPlayer/album=2119924672/size=large/bgcol=ffffff/linkcol=b4520f/tracklist=false/artwork=small/transparent=true/" seamless></iframe>
-    <iframe loading="lazy" title="Lotem Dub" src="https://bandcamp.com/EmbeddedPlayer/album=1673524058/size=large/bgcol=ffffff/linkcol=b4520f/tracklist=false/artwork=small/transparent=true/" seamless></iframe>
-    <iframe loading="lazy" title="One Band" src="https://bandcamp.com/EmbeddedPlayer/album=3161326326/size=large/bgcol=ffffff/linkcol=b4520f/tracklist=false/artwork=small/transparent=true/" seamless></iframe>
-    <iframe loading="lazy" title="Dubonaj" src="https://bandcamp.com/EmbeddedPlayer/album=3617086603/size=large/bgcol=ffffff/linkcol=b4520f/tracklist=false/artwork=small/track=3199250350/transparent=true/" seamless></iframe>
-    <iframe loading="lazy" title="Klasteron in Gadera" src="https://bandcamp.com/EmbeddedPlayer/album=3524899160/size=large/bgcol=ffffff/linkcol=b4520f/tracklist=false/artwork=small/transparent=true/" seamless></iframe>
-    <iframe loading="lazy" title="41" src="https://bandcamp.com/EmbeddedPlayer/album=2093350579/size=large/bgcol=ffffff/linkcol=b4520f/tracklist=false/artwork=small/transparent=true/" seamless></iframe>
-    <iframe loading="lazy" title="42" src="https://bandcamp.com/EmbeddedPlayer/album=149601283/size=large/bgcol=ffffff/linkcol=b4520f/tracklist=false/artwork=small/transparent=true/" seamless></iframe>
-    <iframe loading="lazy" title="Loneliness" src="https://bandcamp.com/EmbeddedPlayer/album=156660366/size=large/bgcol=ffffff/linkcol=b4520f/tracklist=false/artwork=small/transparent=true/" seamless></iframe>
-    <iframe loading="lazy" title="43" src="https://bandcamp.com/EmbeddedPlayer/album=451134584/size=large/bgcol=ffffff/linkcol=b4520f/tracklist=false/artwork=small/transparent=true/" seamless></iframe>
-  </details>
-
-  <footer>Nimrod Talmon · 2026</footer>
+  <footer class="muted">Nimrod Talmon · 2026</footer>
 </main>
+<script>
+  (function () {
+    var dark = window.matchMedia && matchMedia("(prefers-color-scheme: dark)").matches;
+    var bg = dark ? "161615" : "fbfaf7", link = dark ? "f08a3e" : "b4520f";
+    var player = document.getElementById("player");
+    var buttons = document.querySelectorAll("#albums button");
+    function play(btn) {
+      buttons.forEach(function (b) { b.setAttribute("aria-pressed", b === btn ? "true" : "false"); });
+      player.title = btn.textContent;
+      player.src = "https://bandcamp.com/EmbeddedPlayer/album=" + btn.dataset.id +
+        "/size=small/bgcol=" + bg + "/linkcol=" + link + "/transparent=true/";
+    }
+    buttons.forEach(function (b) { b.addEventListener("click", function () { play(b); }); });
+    play(buttons[0]);
+  })();
+</script>
 </body>
 </html>
