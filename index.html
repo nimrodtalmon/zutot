@@ -15,7 +15,11 @@
   main { max-width: 860px; margin: 0 auto; padding: 40px 16px 32px; }
   a { color: var(--accent); text-decoration: none; }
   a:hover { text-decoration: underline; }
-  header { display: flex; gap: 18px; align-items: center; }
+  header { display: grid; gap: 8px 48px; align-items: start; }
+  @media (min-width: 720px) { header { grid-template-columns: 1fr 1fr; } }
+  .me { display: flex; gap: 18px; align-items: center; }
+  .music h2 { margin-top: 0; }
+  @media (max-width: 719px) { .music h2 { margin-top: 16px; } }
   header img { width: 76px; height: 76px; object-fit: cover; border-radius: 4px; flex: none; }
   h1 { font-size: 28px; margin: 0; font-weight: normal; }
   .muted { color: var(--muted); }
@@ -41,6 +45,7 @@
 <body>
 <main>
   <header>
+    <div class="me">
     <img src="https://israelscientometrics.com/assets/images/members/nimrod.png" alt="Nimrod Talmon">
     <div>
       <h1>Nimrod Talmon</h1>
@@ -49,6 +54,23 @@
       </div>
       <div class="muted links">nimrodtalmon77 at gmail dot com</div>
     </div>
+    </div>
+    <section class="music">
+      <h2>Music</h2>
+      <div class="chips" id="albums">
+        <button data-id="2504516911">KAPARA</button>
+        <button data-id="2119924672">The Fourth Dimension</button>
+        <button data-id="1673524058">Lotem Dub</button>
+        <button data-id="3161326326">One Band</button>
+        <button data-id="3617086603">Dubonaj</button>
+        <button data-id="3524899160">Klasteron in Gadera</button>
+        <button data-id="2093350579">41</button>
+        <button data-id="149601283">42</button>
+        <button data-id="156660366">Loneliness</button>
+        <button data-id="451134584">43</button>
+      </div>
+      <iframe id="player" title="Music player" seamless></iframe>
+    </section>
   </header>
 
   <p class="intro">Associate Professor, Industrial Engineering and Management, Ben-Gurion University.
@@ -75,23 +97,6 @@
       <ul>
         <li><a href="slides/metric-based-voting/">Metric-Based Voting</a> <span class="muted">· MidChain DeFi, 2026</span></li>
       </ul>
-    </section>
-
-    <section>
-      <h2>Music</h2>
-      <div class="chips" id="albums">
-        <button data-id="2504516911">KAPARA</button>
-        <button data-id="2119924672">The Fourth Dimension</button>
-        <button data-id="1673524058">Lotem Dub</button>
-        <button data-id="3161326326">One Band</button>
-        <button data-id="3617086603">Dubonaj</button>
-        <button data-id="3524899160">Klasteron in Gadera</button>
-        <button data-id="2093350579">41</button>
-        <button data-id="149601283">42</button>
-        <button data-id="156660366">Loneliness</button>
-        <button data-id="451134584">43</button>
-      </div>
-      <iframe id="player" title="Music player" seamless></iframe>
     </section>
   </div>
 
