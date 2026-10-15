@@ -198,6 +198,18 @@ table.reg td.num { font-weight: 700; }
 .rule { display: flex; align-items: center; gap: 28px; background: var(--card); border: 1px solid var(--gray-light);
   border-radius: 14px; padding: 22px 30px; font-size: 36px; line-height: 1.25; }
 .rule.hot { background: var(--orange-pale); border: none; }
+.cat { display: flex; gap: 96px; align-items: center; margin-block: auto; }
+.cat-text { flex: 1; display: flex; flex-direction: column; gap: 48px; }
+.qr { text-decoration: none; border: 3px solid var(--orange); }
+.qr span { font-size: 30px; }
+.who { display: flex; gap: 32px; }
+.who .person { flex: 1; padding: 24px 32px; }
+.person.big b { font-size: 44px; }
+.person.big span { font-size: 32px; }
+.rules.one { grid-template-columns: 1fr; }
+.cbars.simple .seg span { font-size: 36px; }
+.cbars.simple .seg b { font-size: 72px; }
+.rules.one .rule { font-size: 44px; padding: 26px 36px; }
 '''
 
 # ---------- slides ----------
@@ -235,33 +247,59 @@ S(f'''<section class="slide light">
 </section>''')
 
 
-def person(name, role, icon):
-    return f'<div class="person">{ic(icon, 64)}<div><b>{name}</b><span>{role}</span></div></div>'
+CATALOG = 'https://www.bgu.ac.il/media/admboseg/364-2027.pdf'
 
 
-coords = [('מערכות נבונות', 'פרופ\' רועי זיוון'), ('חקר ביצועים ואלגוריתמיקה', 'פרופ\' נמרוד טלמון'),
-          ('סטטיסטיקה שימושית', 'ד"ר יואב קרנר'), ('מערכות מידע', 'פרופ\' ליאור פינק'),
-          ('מדעי הנתונים', 'פרופ\' בעז לרנר'), ('הנדסת בינה-טכנולוגיה', 'פרופ\' אבינועם בורובסקי')]
+def qr_svg(url, size=420):
+    import qrcode
+    q = qrcode.QRCode(border=0, error_correction=qrcode.constants.ERROR_CORRECT_M)
+    q.add_data(url)
+    q.make(fit=True)
+    m = q.get_matrix()
+    n = len(m)
+    d = ''.join(f'M{x} {y}h1v1h-1z' for y, row in enumerate(m) for x, v in enumerate(row) if v)
+    return (f'<svg viewBox="0 0 {n} {n}" width="{size}" height="{size}" shape-rendering="crispEdges" '
+            f'aria-label="QR code"><path d="{d}" fill="{DK}"/></svg>')
+
+
 S(f'''<section class="slide light">
-  {hd('בעלי תפקידים', 'badge')}
-  <div class="split2">
-    <div class="people">
-      {person("פרופ' סיגל ברמן", 'ראשת המחלקה', 'cap')}
-      {person("פרופ' נמרוד טלמון", 'יו"ר ועדת הוראה תואר שני', 'layers')}
-      {person('לימור אלגבסי', 'אחראית מנהל במחלקה', 'check')}
-      {person('שרית סעדה', 'רכזת המחלקה', 'users')}
-      {person("ג'ני רוקביצין", 'עוזרת רמ"ן לענייני מוסמכים', 'chat')}
-      {person("פרופ' עומר לב", 'רכז עתודת המצטיינים', 'medal')}
+  {hd('השנתון', 'book')}
+  <div class="cat">
+    <div class="cat-text">
+      <h1 class="q">הכל כתוב בשנתון.<br><span class="orange">תקראו אותו.</span></h1>
+      <div class="chips">
+        <span class="chip">התמחויות</span><span class="chip">מבנה התוכנית</span><span class="chip">קורסים</span>
+        <span class="chip">נהלים</span><span class="chip">מסלולים</span>
+      </div>
+      <p class="muted">שאלות? <span class="mail">{ltr('IEMGrad@bgu.ac.il')}</span></p>
     </div>
-    <div class="panel">
-      <h3>רכזי התמחויות ומגמות</h3>
-      {''.join(f'<div class="kv"><b>{a}</b><span>{b}</span></div>' for a, b in coords)}
-    </div>
+    <a class="qr" href="{CATALOG}">{qr_svg(CATALOG)}<span>שנתון המחלקה, תשפ"ז</span></a>
   </div>
 </section>''')
 
+
+def contact(name, role, icon):
+    return f'<div class="person big">{ic(icon, 96)}<div><b>{name}</b><span>{role}</span></div></div>'
+
+
 S(f'''<section class="slide light">
-  {hd('התמחויות התואר השני', 'tree')}
+  {hd('למי פונים', 'chat')}
+  <div class="who">
+    {contact("פרופ' נמרוד טלמון", 'יו"ר ועדת הוראה לתואר שני', 'user')}
+    {contact("ג'ני רוקביצין", 'עוזרת רמ"ן לענייני מוסמכים', 'check')}
+  </div>
+  <div>
+    <h3 style="margin-bottom:24px">רכזי ההתמחויות והמגמות</h3>
+    <div class="chips">
+      <span class="chip">פרופ' רועי זיוון</span><span class="chip">פרופ' נמרוד טלמון</span><span class="chip">ד"ר יואב קרנר</span>
+      <span class="chip">פרופ' ליאור פינק</span><span class="chip">פרופ' בעז לרנר</span><span class="chip">פרופ' אבינועם בורובסקי</span>
+    </div>
+  </div>
+  <p class="muted">הרשימה המלאה, עם תפקידים: נספח א' בשנתון</p>
+</section>''')
+
+S(f'''<section class="slide light">
+  {hd('התמחויות ומסלולים', 'tree')}
   <div class="split2">
     <div class="panel" style="gap:18px">
       <div style="display:flex;align-items:center;gap:24px">{ic('layers', 80)}<div><h3 style="margin:0;color:var(--light)">הנדסת תעשייה</h3><span class="orange" style="font-size:32px;font-weight:700">שלוש מגמות</span></div></div>
@@ -274,46 +312,21 @@ S(f'''<section class="slide light">
     <div style="display:flex;flex-direction:column;gap:24px">
       <div class="spec">{ic('screen', 84)}<div><b>מערכות מידע</b></div></div>
       <div class="spec">{ic('search', 84)}<div><b>מדעי הנתונים</b></div></div>
-      <div class="spec hot">{ic('bulb', 84)}<div><b>הנדסת בינה-טכנולוגיה</b><span>{ltr('Mind-Technology Engineering')}</span></div></div>
+      <div class="spec">{ic('bulb', 84)}<div><b>הנדסת בינה-טכנולוגיה</b></div></div>
     </div>
   </div>
+  <div class="pills"><span style="flex:none;background:none;padding-inline:0">בכל התמחות, שני מסלולים:</span><span>עם תזה</span><span>בלי תזה</span></div>
 </section>''')
 
 S(f'''<section class="slide light">
   {hd('מבנה התוכנית: 36 נק"ז', 'layers')}
-  <div class="cbars">
-    {credit_bar('עם תזה', [(6, 'חובת תואר', 'core'), (3, 'חובת התמחות', 'spec'), (6, 'אשכול', 'clu'), (9, 'בחירה', 'el'), (12, 'תזה', 'th')])}
-    {credit_bar('בלי תזה', [(3, 'חובת תואר', 'core'), (3, 'חובת התמחות', 'spec'), (6, 'אשכול', 'clu'), (21, 'בחירה', 'el'), (3, 'סמינר מסכם', 'th')])}
-    <p class="note">קורסי השלמה (אם נדרשו): ללא נק"ז, להשלים בשנה הראשונה<br>קורס יסודות "הסקה סטטיסטית" (אם נדרש): 3 נק"ז, במקום קורס בחירה</p>
+  <div class="cbars simple">
+    {credit_bar('עם תזה', [(24, '8 קורסים', 'core'), (12, 'תזה', 'th')])}
+    {credit_bar('בלי תזה', [(33, '11 קורסים', 'core'), (3, 'סמינר מסכם', 'th')])}
   </div>
+  <p class="muted">איזה קורסים, לפי כל התמחות: בשנתון</p>
 </section>''')
 
-S(f'''<section class="slide light">
-  {hd('מה בפנים?', 'box')}
-  <div class="cols3">
-    <div class="col dk">
-      <h3>חובת תואר</h3>
-      <p>שיטות מחקר כמותניות</p>
-      <p>סטודיו למחקר א'+ב' (עם תזה)</p>
-      <p>סמינרי מחלקה: פנימי 16 בשנה, חיצוני 8</p>
-    </div>
-    <div class="col lt">
-      <h3>חובת התמחות</h3>
-      <p>נבונות: אינטליגנציה מלאכותית</p>
-      <p>חקר ביצועים: תורת המשחקים</p>
-      <p>סטטיסטיקה: נושאים נבחרים</p>
-      <p>בינה-טכנולוגיה: קבלת החלטות במערכות טכנולוגיות מתקדמות</p>
-      <p>מערכות מידע: מערכות מידע בעידן הבינה המלאכותית</p>
-      <p>מדעי הנתונים: מערכות לומדות וכריית נתונים</p>
-    </div>
-    <div class="col lt">
-      <h3>אשכול ובחירה</h3>
-      <p>אשכול: 2 קורסים מרשימת ההתמחות</p>
-      <p>בחירה: לפי ההתמחות, בתיאום עם המנחה</p>
-      <p>עד 2 קורסים ממחלקות אחרות, באישור מראש</p>
-    </div>
-  </div>
-</section>''')
 
 S(f'''<section class="slide light">
   {hd('ציר זמן', 'route')}
@@ -345,31 +358,16 @@ S(f'''<section class="slide light">
   <div class="submit"><span class="s1">להגיש…</span><span class="s2">להגיש…</span><span class="s3">ולהגיש!</span></div>
 </section>''')
 
-reg = [('סמינר מחלקתי', '364-2-6841 / 6842 / 6843 / 6844', 'אחד בכל סמסטר, לפי הסדר'),
-       ("סטודיו למחקר א' + ב'", '364-2-4221, 364-2-4231', 'מסלול עם תזה'),
-       ('כתיבת עבודת גמר', '364-2-6001', 'מסלול עם תזה'),
-       ('סמינר מסכם לתלמידי מחקר', '364-2-1621', 'מסלול בלי תזה'),
-       ('לומדה למניעת הטרדה מינית', '900-5-5001', 'כולם, גם מי שעשה בתואר ראשון')]
-S(f'''<section class="slide light">
-  {hd('דגשים: רישום לקורסים', 'list')}
-  <table class="reg">
-    <tr><th>מה</th><th>מספר קורס</th><th>מתי / למי</th></tr>
-    {''.join(f'<tr><td>{a}</td><td class="num">{ltr(b)}</td><td>{c}</td></tr>' for a, b, c in reg)}
-  </table>
-</section>''')
-
-rules = [('book', 'הכירו את השנתון. <b>באמת</b>', True),
-         ('help', 'ידע קודם חסר? האחריות להשלים עליכם', False),
-         ('target', 'קורסים לפי ההתמחות והמגמה שלכם', False),
-         ('upload', 'בקשה מיוחדת או קורס מחוץ למחלקה: אישור מראש', False),
-         ('clock', 'אין רישום לקורסים חופפים בשעות', False),
+rules = [('upload', 'כל חריגה מהתוכנית: אישור מראש', False),
          ('screen', 'בקשות: מערכת הטפסים באתר הפקולטה (דורש VPN)', False),
-         ('medal', 'מית"ר: פטור מנק"ז בעקבות חרבות ברזל', False)]
+         ('check', 'לומדה למניעת הטרדה מינית: לכולם, גם למי שעשה בתואר ראשון', False),
+         ('users', 'סמינרי המחלקה: חובה', False)]
 S(f'''<section class="slide light">
-  {hd('דגשים: נהלים', 'check')}
-  <div class="rules">
-    {''.join(f'<div class="rule{" hot" if hot else ""}">{ic(i, 72, DK)}<span>{t}</span></div>' for i, t, hot in rules)}
+  {hd('כמה דגשים', 'check')}
+  <div class="rules one">
+    {''.join(f'<div class="rule{" hot" if hot else ""}">{ic(i, 80, DK)}<span>{t}</span></div>' for i, t, hot in rules)}
   </div>
+  <p class="muted">וכל השאר: בשנתון</p>
 </section>''')
 
 S(f'''<section class="slide dark middle">
@@ -378,6 +376,7 @@ S(f'''<section class="slide dark middle">
   <p class="big muted" style="margin-top:40px">שאלות?</p>
   <p class="mail" style="font-size:56px">{ltr('IEMGrad@bgu.ac.il')}</p>
 </section>''')
+
 
 html = '''<!doctype html>
 <html lang="he" dir="rtl">
