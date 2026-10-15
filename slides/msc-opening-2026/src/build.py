@@ -368,6 +368,15 @@ S(f'''<section class="slide light">
 </section>''')
 
 S(f'''<section class="slide light">
+  {hd('נוכחות, מילואים, וכו\'', 'file')}
+  <div style="margin-block:auto;display:flex;flex-direction:column;gap:40px;max-width:1200px">
+    <h1 class="q" style="font-size:84px">כתוב בסילבוס של כל קורס,<br><span class="orange">ובאחריות המרצה</span></h1>
+    <p class="muted">יש הנחיות מחלקתיות (למשל מתווה מילואים), אבל בסוף זה המרצה</p>
+  </div>
+  <div style="position:absolute;left:128px;top:360px">{big_icon('file', 340)}</div>
+</section>''')
+
+S(f'''<section class="slide light">
   {hd('מלגות', 'coins')}
   <p class="muted">להיות אקטיביים · לבחון בפריזמה רחבה · לעקוב אחרי פרסומים</p>
   <div class="submit"><span class="s1">להגיש…</span><span class="s2">להגיש…</span><span class="s3">ולהגיש!</span></div>
@@ -383,15 +392,6 @@ S(f'''<section class="slide light">
     {''.join(f'<div class="rule{" hot" if hot else ""}">{ic(i, 80, DK)}<span>{t}</span></div>' for i, t, hot in rules)}
   </div>
   <p class="muted">וכל השאר: בשנתון</p>
-</section>''')
-
-S(f'''<section class="slide light">
-  {hd('נוכחות, מילואים, וכו\'', 'file')}
-  <div style="margin-block:auto;display:flex;flex-direction:column;gap:40px;max-width:1200px">
-    <h1 class="q" style="font-size:84px">כתוב בסילבוס של כל קורס,<br><span class="orange">ובאחריות המרצה</span></h1>
-    <p class="muted">יש הנחיות מחלקתיות (למשל מתווה מילואים), אבל בסוף זה המרצה</p>
-  </div>
-  <div style="position:absolute;left:128px;top:360px">{big_icon('file', 340)}</div>
 </section>''')
 
 S(f'''<section class="slide dark middle">
