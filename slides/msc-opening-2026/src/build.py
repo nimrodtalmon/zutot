@@ -353,6 +353,21 @@ S(f'''<section class="slide light">
 </section>''')
 
 S(f'''<section class="slide light">
+  {hd('שאלות שכדאי לשאול', 'help')}
+  <div class="split2" style="align-items:center">
+    <div style="display:flex;flex-direction:column;gap:28px">
+      <div class="spec"><b style="font-size:46px">איך הלמידה בתואר השני שונה מהתואר הראשון?</b></div>
+      <div class="spec"><b style="font-size:46px">איך אדע שהמחקר שלי, והתזה שלי, הולכים למקום טוב?</b></div>
+    </div>
+    <div class="panel" style="gap:28px">
+      <h3>עם מי מדברים על זה?</h3>
+      <div style="display:flex;align-items:center;gap:28px">{ic('users', 96)}<div><b style="font-size:44px">המנחה</b><p style="font-size:32px;color:var(--gray-light)">ובתקווה, יש ביניכם יחסים טובים</p></div></div>
+      <div style="display:flex;align-items:center;gap:28px">{ic('pen', 96)}<div><b style="font-size:44px">סטודיו למחקר</b><p style="font-size:32px;color:var(--gray-light)">חלק מרכזי בקורס הוא בדיוק זה</p></div></div>
+    </div>
+  </div>
+</section>''')
+
+S(f'''<section class="slide light">
   {hd('מלגות', 'coins')}
   <p class="muted">להיות אקטיביים · לבחון בפריזמה רחבה · לעקוב אחרי פרסומים</p>
   <div class="submit"><span class="s1">להגיש…</span><span class="s2">להגיש…</span><span class="s3">ולהגיש!</span></div>
@@ -368,6 +383,15 @@ S(f'''<section class="slide light">
     {''.join(f'<div class="rule{" hot" if hot else ""}">{ic(i, 80, DK)}<span>{t}</span></div>' for i, t, hot in rules)}
   </div>
   <p class="muted">וכל השאר: בשנתון</p>
+</section>''')
+
+S(f'''<section class="slide light">
+  {hd('נוכחות, מילואים, וכו\'', 'file')}
+  <div style="margin-block:auto;display:flex;flex-direction:column;gap:40px;max-width:1200px">
+    <h1 class="q" style="font-size:84px">כתוב בסילבוס של כל קורס,<br><span class="orange">ובאחריות המרצה</span></h1>
+    <p class="muted">יש הנחיות מחלקתיות (למשל מתווה מילואים), אבל בסוף זה המרצה</p>
+  </div>
+  <div style="position:absolute;left:128px;top:360px">{big_icon('file', 340)}</div>
 </section>''')
 
 S(f'''<section class="slide dark middle">
