@@ -351,8 +351,8 @@ def course(icon, name, who, when):
 S(f'''<section class="slide light">
   {hd('קורסים חדשים', 'party')}
   <div class="split2">
-    {course('eye', 'נושאים נבחרים בעיבוד תמונה', 'טרין פז', "סמסטר ב' · " + ltr('364-2-2041'))}
-    {course('bulb', 'תהליכים קוגניטיביים', 'ד"ר טליה שדה', "סמסטר א' · " + ltr('364-2-1261'))}
+    {course('eye', 'נושאים נבחרים בעיבוד תמונה', 'טרין פז', ltr('364-2-2041'))}
+    {course('bulb', 'תהליכים קוגניטיביים', 'ד"ר טליה שדה', ltr('364-2-1261'))}
   </div>
   <p class="box" style="text-align:center">שני קורסים חדשים ומעולים. תירשמו!</p>
 </section>''')
