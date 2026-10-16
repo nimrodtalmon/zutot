@@ -406,7 +406,7 @@ S(f'''<section class="slide light">
   <div style="margin-block:auto;display:flex;flex-direction:column;gap:40px;max-width:1150px">
     <h1 class="q" style="font-size:96px">הוראה היא חלק<br><span class="orange">מההכשרה</span></h1>
     <p class="box">אנחנו מחפשים מתרגלים ובודקים</p>
-    <p class="muted">מעוניינים? פנו ללימור אלגבסי</p>
+    <p class="muted">מעוניינים? פנו ללימור</p>
   </div>
   <div style="position:absolute;left:150px;top:320px">{big_icon('board', 420)}</div>
 </section>''')
