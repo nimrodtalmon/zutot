@@ -386,8 +386,8 @@ S(f'''<section class="slide light">
   <p class="muted">להיות אקטיביים · לבחון בפריזמה רחבה · לעקוב אחרי פרסומים</p>
   <div class="submit" style="gap:0"><span class="s1" style="font-size:64px">להגיש…</span><span class="s2" style="font-size:96px">להגיש…</span><span class="s3" style="font-size:170px">ולהגיש!</span></div>
   <div class="rules">
-    <div class="rule hot">{ic('clock', 80, DK)}<span><b>טפסי מלגות:</b> בזמן, ובדיוק לפי ההנחיות (שרית סעדה)</span></div>
-    <div class="rule">{ic('medal', 80, DK)}<span><b>מלגת מצוינות:</b> ההחלטות בקרוב</span></div>
+    <div class="rule hot">{ic('clock', 80, DK)}<span><b>טפסי מלגות:</b> בזמן, ובדיוק לפי ההנחיות (שרית)</span></div>
+    <div class="rule">{ic('medal', 80, DK)}<span><b>מלגת מצוינות</b></span></div>
   </div>
 </section>''')
 
