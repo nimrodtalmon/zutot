@@ -38,6 +38,9 @@ ICONS = {
     'atom': '<circle cx="12" cy="12" r="1.2"/><ellipse cx="12" cy="12" rx="9" ry="3.6"/><ellipse cx="12" cy="12" rx="9" ry="3.6" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="9" ry="3.6" transform="rotate(120 12 12)"/>',
     'mug': '<path d="M5 6h10v13a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2z"/><path d="M15 9h2a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2h-2M8.5 10v7M11.5 10v7"/>',
     'desert': '<circle cx="16" cy="8" r="3"/><path d="M2 19c4-4 6-4 10 0s6 4 10 0"/>',
+    'eye': '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/>',
+    'board': '<rect x="3" y="4" width="18" height="12" rx="1"/><path d="M8 20l4-4 4 4M7 9h6M7 12h9"/>',
+    'party': '<path d="M4 20l5-14 9 9z"/><path d="M14 4v2M19 9h2M17 6l1.5-1.5"/>',
 }
 
 
@@ -102,7 +105,7 @@ def credit_bar(label, segs):
 def timeline():
     steps = [('שנת ההשלמות', 'סיום קורסי השלמה', 'book'),
              ('סוף סמסטר א\'', 'מנחה ונושא', 'users'),
-             ('סוף שנה א\'', 'הצעת מחקר', 'file'),
+             ('סוף שנה א\'', 'הצעת מחקר<br>+ דו"ח וטפסים בטיסן<br>(תקבלו הודעה)', 'file'),
              ('כל סמסטר', 'דו"ח התקדמות', 'refresh'),
              ('סוף שנה ב\'', 'הגשת תזה / סמינר מסכם', 'flag')]
     out = '<div class="tl">'
@@ -240,10 +243,26 @@ S(f'''<section class="slide light">
   <div style="margin-block:auto;display:flex;flex-direction:column;gap:24px;max-width:1020px">
     <p class="big muted">תואר שני זה קודם כל</p>
     <h1 class="huge orange" style="font-size:220px">מחקר</h1>
-    <p class="box">מחקר זה כיף, ויותר כיף לעשות את זה ביחד</p>
+    <p class="box">מחקר משנה את העולם.<br>מחקר זה כיף, וכיף יותר ביחד.</p>
   </div>
   <div style="position:absolute;left:150px;top:300px">{big_icon('bulb', 460)}</div>
   <div style="position:absolute;left:470px;top:620px">{ic('users', 170)}</div>
+</section>''')
+
+S(f'''<section class="slide light">
+  {hd('שאלות שכדאי לשאול', 'help')}
+  <div class="split2" style="align-items:center">
+    <div style="display:flex;flex-direction:column;gap:28px">
+      <div class="spec"><b style="font-size:46px">איך הלמידה בתואר השני שונה מהתואר הראשון?</b></div>
+      <div class="spec"><b style="font-size:46px">איך אדע שהמחקר שלי, והתזה שלי, הולכים למקום טוב?</b></div>
+    </div>
+    <div class="panel" style="gap:28px">
+      <h3>עם מי מדברים על זה?</h3>
+      <div style="display:flex;align-items:center;gap:28px">{ic('users', 96)}<div><b style="font-size:44px">המנחה</b><p style="font-size:32px;color:var(--gray-light)">ובתקווה, יש ביניכם יחסים טובים</p></div></div>
+      <div style="display:flex;align-items:center;gap:28px">{ic('pen', 96)}<div><b style="font-size:44px">סטודיו למחקר</b><p style="font-size:32px;color:var(--gray-light)">חלק מרכזי בקורס הוא בדיוק זה</p></div></div>
+    </div>
+  </div>
+  <p class="note">עוד אין לכם מנחה? <b style="color:var(--dark)">דברו איתי.</b></p>
 </section>''')
 
 
@@ -299,7 +318,7 @@ S(f'''<section class="slide light">
 </section>''')
 
 S(f'''<section class="slide light">
-  {hd('התמחויות ומסלולים', 'tree')}
+  {hd('התמחויות ומבנה התוכנית', 'tree')}
   <div class="split2">
     <div class="panel" style="gap:18px">
       <div style="display:flex;align-items:center;gap:24px">{ic('layers', 80)}<div><h3 style="margin:0;color:var(--light)">הנדסת תעשייה</h3><span class="orange" style="font-size:32px;font-weight:700">שלוש מגמות</span></div></div>
@@ -315,60 +334,46 @@ S(f'''<section class="slide light">
       <div class="spec">{ic('bulb', 84)}<div><b>הנדסת בינה-טכנולוגיה</b></div></div>
     </div>
   </div>
-  <div class="pills"><span style="flex:none;background:none;padding-inline:0">בכל התמחות, שני מסלולים:</span><span>עם תזה</span><span>בלי תזה</span></div>
+  <div class="pills">
+    <span><span class="orange">עם תזה:</span> 8 קורסים + תזה</span>
+    <span><span class="orange">בלי תזה:</span> 11 קורסים + סמינר מסכם</span>
+  </div>
 </section>''')
+
+
+def course(icon, name, who, when):
+    return (f'<div class="spec hot" style="flex-direction:column;align-items:flex-start;gap:26px;padding:48px">'
+            f'{ic(icon, 120)}<div><b style="font-size:54px;line-height:1.2">{name}</b>'
+            f'<span style="font-size:36px;display:block;margin-top:14px">{who}</span>'
+            f'<span style="font-size:32px;display:block">{when}</span></div></div>')
+
 
 S(f'''<section class="slide light">
-  {hd('מבנה התוכנית: 36 נק"ז', 'layers')}
-  <div class="cbars simple">
-    {credit_bar('עם תזה', [(24, '8 קורסים', 'core'), (12, 'תזה', 'th')])}
-    {credit_bar('בלי תזה', [(33, '11 קורסים', 'core'), (3, 'סמינר מסכם', 'th')])}
+  {hd('קורסים חדשים', 'party')}
+  <div class="split2">
+    {course('eye', 'נושאים נבחרים בעיבוד תמונה', 'טרין פז', "סמסטר ב' · " + ltr('364-2-2041'))}
+    {course('bulb', 'תהליכים קוגניטיביים', 'ד"ר טליה שדה', "סמסטר א' · " + ltr('364-2-1261'))}
   </div>
-  <p class="muted">איזה קורסים, לפי כל התמחות: בשנתון</p>
+  <p class="box" style="text-align:center">שני קורסים חדשים ומעולים. תירשמו!</p>
 </section>''')
-
 
 S(f'''<section class="slide light">
   {hd('ציר זמן', 'route')}
   {timeline()}
 </section>''')
 
-
-def srow(icon, title, sub):
-    return f'<div class="r">{ic(icon, 88, DK)}<div><b>{title}</b><span>{sub}</span></div></div>'
-
-
 S(f'''<section class="slide light">
-  {hd('שופינג למנחה', 'cart')}
-  <div class="shop">
-    <div class="rows2">
-      {srow('search', "סמסטר א' = שופינג", 'זה הזמן להכיר את המעבדות ואת הנושאים')}
-      {srow('chat', 'דברו עם כמה חברי סגל', 'הדלת פתוחה, פשוט שלחו מייל')}
-      {srow('users', 'שאלו את הסטודנטים במעבדה', 'איך זה באמת')}
-      {srow('pen', 'סטודיו למחקר', 'המקום לשאול הכל, ולהפוך את המחקר ליותר טוב, כיף ומועיל')}
-      {srow('screen', 'סמינרי המחלקה', 'חובה, אבל גם החלון הכי טוב למה שקורה פה')}
-    </div>
-    <div class="side">{big_icon('cart', 400)}<p>נושא מעניין + מנחה שנעים לעבוד איתו</p></div>
+  {hd('נוכחות', 'users')}
+  <h1 class="q" style="font-size:120px">תבואו.</h1>
+  <div class="split2" style="margin-block:0">
+    <div class="spec hot">{ic('screen', 110)}<div><b>סמינרים מחלקתיים: חובה</b><span style="font-size:34px">פנימיים: 16 מפגשים בשנה · חיצוניים: 8</span></div></div>
+    <div class="spec hot">{ic('pen', 110)}<div><b>סטודיו למחקר: חובה</b><span style="font-size:34px">ושם גם שואלים את כל השאלות</span></div></div>
   </div>
+  <p class="big muted">שם רואים מה קורה, ושם נפגשים.</p>
 </section>''')
 
 S(f'''<section class="slide light">
-  {hd('שאלות שכדאי לשאול', 'help')}
-  <div class="split2" style="align-items:center">
-    <div style="display:flex;flex-direction:column;gap:28px">
-      <div class="spec"><b style="font-size:46px">איך הלמידה בתואר השני שונה מהתואר הראשון?</b></div>
-      <div class="spec"><b style="font-size:46px">איך אדע שהמחקר שלי, והתזה שלי, הולכים למקום טוב?</b></div>
-    </div>
-    <div class="panel" style="gap:28px">
-      <h3>עם מי מדברים על זה?</h3>
-      <div style="display:flex;align-items:center;gap:28px">{ic('users', 96)}<div><b style="font-size:44px">המנחה</b><p style="font-size:32px;color:var(--gray-light)">ובתקווה, יש ביניכם יחסים טובים</p></div></div>
-      <div style="display:flex;align-items:center;gap:28px">{ic('pen', 96)}<div><b style="font-size:44px">סטודיו למחקר</b><p style="font-size:32px;color:var(--gray-light)">חלק מרכזי בקורס הוא בדיוק זה</p></div></div>
-    </div>
-  </div>
-</section>''')
-
-S(f'''<section class="slide light">
-  {hd('נוכחות, מילואים, וכו\'', 'file')}
+  {hd('נוכחות בקורסים, מילואים', 'file')}
   <div style="margin-block:auto;display:flex;flex-direction:column;gap:40px;max-width:1200px">
     <h1 class="q" style="font-size:84px">כתוב בסילבוס של כל קורס,<br><span class="orange">ובאחריות המרצה</span></h1>
     <p class="muted">יש הנחיות מחלקתיות (למשל מתווה מילואים), אבל בסוף זה המרצה</p>
@@ -379,13 +384,45 @@ S(f'''<section class="slide light">
 S(f'''<section class="slide light">
   {hd('מלגות', 'coins')}
   <p class="muted">להיות אקטיביים · לבחון בפריזמה רחבה · לעקוב אחרי פרסומים</p>
-  <div class="submit"><span class="s1">להגיש…</span><span class="s2">להגיש…</span><span class="s3">ולהגיש!</span></div>
+  <div class="submit" style="gap:0"><span class="s1" style="font-size:64px">להגיש…</span><span class="s2" style="font-size:96px">להגיש…</span><span class="s3" style="font-size:170px">ולהגיש!</span></div>
+  <div class="rules">
+    <div class="rule hot">{ic('clock', 80, DK)}<span><b>טפסי מלגות:</b> בזמן, ובדיוק לפי ההנחיות (שרית סעדה)</span></div>
+    <div class="rule">{ic('medal', 80, DK)}<span><b>מלגת מצוינות:</b> ההחלטות בקרוב</span></div>
+  </div>
+</section>''')
+
+S(f'''<section class="slide light">
+  {hd('יום המחקר', 'party')}
+  <div style="margin-block:auto;display:flex;flex-direction:column;gap:40px;max-width:1100px">
+    <h1 class="q" style="font-size:110px">יום המחקר המחלקתי</h1>
+    <p class="box">כיף, וחשוב. תבואו!</p>
+    <p class="muted">פרטים בהודעה</p>
+  </div>
+  <div style="position:absolute;left:150px;top:320px">{big_icon('party', 420)}</div>
+</section>''')
+
+S(f'''<section class="slide light">
+  {hd('הוראה', 'board')}
+  <div style="margin-block:auto;display:flex;flex-direction:column;gap:40px;max-width:1150px">
+    <h1 class="q" style="font-size:96px">הוראה היא חלק<br><span class="orange">מההכשרה</span></h1>
+    <p class="box">אנחנו מחפשים מתרגלים ובודקים</p>
+    <p class="muted">מעוניינים? פנו ללימור אלגבסי</p>
+  </div>
+  <div style="position:absolute;left:150px;top:320px">{big_icon('board', 420)}</div>
+</section>''')
+
+S(f'''<section class="slide light">
+  {hd('דוקטורט: מסלול משולב', 'cap')}
+  <div class="rules one">
+    <div class="rule">{ic('medal', 80, DK)}<span>למצטיינים בשנה ב', במסלול עם תזה, בהמלצת המנחה</span></div>
+    <div class="rule hot">{ic('file', 80, DK)}<span>במקום תזה: סיכום המחקר + הצעת מחקר לדוקטורט</span></div>
+  </div>
+  <p class="muted">פרטים: התקנון של בית הספר קרייטמן</p>
 </section>''')
 
 rules = [('upload', 'כל חריגה מהתוכנית: אישור מראש', False),
          ('screen', 'בקשות: מערכת הטפסים באתר הפקולטה (דורש VPN)', False),
-         ('check', 'לומדה למניעת הטרדה מינית: לכולם, גם למי שעשה בתואר ראשון', False),
-         ('users', 'סמינרי המחלקה: חובה', False)]
+         ('check', 'לומדה למניעת הטרדה מינית: לכולם, גם למי שעשה בתואר ראשון', False)]
 S(f'''<section class="slide light">
   {hd('כמה דגשים', 'check')}
   <div class="rules one">
@@ -396,11 +433,10 @@ S(f'''<section class="slide light">
 
 S(f'''<section class="slide dark middle">
   <h1 class="huge">בהצלחה!</h1>
-  <p class="big orange">מחקר זה כיף, ויותר כיף לעשות את זה ביחד</p>
+  <p class="big orange">מחקר משנה את העולם.<br>מחקר זה כיף, וכיף יותר ביחד.</p>
   <p class="big muted" style="margin-top:40px">שאלות?</p>
   <p class="mail" style="font-size:56px">{ltr('IEMGrad@bgu.ac.il')}</p>
 </section>''')
-
 
 html = '''<!doctype html>
 <html lang="he" dir="rtl">
