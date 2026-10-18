@@ -11,6 +11,7 @@ FONT = 'font-family="Heebo, Arial, sans-serif"'
 
 # ---------- running example: three color-coded metrics ----------
 GREEN, GOLD, BLUE = '#3E9B4F', '#E2B42B', '#3A7BC8'
+LIE = '#D64545'
 METRICS = ['Planet', 'Fees', 'Energy']
 KINDS = ['leaf', 'coin', 'bolt']
 MCOL = [GREEN, GOLD, BLUE]
@@ -128,11 +129,13 @@ def phantoms_vis():
 
 
 def how_it_works(step):
-    """step 1..5: Metrics, Data, Ballots, Weights, Scores (later columns hidden)."""
-    W, H = 1660, 600
+    """step 1..5: Metrics, Ballots, Weights, Data, Scores (later columns hidden).
+    Reads as: metrics -> ballots -> weights x data = scores."""
+    W, H = 1660, 570
     T, S = 46, 30
     agg = [st.median(c) for c in zip(*BALLOTS)]
     sc = [[agg[j] * VAL[i][j] for j in range(3)] for i in range(3)]
+    y0, c = 200, 96
     cols = []
     # 1 metrics
     b = text(115, 50, 'Metrics', T, DK, weight=800) + text(115, 96, 'what counts', S, GR)
@@ -140,8 +143,21 @@ def how_it_works(step):
         y = 250 + 100 * j
         b += icon(KINDS[j], 40, y, 30, MCOL[j]) + text(86, y + 11, m, 34, DK, 'start', weight=700)
     cols.append(b)
-    # 2 data
-    x0, y0, c = 470, 200, 96
+    # 2 ballots
+    bx = 360
+    b = text(bx + 92, 50, 'Ballots', T, DK, weight=800) + text(bx + 92, 96, 'what matters', S, GR)
+    for v in range(3):
+        yy = 168 + v * 136
+        b += head(bx + 20, yy + 40, 16, GR)
+        b += bars(bx + 62, yy, BALLOTS[v], w=36, gap=10, h=110)
+    cols.append(b)
+    # 3 weights
+    ax = 680
+    b = text(ax + 80, 50, 'Weights', T, DK, weight=800) + text(ax + 80, 96, 'one per metric', S, GR)
+    b += bars(ax, 215, agg, w=46, gap=12, h=270)
+    cols.append(b)
+    # 4 data
+    x0 = 1010
     b = text(x0 + 1.5 * c, 50, 'Data', T, DK, weight=800) + text(x0 + 1.5 * c, 96, 'public', S, GR)
     for j in range(3):
         b += icon(KINDS[j], x0 + j * c + c / 2, y0 - 34, 22, MCOL[j])
@@ -152,37 +168,23 @@ def how_it_works(step):
             b += f'<rect x="{x0+j*c+5}" y="{y0+i*c+5}" width="{c-10}" height="{c-10}" rx="12" fill="{MCOL[j]}" fill-opacity="{0.12+0.7*v:.2f}"/>'
             b += text(x0 + j * c + c / 2, y0 + i * c + c / 2 + 12, f'{v:.1f}'.lstrip('0'), 32, DK, weight=700)
     cols.append(b)
-    # 3 ballots
-    bx = 810
-    b = text(bx + 90, 50, 'Ballots', T, DK, weight=800) + text(bx + 90, 96, 'what matters', S, GR)
-    for v in range(3):
-        yy = 168 + v * 140
-        b += head(bx + 20, yy + 40, 16, GR)
-        b += bars(bx + 62, yy, BALLOTS[v], w=34, gap=8, h=110)
-    cols.append(b)
-    # 4 weights
-    ax = 1085
-    b = text(ax + 78, 50, 'Weights', T, DK, weight=800) + text(ax + 78, 96, 'one per metric', S, GR)
-    b += bars(ax, 215, agg, w=44, gap=12, h=270)
-    cols.append(b)
-    # 5 scores (stacked: each metric's part of the weighted sum)
-    sx, scale = 1440, 215 / max(sum(r) for r in sc)
-    b = text(sx + 100, 50, 'Scores', T, DK, weight=800) + text(sx + 100, 96, 'weighted sums', S, GR)
-    for i, p in enumerate(PROJECTS):
-        yy = 216 + i * 96
-        b += text(sx - 14, yy + 44, p, S, GR, 'end')
-        x = sx
+    # 5 scores, stacked by metric, aligned with the data rows
+    sx, scale = 1370, 285 / max(sum(r) for r in sc)
+    b = text(sx + 140, 50, 'Scores', T, DK, weight=800) + text(sx + 140, 96, 'weighted sums', S, GR)
+    for i in range(3):
+        yy, x = y0 + i * c + 12, sx
         for j in range(3):
             w = sc[i][j] * scale
-            b += f'<rect x="{x:.1f}" y="{yy}" width="{w:.1f}" height="64" fill="{MCOL[j]}"/>'
+            b += f'<rect x="{x:.1f}" y="{yy}" width="{w:.1f}" height="{c-24}" fill="{MCOL[j]}"/>'
             x += w
     cols.append(b)
-    arrows = [arrow(250, 350, 300), arrow(778, 350, 802), arrow(1000, 350, 1070), arrow(1248, 350, 1318)]
+    joins = [arrow(240, 350, 330), arrow(570, 350, 660),
+             text(855, 372, '×', 72, OR, weight=800), text(1328, 370, '=', 72, OR, weight=800)]
     body = ''
     for k, col in enumerate(cols):
         body += hide(k < step, col)
         if k < 4:
-            body += hide(k + 1 < step, arrows[k])
+            body += hide(k + 1 < step, joins[k])
     return svg(W, H, body)
 
 
@@ -222,6 +224,9 @@ def mean_median_vis(show):
         b += text(x + 55, base + 50, nm, 32, GR)
     b += arrow(760, 330, 860)
     agg = [('mean', sum(vals) / 3, DK), ('median', st.median(vals), OR)]
+    tag = (f'<rect x="950" y="0" width="450" height="64" rx="32" fill="{PALE}"/>'
+           + text(1175, 44, 'Both used in practice', 32, DK, weight=800))
+    b += hide(show, tag)
     for k, (nm, v, col) in enumerate(agg):
         x = 960 + k * 280
         b += f'<rect x="{x}" y="{base-hh}" width="150" height="{hh}" rx="10" fill="none" stroke="{GL}" stroke-width="3" stroke-dasharray="12 10"/>'
@@ -242,7 +247,7 @@ def thermo_pair(rule, lie_shown):
     b = ''
     for r, (label, cat) in enumerate([('Truth', 26), ('Cat lies', 32)]):
         y = 150 + r * 320
-        row = text(40, y + 12, label, 36, DK if r == 0 else OR, 'start', weight=800)
+        row = text(40, y + 12, label, 36, DK if r == 0 else LIE, 'start', weight=800)
         row += f'<line x1="{X(lo)-20}" y1="{y}" x2="{X(hi)+20}" y2="{y}" stroke="{GL}" stroke-width="6" stroke-linecap="round"/>'
         for t in (16, 20, 24, 28, 32):
             row += f'<line x1="{X(t)}" y1="{y-10}" x2="{X(t)}" y2="{y+10}" stroke="{GL}" stroke-width="3"/>'
@@ -250,7 +255,7 @@ def thermo_pair(rule, lie_shown):
         if r == 1:
             row += f'<circle cx="{X(26)}" cy="{y}" r="20" fill="none" stroke="{GL}" stroke-width="4" stroke-dasharray="6 6"/>'
         for v, nm in [(18, 'Ann'), (22, 'Ben'), (cat, 'Cat')]:
-            row += f'<circle cx="{X(v)}" cy="{y}" r="22" fill="{OR if (r == 1 and nm == "Cat") else DK}"/>'
+            row += f'<circle cx="{X(v)}" cy="{y}" r="22" fill="{LIE if (r == 1 and nm == "Cat") else DK}"/>'
             row += text(X(v), y - 42, nm, 32, DK, weight=700)
         if rule:
             vals = [18, 22, cat]
@@ -278,13 +283,13 @@ def ann_table(lie):
         y = 90 + i * 92
         b += text(40, y + 50, nm, 36, DK, 'start', weight=800 if nm == 'Ann' else 400)
         if nm == 'Ann':
-            b += text(140, y + 50, '(lie)' if lie else '(truth)', 30, OR if lie else GR, 'start', weight=700)
+            b += text(140, y + 50, '(lie)' if lie else '(truth)', 30, LIE if lie else GR, 'start', weight=700)
             b += f'<rect x="{cx[2]-110}" y="{y}" width="220" height="74" rx="12" fill="{PALE}"/>'
             b += text(cx[2], y + 50, 'wants 1', 34, DK, weight=800)
         for j, val in enumerate(v):
             hot = lie and nm == 'Ann' and j == 1
-            b += f'<rect x="{cx[j]-75}" y="{y}" width="150" height="74" rx="12" fill="{OR if hot else CARD}" stroke="{GL}" stroke-width="{0 if hot else 2}"/>'
-            b += text(cx[j], y + 50, f'{val:g}', 36, DK, weight=700)
+            b += f'<rect x="{cx[j]-75}" y="{y}" width="150" height="74" rx="12" fill="{LIE if hot else CARD}" stroke="{GL}" stroke-width="{0 if hot else 2}"/>'
+            b += text(cx[j], y + 50, f'{val:g}', 36, '#fff' if hot else DK, weight=700)
     # median row, set apart by a rule
     y = 90 + 3 * 92 + 40
     b += f'<line x1="30" y1="{y-26}" x2="{cx[2]+110}" y2="{y-26}" stroke="{DK}" stroke-width="5" stroke-linecap="round"/>'
@@ -382,13 +387,13 @@ def clone_vis(after):
 
 def landscape_vis():
     """The paper's classification table, as colored tiles."""
-    T = {  # (mean, median) per lever: RC, MS, MR, PM
-        'Plurality': [('P', 'P'), ('H', 'P'), ('I', 'P'), ('H', 'P')],
+    T = {
+        'Plurality': [('P', 'P'), ('H', 'P'), ('H', 'P'), ('I', 'P')],
         'Approval': [('H', 'H')] * 4,
-        'Cumulative': [('P', 'H'), ('H', 'H'), ('I', 'H'), ('P', 'H')],
-        'Fractional': [('P', 'P'), ('H', 'H'), ('H', 'H'), ('P', 'P')],
-    }
-    levers = ['Change a ballot', 'Pick metrics', 'Copy metrics', 'Edit ballots']
+        'Cumulative': [('P', 'H'), ('P', 'H'), ('H', 'H'), ('I', 'H')],
+        'Fractional': [('P', 'P'), ('P', 'P'), ('H', 'H'), ('H', 'H')],
+    }  # (mean, median) per lever: RC, PM, MS, MR
+    levers = ['Change a ballot', 'Edit ballots', 'Pick metrics', 'Copy metrics']
     W, H = 1660, 580
     x0, cw, gap, ggap = 270, 160, 8, 26
     b = ''
@@ -507,9 +512,9 @@ S('''<section class="slide dark center">
 
 HOW_NOTES = [
     'Start from the metrics: what counts. Here: helping the planet, fees (money), energy.',
-    'Each project has a public value on each metric.',
     'Each voter says how much each metric matters.',
     'The rule turns the ballots into one weight per metric. This is the object we study: rules that aggregate weights first, metric by metric. (Optimism Round 4 did it the other way: a median per project, then rescaling. Under the mean the order does not matter; under the median it does.)',
+    'Each project has a public value on each metric.',
     'Each project gets the weighted sum: its values times the weights. Colors show which metric earned what.',
 ]
 for k in range(1, 6):
@@ -532,17 +537,13 @@ for show in (False, True):
 </section>''')
 
 S('''<section class="slide dark">
-  <h2>Both are used in practice</h2>
+  <h2>Next: mean vs. median, on three fronts</h2>
   <div class="cards">
-    <div class="card top"><h3>Mean</h3><p>Composite indices</p></div>
-    <div class="card top"><h3>Median</h3><p>Optimism; social choice</p></div>
+    <div class="card top"><h3>Lying</h3><p>Neither is safe</p></div>
+    <div class="card top"><h3>Hitting a target</h3><p>Depends on the ballot</p></div>
+    <div class="card top"><h3>Copying metrics</h3><p>Mean often immune</p></div>
   </div>
-  <div class="chips" style="margin-bottom:auto">
-    <span class="muted" style="font-size:44px;margin-right:12px">We compare them on</span>
-    <span class="chip">lying</span><span class="chip">hitting a target</span><span class="chip">copying metrics</span>
-  </div>
-  <p class="ref">Greco et al. 2019 · Optimism Retro Funding 4, 2024</p>
-  <aside>The mean is what composite-index builders deploy. The median is the canonical strategyproof counterpart in budget aggregation. Optimism used medians, but per project after scoring, then rescaled; we study the coordinate-wise median of weights.</aside>
+  <aside>Lying: no metric-by-metric rule is strategyproof. Hitting a target: which rule is harder to steer depends on the ballot type. Copying metrics: under the mean, copies cannot change any score with cumulative or plurality ballots; the median can be moved.</aside>
 </section>''')
 
 S(f'''<section class="slide dark center">
