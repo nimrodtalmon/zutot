@@ -6,70 +6,72 @@
 <title>CV · Nimrod Talmon</title>
 <meta name="description" content="CV of Nimrod Talmon: academic research and industry consulting on governance, voting systems, and mechanism design.">
 <style>
-  :root { --bg: #fbfaf7; --fg: #1d1d1b; --muted: #6b6a66; --line: #e4e1da; --accent: #b4520f; }
-  @media (prefers-color-scheme: dark) {
-    :root { --bg: #161615; --fg: #e9e7e2; --muted: #9b9890; --line: #2e2d2a; --accent: #f08a3e; }
-  }
+  /* Mirrors the Google Doc "CV — Nimrod Talmon (Tech Consulting)": Arial, letter page, 72pt side margins. */
   * { box-sizing: border-box; }
-  body { margin: 0; background: var(--bg); color: var(--fg); font: 16px/1.55 Georgia, "Times New Roman", serif; }
-  main { max-width: 760px; margin: 0 auto; padding: 32px 16px 40px; }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; }
-  .back { font: 14px system-ui, sans-serif; }
-  h1 { font-size: 28px; margin: 18px 0 2px; font-weight: normal; }
-  .muted { color: var(--muted); }
-  .links { font-size: 15px; }
-  .links a + a::before, .links span + a::before { content: "·"; color: var(--muted); margin: 0 7px; }
-  h2 { font: 600 12px/1 system-ui, sans-serif; text-transform: uppercase; letter-spacing: 1.5px;
-       color: var(--muted); margin: 28px 0 10px; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
-  p { margin: 0; }
-  ul { list-style: none; padding: 0; margin: 0; }
-  li { padding: 4px 0; }
-  .yr { color: var(--muted); }
+  html { background: #f1f3f4; }
+  @media (prefers-color-scheme: dark) { html { background: #202124; } }
+  body { margin: 0; padding: 24px 16px; font-family: Arial, Helvetica, sans-serif; color: #000; }
+  .page { background: #fff; max-width: 8.5in; margin: 0 auto; padding: 36pt 72pt 48pt;
+          box-shadow: 0 1px 3px rgba(0,0,0,.2); font-size: 11pt; line-height: 1.15; }
+  h1 { font-size: 24pt; font-weight: 700; margin: 0; padding: 12pt 0; line-height: 1.15; }
+  h2 { font-size: 18pt; font-weight: 700; margin: 0; padding: 0 0 11.2pt; line-height: 1.15; }
+  p { margin: 0; padding: 0 0 11.2pt; text-align: justify; }
+  ul { margin: 0; padding: 0 0 11.2pt; list-style-type: "●"; }
+  li { margin-left: 30pt; padding-left: 12pt; text-align: justify; }
+  li::marker { font-size: 9pt; }
+  a { color: #0000ee; text-decoration: underline; }
+  .last { padding-bottom: 0; }
+  @media (max-width: 640px) {
+    body { padding: 0; }
+    .page { padding: 16px 16px 32px; box-shadow: none; }
+    p, li { text-align: left; }
+    li { margin-left: 18pt; }
+  }
   @media print {
-    :root { --bg: #fff; --fg: #000; --muted: #555; --line: #ccc; --accent: #000; }
-    .back { display: none; }
-    main { padding-top: 0; }
+    @page { size: letter; margin: 36pt 72pt; }
+    html, body { background: #fff; padding: 0; }
+    .page { box-shadow: none; padding: 0; max-width: none; }
+    a { color: #0000ee; }
   }
 </style>
 </head>
 <body>
-<main>
-  <a class="back" href="../">← Home</a>
-
+<main class="page">
   <h1>Nimrod Talmon, PhD</h1>
-  <div class="links">
-    <span class="muted">nimrodtalmon77 at gmail dot com</span><a href="https://dblp.org/pid/53/11268">DBLP</a><a href="https://scholar.google.com/citations?user=dSfOjCQAAAAJ">Google Scholar</a>
-  </div>
+  <p><span id="em">nimrodtalmon77 at gmail dot com</span>&nbsp; | &nbsp;<a href="../">Personal site</a>&nbsp; | &nbsp;<a href="https://scholar.google.com/citations?user=dSfOjCQAAAAJ">Google Scholar</a></p>
 
   <h2>Profile</h2>
-  <p>Tenured Associate Professor of Computer Science (Ben-Gurion University) and industry consultant on blockchain/DAO governance, voting systems, and mechanism design. Combines a leading academic record in computational social choice (2,900+ citations, h-index 30; AAMAS/IJCAI/AAAI) with hands-on governance work for major blockchain ecosystems including Cardano (IOG), Optimism, and DAOstack. Advises on governance mechanism design and evaluation: voting-power distribution, delegation, treasury and funding allocation (quadratic and retroactive funding), incentive design, and attack/bribery resistance — as well as AI governance and multi-agent AI systems.</p>
+  <p>Tenured Associate Professor of Industrial Engineering and Management (Ben-Gurion University) and industry consultant on blockchain/DAO governance, voting systems, and mechanism design. Combines a leading academic record in computational social choice (<span id="cites">2,900+</span> citations, h-index <span id="hindex">30</span>; AAMAS/IJCAI/AAAI) with hands-on governance work for major blockchain ecosystems including Cardano (IOG), Optimism, and DAOstack. Advises on governance mechanism design and evaluation: voting-power distribution, delegation, treasury and funding allocation (quadratic and retroactive funding), incentive design, and attack/bribery resistance — as well as AI governance and multi-agent AI systems.</p>
 
   <h2>Consulting &amp; Industry Experience</h2>
   <ul>
-    <li><b>Input Output Global (IOG; Cardano)</b>, <span class="yr">2024–2026</span> — Researcher and consultant on blockchain governance and algorithmic game theory.</li>
-    <li><b>Stealth-mode blockchain venture</b>, <span class="yr">2022–present</span> — Consultant on blockchain governance and network economics.</li>
-    <li><b>Optimism</b>, <span class="yr">2024</span> — Governance research.</li>
-    <li><b>DAOstack</b>, <span class="yr">2021–2023</span> — Consultant on DAO governance and blockchain architecture.</li>
-    <li><b>Weizmann Institute of Science</b>, <span class="yr">2019–present</span> — Research consultant on digital democracy.</li>
-    <li><b>Google Israel</b>, <span class="yr">2008–2010</span> — Software Engineer and Team Lead.</li>
+    <li><b>Input Output Global (IOG; Cardano)</b>, 2024–2026 — Researcher and consultant on blockchain governance and algorithmic game theory.</li>
+    <li><b>Stealth-mode blockchain venture</b>, 2022–present — Consultant on blockchain governance and network economics.</li>
+    <li><b>Optimism</b>, 2024 — Governance research.</li>
+    <li><b>DAOstack</b>, 2021–2023 — Consultant on DAO governance and blockchain architecture.</li>
+    <li><b>Weizmann Institute of Science</b>, 2019–present — Research consultant on digital democracy.</li>
+    <li><b>Google Israel</b>, 2008–2010 — Software Engineer and Team Lead.</li>
   </ul>
 
   <h2>Academic Position</h2>
-  <p><b>Ben-Gurion University of the Negev</b>, <span class="yr">2018–present</span> — Associate Professor (tenured), Department of Industrial Engineering and Management. Head of the <a href="https://bgulab.onrender.com">Digital Cooperation Lab</a>.</p>
+  <p><b>Ben-Gurion University of the Negev</b>, 2018–present — Associate Professor (tenured), Department of Industrial Engineering and Management. Head of the Digital Cooperation Lab.</p>
 
   <h2>Areas of Expertise</h2>
   <p>Computational social choice · voting theory · mechanism design · participatory budgeting · liquid democracy · sortition · DAO/protocol governance · tokenomics and incentive design · quadratic &amp; retroactive funding · AI governance · multi-agent AI systems · game theory</p>
 
   <h2>Education</h2>
   <ul>
-    <li><b>PhD</b>, TU Berlin, <span class="yr">2013–2015</span> — Summa Cum Laude; Best PhD Dissertation of 2016, Faculty IV.</li>
-    <li><b>MSc</b>, Weizmann Institute of Science, <span class="yr">2010–2012</span>.</li>
-    <li><b>BSc</b>, Tel Aviv University (Computer Science), <span class="yr">2004–2007</span> — Magna Cum Laude.</li>
+    <li><b>PhD</b>, TU Berlin, 2013–2015 — Summa Cum Laude; Best PhD Dissertation of 2016, Faculty IV.</li>
+    <li><b>MSc</b>, Weizmann Institute of Science, 2010–2012.</li>
+    <li><b>BSc</b>, Tel Aviv University (Computer Science), 2004–2007 — Magna Cum Laude.</li>
   </ul>
 
   <h2>Selected Awards</h2>
-  <p>Clore Post-Doctoral Fellowship (2016) · Best PhD Dissertation, TU Berlin Faculty IV (2016) · multiple Dean's Excellence Awards, Tel Aviv University.</p>
+  <p class="last">Clore Post-Doctoral Fellowship (2016) · Best PhD Dissertation, TU Berlin Faculty IV (2016) · multiple Dean's Excellence Awards, Tel Aviv University.</p>
 </main>
+<script>
+  // Email assembled at runtime so scrapers don't get it from the source.
+  document.getElementById("em").textContent = ["nimrodtalmon77", "gmail.com"].join("@");
+</script>
 </body>
 </html>
