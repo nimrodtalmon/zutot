@@ -415,6 +415,258 @@ def landscape_vis():
     return svg(W, H, b)
 
 
+# ---------- part 1 visuals: food security ----------
+SOFTRED, SOFTGREEN = '#FBE3E3', '#E2F2E5'
+
+
+def house(x, y, s, on):
+    col = OR if on else GL
+    return (f'<path d="M{x} {y+.45*s} L{x+.5*s} {y} L{x+s} {y+.45*s} V{y+s} H{x} Z" fill="{OR if on else "none"}" '
+            f'stroke="{col}" stroke-width="10" stroke-linejoin="round"/>'
+            f'<rect x="{x+.38*s}" y="{y+.6*s}" width="{.24*s}" height="{.4*s}" rx="6" fill="{DK if on else GL}"/>')
+
+
+def houses_vis():
+    W, H = 1060, 280
+    return svg(W, H, ''.join(house(20 + k * 260, 30, 220, k == 0) for k in range(4)))
+
+
+def box(cx, cy, label, w=270, h=84, fill=CARD, stroke=DK, fg=DK, dash=''):
+    return (f'<rect x="{cx-w/2}" y="{cy-h/2}" width="{w}" height="{h}" rx="18" fill="{fill}" stroke="{stroke}" stroke-width="4" {dash}/>'
+            + text(cx, cy + 11, label, 30, fg, weight=700))
+
+
+def link(x1, y1, x2, y2, color, w=6, dash=''):
+    mx = (x1 + x2) / 2
+    return (f'<path d="M{x1} {y1} C{mx} {y1} {mx} {y2} {x2-18} {y2}" fill="none" stroke="{color}" '
+            f'stroke-width="{w}" stroke-linecap="round" {dash}/>'
+            f'<path d="M{x2} {y2} l-22 -12 v24 z" fill="{color}"/>')
+
+
+def network_vis():
+    """Seeds, eggs and meat moving between farmers, distributors, stores, consumers, waste."""
+    W, H, bw = 1680, 600, 270
+    N = {'seedf': ('Seed farmer', 145, 270), 'chick': ('Chicken farmer', 480, 150),
+         'seedd': ('Seed distributor', 480, 400), 'eggd': ('Egg distributor', 815, 70),
+         'butch': ('Butcher', 815, 240), 'groc': ('Grocery', 1150, 270),
+         'cons': ('Consumers', 1530, 170), 'waste': ('Waste', 1530, 400)}
+    SEED, EGG, MEAT = GREEN, GOLD, LIE
+    E = [('seedf', 'chick', SEED), ('seedf', 'seedd', SEED), ('seedd', 'groc', SEED),
+         ('chick', 'eggd', EGG), ('chick', 'butch', MEAT), ('eggd', 'groc', EGG),
+         ('butch', 'groc', MEAT), ('groc', 'cons', DK), ('groc', 'waste', GL)]
+    b = ''
+    for a, c, col in E:
+        _, xa, ya = N[a]
+        _, xc, yc = N[c]
+        b += link(xa + bw / 2, ya, xc - bw / 2, yc, col, dash='stroke-dasharray="4 12"' if c == 'waste' else '')
+    for k, (lab, x, y) in N.items():
+        b += box(x, y, lab, bw, stroke=GL if k == 'waste' else DK, fg=GR if k == 'waste' else DK,
+                 dash='stroke-dasharray="10 8"' if k == 'waste' else '')
+    for k, (lab, col) in enumerate([('seeds', SEED), ('eggs', EGG), ('meat', MEAT)]):
+        x = 520 + k * 240
+        b += f'<line x1="{x}" y1="560" x2="{x+70}" y2="560" stroke="{col}" stroke-width="8" stroke-linecap="round"/>'
+        b += text(x + 90, 571, lab, 30, GR, 'start', weight=700)
+    return svg(W, H, b)
+
+
+def check(cx, cy, r, color=GREEN):
+    return (f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="{color}"/>'
+            f'<path d="M{cx-.45*r} {cy} l{.3*r} {.32*r} l{.6*r} {-.62*r}" fill="none" stroke="#fff" '
+            f'stroke-width="{r/4:.1f}" stroke-linecap="round" stroke-linejoin="round"/>')
+
+
+def record_vis():
+    """One hand-off as a record, and the four steps it goes through."""
+    W, H = 1660, 500
+    b = f'<rect x="20" y="20" width="700" height="460" rx="22" fill="{CARD}" stroke="{DK}" stroke-width="4"/>'
+    b += f'<rect x="20" y="20" width="700" height="12" rx="6" fill="{OR}"/>'
+    rows = [('seller', 'Dairy farm'), ('buyer', 'Grocery'), ('batch', '#4417'), ('date', 'March 3'), ('amount', '200 liters')]
+    for k, (f, v) in enumerate(rows):
+        y = 105 + k * 82
+        b += text(70, y, f, 34, GR, 'start', weight=700) + text(300, y, v, 38, DK, 'start', weight=800)
+        if k:
+            b += f'<line x1="60" y1="{y-50}" x2="680" y2="{y-50}" stroke="{GL}" stroke-width="2"/>'
+    steps = ['proposed', 'confirmed', 'shipped', 'received']
+    x0, dx, y = 900, 230, 250
+    b += f'<line x1="{x0}" y1="{y}" x2="{x0+3*dx}" y2="{y}" stroke="{GL}" stroke-width="8" stroke-linecap="round"/>'
+    for k, s in enumerate(steps):
+        b += check(x0 + k * dx, y, 40, OR)
+        b += text(x0 + k * dx, y + 100, s, 32, DK, weight=700)
+    b += text(x0 + 1.5 * dx, 120, 'signed by both sides, on-chain', 34, GR, weight=700)
+    return svg(W, H, b)
+
+
+def ledger(cx, cy, s, color=DK):
+    return (f'<rect x="{cx-s/2}" y="{cy-.6*s}" width="{s}" height="{1.2*s}" rx="8" fill="{CARD}" stroke="{color}" stroke-width="4"/>'
+            + ''.join(f'<line x1="{cx-.3*s}" y1="{cy-.3*s+k*.3*s}" x2="{cx+.3*s}" y2="{cy-.3*s+k*.3*s}" '
+                      f'stroke="{color}" stroke-width="4" stroke-linecap="round"/>' for k in range(3)))
+
+
+def trust_vis():
+    """One owner of the database vs. everyone holding the same log."""
+    W, H = 1660, 470
+    b = ''
+    # left: one database, one owner
+    cx, cy = 390, 270
+    b += text(cx, 50, 'One owner', 44, DK, weight=800)
+    b += (f'<ellipse cx="{cx}" cy="{cy-60}" rx="90" ry="28" fill="{PALE}" stroke="{OR}" stroke-width="5"/>'
+          f'<path d="M{cx-90} {cy-60} V{cy+60} a90 28 0 0 0 180 0 V{cy-60}" fill="{PALE}" stroke="{OR}" stroke-width="5"/>'
+          f'<ellipse cx="{cx}" cy="{cy-60}" rx="90" ry="28" fill="{PALE}" stroke="{OR}" stroke-width="5"/>')
+    b += head(cx, cy - 140, 20, OR)
+    for k, (hx, hy) in enumerate([(130, 160), (130, 360), (650, 160), (650, 360)]):
+        b += head(hx, hy - 20, 18, GR)
+        x2 = cx - 110 if hx < cx else cx + 110
+        b += f'<line x1="{hx + (40 if hx < cx else -40)}" y1="{hy}" x2="{x2}" y2="{cy}" stroke="{GL}" stroke-width="5" stroke-dasharray="4 12" stroke-linecap="round"/>'
+    b += text(cx, 450, 'everyone trusts one party', 32, GR, weight=700)
+    # right: shared log
+    cx = 1250
+    b += text(cx, 50, 'A shared log', 44, DK, weight=800)
+    pts = [(cx + 200 * math.cos(-math.pi / 2 + k * 2 * math.pi / 5), 265 + 150 * math.sin(-math.pi / 2 + k * 2 * math.pi / 5)) for k in range(5)]
+    b += f'<ellipse cx="{cx}" cy="265" rx="200" ry="150" fill="none" stroke="{GL}" stroke-width="5"/>'
+    for x, y in pts:
+        b += f'<circle cx="{x:.0f}" cy="{y:.0f}" r="52" fill="{LT}"/>'
+        b += head(x - 18, y - 12, 13, GR) + ledger(x + 20, y + 4, 30, OR)
+    b += text(cx, 450, 'nobody can quietly edit it', 32, GR, weight=700)
+    return svg(W, H, b)
+
+
+def milk_series(batches=((40, 3), (30, 7), (30, 13)), per_day=8):
+    """The depletion algorithm: drop expired batches, record stock, consume first-to-expire."""
+    bs = [[q, e] for q, e in batches]
+    out, day = [], 0
+    while True:
+        before = sum(q for q, _ in bs)
+        bs = [[q, e] for q, e in bs if e > day and q > 0]
+        after = sum(q for q, _ in bs)
+        out.append((day, before, after))
+        if after == 0:
+            return out
+        need = per_day
+        for bt in sorted(bs, key=lambda t: t[1]):
+            take = min(need, bt[0])
+            bt[0] -= take
+            need -= take
+        day += 1
+
+
+def milk_vis():
+    W, H = 1500, 560
+    ser = milk_series()
+    base, unit, bw, gap = 450, 3.6, 76, 34
+    b = text(40, 40, 'milk in stock', 32, GR, 'start', weight=700)
+    for d, before, after in ser:
+        x = 60 + d * (bw + gap)
+        if after:
+            b += f'<rect x="{x}" y="{base-after*unit}" width="{bw}" height="{after*unit}" rx="8" fill="{BLUE}"/>'
+        if before > after:
+            b += f'<rect x="{x}" y="{base-before*unit}" width="{bw}" height="{(before-after)*unit}" rx="8" fill="{LIE}"/>'
+            b += text(x + bw / 2, base - before * unit - 18, 'expired', 30, LIE, weight=800)
+        b += text(x + bw / 2, base + 46, str(d), 30, GR)
+    last = 60 + ser[-1][0] * (bw + gap) + bw / 2
+    b += text(last, base - 30, 'out', 36, OR, weight=800)
+    b += f'<line x1="40" y1="{base}" x2="{last+70}" y2="{base}" stroke="{GL}" stroke-width="4"/>'
+    b += text(60 + 5.5 * (bw + gap), base + 100, 'days', 32, GR, weight=700)
+    return svg(W, H, b)
+
+
+def banana(cx, cy, r):
+    return (f'<path d="M{cx-r} {cy-.35*r} Q{cx} {cy+.9*r} {cx+r} {cy-.35*r}" fill="none" stroke="{GOLD}" '
+            f'stroke-width="{.42*r:.0f}" stroke-linecap="round"/>'
+            f'<line x1="{cx+r}" y1="{cy-.35*r}" x2="{cx+1.1*r}" y2="{cy-.55*r}" stroke="#7A5C12" stroke-width="{.18*r:.0f}" stroke-linecap="round"/>')
+
+
+def sack(cx, cy, r):
+    return (f'<path d="M{cx-.55*r} {cy-.6*r} Q{cx-r} {cy+.2*r} {cx-.8*r} {cy+.9*r} H{cx+.8*r} Q{cx+r} {cy+.2*r} {cx+.55*r} {cy-.6*r} Z" '
+            f'fill="{CARD}" stroke="{DK}" stroke-width="5" stroke-linejoin="round"/>'
+            f'<path d="M{cx-.55*r} {cy-.6*r} l{.2*r} {-.35*r} h{.7*r} l{.2*r} {.35*r}" fill="none" stroke="{DK}" stroke-width="5" stroke-linejoin="round"/>'
+            + text(cx, cy + .45 * r, 'FLOUR', .36 * r, GR, weight=800))
+
+
+def bread_vis():
+    """Recipe per loaf; what each input allows; the scarcest one decides."""
+    W, H = 1660, 470
+    b = f'<rect x="20" y="20" width="420" height="430" rx="22" fill="{CARD}" stroke="{GL}" stroke-width="2"/>'
+    b += text(230, 90, 'one loaf needs', 34, GR, weight=700)
+    b += sack(120, 210, 60) + text(200, 225, '2 cups flour', 34, DK, 'start', weight=800)
+    b += banana(120, 350, 55) + text(200, 365, '3 bananas', 34, DK, 'start', weight=800)
+    rows = [(210, 'have 300 cups', 150, GR), (360, 'have 6 bananas', 2, OR)]
+    x0, scale = 860, 3.6
+    b += text(x0, 90, 'enough for', 34, GR, 'start', weight=700)
+    for y, have, loaves, col in rows:
+        b += text(500, y + 12, have, 34, DK, 'start', weight=700)
+        b += arrow(760, y, 835, GL)
+        b += f'<rect x="{x0}" y="{y-34}" width="{max(loaves*scale, 14)}" height="68" rx="10" fill="{col}"/>'
+        lx = x0 + max(loaves * scale, 14) + 24
+        b += text(lx, y + 14, f'{loaves} loaves', 40, col if col == OR else DK, 'start', weight=800)
+    b += f'<rect x="{x0-20}" y="{360-56}" width="330" height="112" rx="20" fill="none" stroke="{OR}" stroke-width="5" stroke-dasharray="10 8"/>'
+    return svg(W, H, b)
+
+
+def cascade_vis(step):
+    """step 0: the network; 1: Russia cut, the loss travels downstream; 2: another supplier covers it."""
+    W, H, bw = 1680, 520, 300
+    N = {'ru': ('Russian supplier', 170, 110), 'el': ('Other supplier', 170, 400),
+         'imp': ('Fruit importer', 640, 110), 'whs': ('Wholesaler', 640, 400),
+         'bak': ('Bakery', 1110, 110), 'groc': ('Grocery', 1500, 300)}
+    E = [('ru', 'imp', 'bananas'), ('imp', 'bak', 'bananas'), ('bak', 'groc', 'banana bread'),
+         ('el', 'whs', ''), ('whs', 'groc', '')]
+    hit = {'imp', 'bak'} if step == 1 else set()
+    b = ''
+    for a, c, lab in E:
+        _, xa, ya = N[a]
+        _, xc, yc = N[c]
+        red = step >= 1 and a in ('ru', 'imp', 'bak') and (step == 1 or a == 'ru')
+        b += link(xa + bw / 2, ya, xc - bw / 2, yc, LIE if red else GR,
+                  dash='stroke-dasharray="14 10"' if red else '')
+        if lab and ya == yc:
+            b += text((xa + xc) / 2, ya - 18, lab, 28, LIE if red else GR, weight=700)
+        elif lab:
+            b += text(xa + bw / 2 + 24, ya - 30, lab, 28, LIE if red else GR, 'start', weight=700)
+    if step == 2:
+        _, xa, ya = N['el']
+        _, xc, yc = N['imp']
+        b += link(xa + bw / 2, ya, xc - bw / 2, yc, GREEN, w=8)
+        b += text((xa + xc) / 2 + 30, (ya + yc) / 2 + 10, 'bananas', 28, GREEN, 'start', weight=800)
+    for k, (lab, x, y) in N.items():
+        if k == 'ru' and step >= 1:
+            b += box(x, y, lab, bw, fill=SOFTRED, stroke=LIE, fg=GR)
+            cx, cy = x + bw / 2 - 6, y - 40
+            b += (f'<circle cx="{cx}" cy="{cy}" r="26" fill="{LIE}"/>'
+                  f'<path d="M{cx-10} {cy-10} l20 20 M{cx+10} {cy-10} l-20 20" stroke="#fff" stroke-width="6" stroke-linecap="round"/>')
+        elif k in hit:
+            b += box(x, y, lab, bw, fill=SOFTRED, stroke=LIE)
+        elif step == 2 and k in ('imp', 'bak'):
+            b += box(x, y, lab, bw, fill=SOFTGREEN, stroke=GREEN)
+        else:
+            b += box(x, y, lab, bw)
+    if step == 1:
+        b += text(1110, 200, 'no bananas', 32, LIE, weight=800)
+    return svg(W, H, b)
+
+
+def whatif_vis():
+    """A dashboard: switch off a source, compare today with the what-if."""
+    W, H = 1600, 500
+    b = f'<rect x="20" y="20" width="1560" height="460" rx="26" fill="{CARD}" stroke="{DK}" stroke-width="4"/>'
+    for k, (lab, on) in enumerate([('Imports from A', False), ('Region B', True), ('Supplier C', True)]):
+        y = 130 + k * 120
+        b += text(80, y + 12, lab, 32, DK, 'start', weight=700)
+        b += f'<rect x="380" y="{y-26}" width="96" height="52" rx="26" fill="{GREEN if on else GL}"/>'
+        b += f'<circle cx="{454 if on else 402}" cy="{y}" r="20" fill="#fff"/>'
+    b += f'<line x1="560" y1="60" x2="560" y2="440" stroke="{GL}" stroke-width="3"/>'
+    X = lambda d: 640 + d * 72
+    Y = lambda v: 410 - v * 3
+    today = [100, 98, 97, 95, 94, 93, 91, 90, 89, 88, 86]
+    whatif = [100, 92, 83, 74, 66, 57, 49, 41, 32, 24, 16]
+    for ser, col, dash in [(today, DK, ''), (whatif, OR, 'stroke-dasharray="16 10"')]:
+        pts = ' '.join(f'{X(d)},{Y(v)}' for d, v in enumerate(ser))
+        b += f'<polyline points="{pts}" fill="none" stroke="{col}" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" {dash}/>'
+    b += text(X(10) + 20, Y(86) + 10, 'today', 32, DK, 'start', weight=800)
+    b += text(X(10) + 20, Y(16) + 10, 'what if', 32, OR, 'start', weight=800)
+    b += f'<line x1="620" y1="{Y(0)}" x2="{X(10)}" y2="{Y(0)}" stroke="{GL}" stroke-width="3"/>'
+    return svg(W, H, b)
+
+
 # ---------- slides ----------
 def deco(name, dark=False, cls='deco'):
     return f'<img class="{cls}" src="img/{name}{"-dark" if dark else ""}.svg" alt="">'
@@ -433,13 +685,104 @@ TITLE = '''
   <p class="eyebrow">MidChain DeFi Conference</p>
   <h1>Metric-Based Voting</h1>
   <p class="big muted">Designing Rules for Ecosystem Resource Allocation</p>
-  <p class="ref" style="bottom:128px;font-size:32px">Nimrod Talmon · joint work with Eyal Briman</p>
+  <p class="hl">…and first: food security on a blockchain</p>
+  <p class="ref" style="bottom:128px;font-size:32px">Nimrod Talmon</p>
   <p class="ref">Ben-Gurion University of the Negev · October 26, 2026</p>
   <img class="deco" src="../assets/img/deco-network.svg" alt="">
 </section>'''
 
 slides = [TITLE]
 S = slides.append
+
+# ===== Part 1: food security on a blockchain (~10 min) =====
+S('''<section class="slide dark center">
+  <p class="eyebrow">Part 1</p>
+  <h1>Food security<br>on a blockchain</h1>
+  <p class="ref" style="bottom:128px;font-size:32px">with Bar Hoter, Moran Koren, Dorit Nitzan, Stav Shapira</p>
+  <p class="ref">Supported by the Israeli Ministry of Science and Technology</p>
+  <aside>Bar Hoter's MSc thesis (BGU, 2026), co-supervised with Moran Koren; paper at IEEE ISCC 2025.</aside>
+</section>''')
+
+S(f'''<section class="slide light">
+  <div class="cols">
+    <div><h1 class="huge" style="color:var(--orange)">1 in 4</h1>
+      <p class="big">households in Israel<br>are food insecure</p></div>
+    <div style="flex:none">{houses_vis()}</div>
+  </div>
+  <p class="ref">National Insurance Institute of Israel, Food Security Report 2024 (published 2025)</p>
+  <aside>2024: about 27% of households, about 2.8 million people. And in a crisis (COVID, war), nobody sees the whole food system at once.</aside>
+</section>''')
+
+S(f'''<section class="slide light">
+  <h2>Food moves along a network of hand-offs</h2>
+  <div style="margin-block:auto">{network_vis()}</div>
+  <aside>Seeds feed chickens; chickens give eggs and meat; everything meets at the store. Many parties, many products, one tangled network.</aside>
+</section>''')
+
+S(f'''<section class="slide light">
+  <h2>Every hand-off is a record</h2>
+  <div style="margin-block:auto">{record_vis()}</div>
+  <aside>Each transfer of a batch goes through four steps, each one signed and stored on-chain. Put together, these records are the network.</aside>
+</section>''')
+
+S(f'''<section class="slide light">
+  <h2>Why a blockchain?</h2>
+  <div style="margin-block:auto 0">{trust_vis()}</div>
+  <div class="chips" style="margin-block:0 auto">
+    <span class="chip on">On-chain: who, what, when</span>
+    <span class="chip">Off-chain: prices, contracts</span>
+  </div>
+  <aside>Many parties, and no single party everyone wants to own the database. A shared log is tamper-evident, also in a crisis. Commercially sensitive details stay off-chain; dashboards are built on top.</aside>
+</section>''')
+
+S(f'''<section class="slide light">
+  <h2>How many days of milk do we have?</h2>
+  <div style="margin-block:auto">{milk_vis()}</div>
+  <aside>Day by day: expired batches go to waste, then today's consumption is taken from the batches closest to expiry. Count the days until nothing is left. (Illustrative numbers.)</aside>
+</section>''')
+
+S(f'''<section class="slide light">
+  <h2>What can we still bake?</h2>
+  <div style="margin-block:auto 0">{bread_vis()}</div>
+  <p class="hl big" style="align-self:flex-start;margin-block:0 auto">The scarcest input decides</p>
+  <aside>Plenty of flour does not help without bananas. The same rule gives each producer's capacity, and points to the bottleneck.</aside>
+</section>''')
+
+CASCADE_NOTES = [
+    'A small piece of the network. Bananas come in from Russia, through an importer, to a bakery.',
+    'Cut Russia. The loss travels downstream: the importer has no bananas, the bakery cannot bake. It stops there; the grocery has other goods.',
+    'Then look for another supplier who can cover the importer.',
+]
+for k in range(3):
+    S(f'''<section class="slide light">
+  <h2>What if we lose Russia?</h2>
+  <div style="margin-block:auto 0">{cascade_vis(k)}</div>
+  <p class="hl big" style="align-self:flex-start;margin-block:0 auto;{"" if k == 2 else "visibility:hidden"}">Bananas from elsewhere: the bakery is covered</p>
+  <aside>{CASCADE_NOTES[k]}</aside>
+</section>''')
+
+S('''<section class="slide dark">
+  <h2>Where it stands</h2>
+  <div class="cards">
+    <div class="card top"><h3>Prototype</h3><p>Ethereum testnet</p></div>
+    <div class="card top"><h3>Data</h3><p>Synthetic, for now</p></div>
+    <div class="card top"><h3>Dashboards</h3><p>Nutrition and flows</p></div>
+  </div>
+  <p class="ref">Hoter, Koren, Nitzan, Shapira, Talmon · IEEE ISCC 2025</p>
+</section>''')
+
+S(f'''<section class="slide light">
+  <h2>Now: a real BI with a what-if simulator</h2>
+  <div style="margin-block:auto">{whatif_vis()}</div>
+  <aside>Current work: a real BI layer on top of the records, where a decision-maker switches off a source and sees what happens.</aside>
+</section>''')
+
+# ===== Part 2: metric-based voting =====
+S('''<section class="slide dark center">
+  <p class="eyebrow">Part 2</p>
+  <h1>Metric-based voting</h1>
+  <p class="ref" style="bottom:128px;font-size:32px">with Eyal Briman</p>
+</section>''')
 
 S(f'''<section class="slide light center">
   <h1 class="q">A pot of money,<br>many projects.<br>Who gets what?</h1>
