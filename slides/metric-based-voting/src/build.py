@@ -417,23 +417,23 @@ def landscape_vis():
 
 # ---------- part 1 visuals: food security ----------
 SOFTRED, SOFTGREEN = '#FBE3E3', '#E2F2E5'
+DASHED = 'stroke-dasharray="10 8"'
 
 
-def house(x, y, s, on):
+def house(x, y, s, on, w=10):
     col = OR if on else GL
     return (f'<path d="M{x} {y+.45*s} L{x+.5*s} {y} L{x+s} {y+.45*s} V{y+s} H{x} Z" fill="{OR if on else "none"}" '
-            f'stroke="{col}" stroke-width="10" stroke-linejoin="round"/>'
-            f'<rect x="{x+.38*s}" y="{y+.6*s}" width="{.24*s}" height="{.4*s}" rx="6" fill="{DK if on else GL}"/>')
+            f'stroke="{col}" stroke-width="{w}" stroke-linejoin="round"/>'
+            f'<rect x="{x+.38*s}" y="{y+.6*s}" width="{.24*s}" height="{.4*s}" rx="{s/30:.0f}" fill="{DK if on else GL}"/>')
 
 
-def houses_vis():
-    W, H = 1060, 280
-    return svg(W, H, ''.join(house(20 + k * 260, 30, 220, k == 0) for k in range(4)))
+def houses_small():
+    return svg(390, 100, ''.join(house(10 + k * 95, 10, 80, k == 0, 6) for k in range(4)))
 
 
-def box(cx, cy, label, w=270, h=84, fill=CARD, stroke=DK, fg=DK, dash=''):
+def box(cx, cy, label, w=270, h=84, fill=CARD, stroke=DK, fg=DK, dash='', size=30):
     return (f'<rect x="{cx-w/2}" y="{cy-h/2}" width="{w}" height="{h}" rx="18" fill="{fill}" stroke="{stroke}" stroke-width="4" {dash}/>'
-            + text(cx, cy + 11, label, 30, fg, weight=700))
+            + text(cx, cy + size * .36, label, size, fg, weight=700))
 
 
 def link(x1, y1, x2, y2, color, w=6, dash=''):
@@ -443,25 +443,66 @@ def link(x1, y1, x2, y2, color, w=6, dash=''):
             f'<path d="M{x2} {y2} l-22 -12 v24 z" fill="{color}"/>')
 
 
+def virus(cx, cy, r):
+    o = ''
+    for k in range(8):
+        a = k * math.pi / 4
+        x1, y1 = cx + r * math.cos(a), cy + r * math.sin(a)
+        x2, y2 = cx + 1.45 * r * math.cos(a), cy + 1.45 * r * math.sin(a)
+        o += f'<line x1="{x1:.0f}" y1="{y1:.0f}" x2="{x2:.0f}" y2="{y2:.0f}" stroke="{OR}" stroke-width="8" stroke-linecap="round"/>'
+        o += f'<circle cx="{x2:.0f}" cy="{y2:.0f}" r="12" fill="{OR}"/>'
+    return o + f'<circle cx="{cx}" cy="{cy}" r="{r}" fill="{PALE}" stroke="{OR}" stroke-width="8"/>'
+
+
+def roadblock(cx, cy, r):
+    w, h = 2.2 * r, .5 * r
+    o = ''.join(f'<rect x="{cx+dx-8}" y="{cy-.2*r}" width="16" height="{1.2*r}" rx="6" fill="{DK}"/>' for dx in (-.8 * r, .8 * r))
+    o += f'<rect x="{cx-w/2}" y="{cy-h/2-.3*r}" width="{w}" height="{h}" rx="10" fill="{CARD}" stroke="{DK}" stroke-width="5"/>'
+    seg = (w - 10) / 5
+    for k in range(0, 5, 2):
+        o += f'<rect x="{cx-w/2+5+k*seg:.0f}" y="{cy-h/2-.3*r+5:.0f}" width="{seg:.0f}" height="{h-10:.0f}" fill="{LIE}"/>'
+    return o
+
+
+def crisis_vis():
+    """Pandemic, war -> a supply chain with a broken link."""
+    W, H = 1660, 340
+    b = virus(150, 140, 70) + text(150, 310, 'pandemic', 36, DK, weight=800)
+    b += roadblock(450, 150, 90) + text(450, 310, 'war', 36, DK, weight=800)
+    b += f'<path d="M640 150 h70" stroke="{OR}" stroke-width="10" stroke-linecap="round"/><path d="M740 150 l-34 -22 v44 z" fill="{OR}"/>'
+    xs = [900, 1150, 1400]
+    for k, x in enumerate(xs):
+        b += f'<circle cx="{x}" cy="150" r="50" fill="{CARD}" stroke="{DK}" stroke-width="6"/>'
+    b += f'<line x1="950" y1="150" x2="1100" y2="150" stroke="{DK}" stroke-width="8"/>'
+    b += f'<line x1="1200" y1="150" x2="1260" y2="150" stroke="{LIE}" stroke-width="8" stroke-linecap="round"/>'
+    b += f'<line x1="1290" y1="150" x2="1350" y2="150" stroke="{LIE}" stroke-width="8" stroke-linecap="round"/>'
+    b += f'<path d="M1262 118 l26 64" stroke="{LIE}" stroke-width="8" stroke-linecap="round"/>'
+    b += text(1150, 310, 'supply chains break', 36, DK, weight=800)
+    return svg(W, H, b)
+
+
 def network_vis():
-    """Seeds, eggs and meat moving between farmers, distributors, stores, consumers, waste."""
+    """Seeds, eggs and meat moving between farmers, distributors, the grocery; consumers and waste are sinks."""
     W, H, bw = 1680, 600, 270
-    N = {'seedf': ('Seed farmer', 145, 270), 'chick': ('Chicken farmer', 480, 150),
-         'seedd': ('Seed distributor', 480, 400), 'eggd': ('Egg distributor', 815, 70),
-         'butch': ('Butcher', 815, 240), 'groc': ('Grocery', 1150, 270),
-         'cons': ('Consumers', 1530, 170), 'waste': ('Waste', 1530, 400)}
+    N = {'seedf': ('Seed farmer', 145, 270), 'chick': ('Chicken farmer', 480, 140),
+         'seedd': ('Seed distributor', 480, 420), 'eggd': ('Egg distributor', 815, 50),
+         'butch': ('Butcher', 815, 195), 'groc': ('Grocery', 1150, 300),
+         'cons': ('Consumers', 1530, 190), 'waste': ('Waste', 1530, 420)}
     SEED, EGG, MEAT = GREEN, GOLD, LIE
     E = [('seedf', 'chick', SEED), ('seedf', 'seedd', SEED), ('seedd', 'groc', SEED),
          ('chick', 'eggd', EGG), ('chick', 'butch', MEAT), ('eggd', 'groc', EGG),
-         ('butch', 'groc', MEAT), ('groc', 'cons', DK), ('groc', 'waste', GL)]
+         ('butch', 'groc', MEAT), ('groc', 'cons', GR), ('groc', 'waste', GL)]
+    sinks = {'cons', 'waste'}
     b = ''
     for a, c, col in E:
         _, xa, ya = N[a]
         _, xc, yc = N[c]
-        b += link(xa + bw / 2, ya, xc - bw / 2, yc, col, dash='stroke-dasharray="4 12"' if c == 'waste' else '')
+        b += link(xa + bw / 2, ya, xc - bw / 2, yc, col, dash='stroke-dasharray="4 12"' if c in sinks else '')
     for k, (lab, x, y) in N.items():
-        b += box(x, y, lab, bw, stroke=GL if k == 'waste' else DK, fg=GR if k == 'waste' else DK,
-                 dash='stroke-dasharray="10 8"' if k == 'waste' else '')
+        if k in sinks:
+            b += box(x, y, lab, bw, fill=LT, stroke=GR, fg=GR, dash=DASHED)
+        else:
+            b += box(x, y, lab, bw)
     for k, (lab, col) in enumerate([('seeds', SEED), ('eggs', EGG), ('meat', MEAT)]):
         x = 520 + k * 240
         b += f'<line x1="{x}" y1="560" x2="{x+70}" y2="560" stroke="{col}" stroke-width="8" stroke-linecap="round"/>'
@@ -496,77 +537,112 @@ def record_vis():
     return svg(W, H, b)
 
 
-def ledger(cx, cy, s, color=DK):
-    return (f'<rect x="{cx-s/2}" y="{cy-.6*s}" width="{s}" height="{1.2*s}" rx="8" fill="{CARD}" stroke="{color}" stroke-width="4"/>'
-            + ''.join(f'<line x1="{cx-.3*s}" y1="{cy-.3*s+k*.3*s}" x2="{cx+.3*s}" y2="{cy-.3*s+k*.3*s}" '
-                      f'stroke="{color}" stroke-width="4" stroke-linecap="round"/>' for k in range(3)))
+def pill(cx, cy, label, w=240, fill=CARD, stroke=DK):
+    return (f'<rect x="{cx-w/2}" y="{cy-35}" width="{w}" height="70" rx="35" fill="{fill}" stroke="{stroke}" stroke-width="4"/>'
+            + head(cx - w / 2 + 40, cy - 12, 12, GR) + text(cx + 18, cy + 11, label, 30, DK, weight=700))
+
+
+def cylinder(cx, cy, rx, h, fill=PALE, stroke=OR):
+    ry = rx * .3
+    return (f'<path d="M{cx-rx} {cy-h/2} V{cy+h/2} a{rx} {ry} 0 0 0 {2*rx} 0 V{cy-h/2}" fill="{fill}" stroke="{stroke}" stroke-width="5"/>'
+            f'<ellipse cx="{cx}" cy="{cy-h/2}" rx="{rx}" ry="{ry}" fill="{fill}" stroke="{stroke}" stroke-width="5"/>')
+
+
+def lock(cx, cy, s, color=DK):
+    return (f'<path d="M{cx-.3*s} {cy} v{-.25*s} a{.3*s} {.3*s} 0 0 1 {.6*s} 0 v{.25*s}" fill="none" stroke="{color}" stroke-width="{s/9:.0f}"/>'
+            f'<rect x="{cx-.45*s}" y="{cy}" width="{.9*s}" height="{.65*s}" rx="{s/10:.0f}" fill="{color}"/>')
 
 
 def trust_vis():
-    """One owner of the database vs. everyone holding the same log."""
-    W, H = 1660, 470
+    """Competing firms write to one log; the regulator reads it; nobody rewrites it; prices stay off-chain."""
+    W, H = 1660, 560
     b = ''
-    # left: one database, one owner
-    cx, cy = 390, 270
-    b += text(cx, 50, 'One owner', 44, DK, weight=800)
-    b += (f'<ellipse cx="{cx}" cy="{cy-60}" rx="90" ry="28" fill="{PALE}" stroke="{OR}" stroke-width="5"/>'
-          f'<path d="M{cx-90} {cy-60} V{cy+60} a90 28 0 0 0 180 0 V{cy-60}" fill="{PALE}" stroke="{OR}" stroke-width="5"/>'
-          f'<ellipse cx="{cx}" cy="{cy-60}" rx="90" ry="28" fill="{PALE}" stroke="{OR}" stroke-width="5"/>')
-    b += head(cx, cy - 140, 20, OR)
-    for k, (hx, hy) in enumerate([(130, 160), (130, 360), (650, 160), (650, 360)]):
-        b += head(hx, hy - 20, 18, GR)
-        x2 = cx - 110 if hx < cx else cx + 110
-        b += f'<line x1="{hx + (40 if hx < cx else -40)}" y1="{hy}" x2="{x2}" y2="{cy}" stroke="{GL}" stroke-width="5" stroke-dasharray="4 12" stroke-linecap="round"/>'
-    b += text(cx, 450, 'everyone trusts one party', 32, GR, weight=700)
-    # right: shared log
-    cx = 1250
-    b += text(cx, 50, 'A shared log', 44, DK, weight=800)
-    pts = [(cx + 200 * math.cos(-math.pi / 2 + k * 2 * math.pi / 5), 265 + 150 * math.sin(-math.pi / 2 + k * 2 * math.pi / 5)) for k in range(5)]
-    b += f'<ellipse cx="{cx}" cy="265" rx="200" ry="150" fill="none" stroke="{GL}" stroke-width="5"/>'
-    for x, y in pts:
-        b += f'<circle cx="{x:.0f}" cy="{y:.0f}" r="52" fill="{LT}"/>'
-        b += head(x - 18, y - 12, 13, GR) + ledger(x + 20, y + 4, 30, OR)
-    b += text(cx, 450, 'nobody can quietly edit it', 32, GR, weight=700)
+    writers = [('Farm', 290), ('Importer', 560), ('Dairy', 830), ('Retailer', 1100)]
+    blocks = [200 + k * 175 for k in range(6)]
+    cy = 270
+    for lab, x in writers:
+        b += f'<line x1="{x}" y1="105" x2="{x}" y2="{cy-62}" stroke="{GL}" stroke-width="5" stroke-dasharray="4 10" stroke-linecap="round"/>'
+        b += f'<path d="M{x} {cy-50} l-12 -20 h24 z" fill="{GL}"/>'
+    for k, x in enumerate(blocks):
+        if k:
+            b += f'<line x1="{x-55}" y1="{cy}" x2="{x}" y2="{cy}" stroke="{DK}" stroke-width="6"/>'
+        b += f'<rect x="{x}" y="{cy-45}" width="120" height="90" rx="14" fill="{OR if k == 5 else CARD}" stroke="{DK}" stroke-width="4"/>'
+    for lab, x in writers:
+        b += pill(x, 70, lab, 230)
+    b += text(1280, 82, 'competitors write', 34, GR, 'start', weight=700)
+    b += lock(1300, cy - 20, 50) + text(1350, cy + 12, 'nobody rewrites', 34, GR, 'start', weight=700)
+    mx = 650
+    b += f'<line x1="{mx}" y1="{430}" x2="{mx}" y2="{cy+62}" stroke="{GL}" stroke-width="5" stroke-dasharray="4 10" stroke-linecap="round"/>'
+    b += f'<path d="M{mx} {cy+50} l-12 20 h24 z" fill="{GL}"/>'
+    b += pill(mx, 470, 'Regulator', 260, PALE, OR)
+    b += text(mx + 160, 482, 'reads', 34, GR, 'start', weight=700)
+    b += cylinder(1330, 460, 60, 70, LT, GR) + text(1410, 450, 'prices, contracts:', 30, GR, 'start', weight=700)
+    b += text(1410, 490, 'off-chain', 30, GR, 'start', weight=700)
     return svg(W, H, b)
 
 
-def milk_series(batches=((40, 3), (30, 7), (30, 13)), per_day=8):
-    """The depletion algorithm: drop expired batches, record stock, consume first-to-expire."""
-    bs = [[q, e] for q, e in batches]
+BATCHES = (('A', 40, 3), ('B', 30, 7), ('C', 30, 13))
+PER_DAY = 8
+BCOL = {'A': '#1F4E8C', 'B': BLUE, 'C': '#9DC0E8'}
+
+
+def milk_series(expiry=True):
+    """The depletion algorithm: drop expired batches, record stock per batch, use the first-to-expire first."""
+    bs = {n: [q, e] for n, q, e in BATCHES}
     out, day = [], 0
     while True:
-        before = sum(q for q, _ in bs)
-        bs = [[q, e] for q, e in bs if e > day and q > 0]
-        after = sum(q for q, _ in bs)
-        out.append((day, before, after))
-        if after == 0:
+        lost = {}
+        if expiry:
+            for n, (q, e) in bs.items():
+                if e <= day and q > 0:
+                    lost[n] = q
+                    bs[n][0] = 0
+        out.append((day, {n: q for n, (q, _) in bs.items()}, lost))
+        if sum(q for q, _ in bs.values()) == 0:
             return out
-        need = per_day
-        for bt in sorted(bs, key=lambda t: t[1]):
-            take = min(need, bt[0])
-            bt[0] -= take
+        need = PER_DAY
+        for n in sorted(bs, key=lambda n: bs[n][1]):
+            take = min(need, bs[n][0])
+            bs[n][0] -= take
             need -= take
         day += 1
 
 
+def carton(cx, cy, s, color, letter):
+    return (f'<path d="M{cx-.4*s} {cy-.3*s} L{cx-.25*s} {cy-.6*s} H{cx+.25*s} L{cx+.4*s} {cy-.3*s} V{cy+.6*s} H{cx-.4*s} Z" '
+            f'fill="{color}" stroke="{DK}" stroke-width="4" stroke-linejoin="round"/>'
+            + text(cx, cy + .32 * s, letter, .5 * s, '#fff', weight=800))
+
+
 def milk_vis():
-    W, H = 1500, 560
+    W, H = 1660, 560
     ser = milk_series()
-    base, unit, bw, gap = 450, 3.6, 76, 34
-    b = text(40, 40, 'milk in stock', 32, GR, 'start', weight=700)
-    for d, before, after in ser:
-        x = 60 + d * (bw + gap)
-        if after:
-            b += f'<rect x="{x}" y="{base-after*unit}" width="{bw}" height="{after*unit}" rx="8" fill="{BLUE}"/>'
-        if before > after:
-            b += f'<rect x="{x}" y="{base-before*unit}" width="{bw}" height="{(before-after)*unit}" rx="8" fill="{LIE}"/>'
-            b += text(x + bw / 2, base - before * unit - 18, 'expired', 30, LIE, weight=800)
-        b += text(x + bw / 2, base + 46, str(d), 30, GR)
-    last = 60 + ser[-1][0] * (bw + gap) + bw / 2
-    b += text(last, base - 30, 'out', 36, OR, weight=800)
-    b += f'<line x1="40" y1="{base}" x2="{last+70}" y2="{base}" stroke="{GL}" stroke-width="4"/>'
-    b += text(60 + 5.5 * (bw + gap), base + 100, 'days', 32, GR, weight=700)
-    return svg(W, H, b)
+    b = text(40, 50, 'in stock', 32, GR, 'start', weight=700)
+    for k, (n, q, e) in enumerate(BATCHES):
+        y = 140 + k * 125
+        b += carton(80, y, 90, BCOL[n], n)
+        b += text(150, y - 4, f'{q} liters', 34, DK, 'start', weight=800)
+        b += text(150, y + 38, f'good until day {e}', 28, GR, 'start')
+    b += text(40, 530, f'we drink {PER_DAY} a day', 34, DK, 'start', weight=800)
+    base, unit, bw, gap, x0 = 470, 3.6, 62, 30, 560
+    b += text(x0, 50, 'liters left, day by day', 32, GR, 'start', weight=700)
+    for d, left, lost in ser:
+        x = x0 + d * (bw + gap)
+        y = base
+        for n, _, _ in BATCHES:
+            if left[n]:
+                b += f'<rect x="{x}" y="{y-left[n]*unit}" width="{bw}" height="{left[n]*unit}" fill="{BCOL[n]}"/>'
+                y -= left[n] * unit
+        for n, q in lost.items():
+            b += f'<rect x="{x}" y="{y-q*unit}" width="{bw}" height="{q*unit}" fill="none" stroke="{LIE}" stroke-width="4" stroke-dasharray="8 6"/>'
+            b += text(x + bw / 2, y - q * unit - 16, 'expired', 28, LIE, weight=800)
+        b += text(x + bw / 2, base + 40, str(d), 28, GR)
+    end = ser[-1][0]
+    xe = x0 + end * (bw + gap) + bw / 2
+    b += f'<line x1="{x0-10}" y1="{base}" x2="{xe+bw}" y2="{base}" stroke="{GL}" stroke-width="4"/>'
+    b += text(xe, base - 24, 'out', 34, OR, weight=800)
+    b += text(x0 + 5 * (bw + gap), base + 84, 'day', 30, GR, weight=700)
+    return svg(W, H, b), end, milk_series(False)[-1][0]
 
 
 def banana(cx, cy, r):
@@ -583,22 +659,30 @@ def sack(cx, cy, r):
 
 
 def bread_vis():
-    """Recipe per loaf; what each input allows; the scarcest one decides."""
-    W, H = 1660, 470
-    b = f'<rect x="20" y="20" width="420" height="430" rx="22" fill="{CARD}" stroke="{GL}" stroke-width="2"/>'
-    b += text(230, 90, 'one loaf needs', 34, GR, weight=700)
-    b += sack(120, 210, 60) + text(200, 225, '2 cups flour', 34, DK, 'start', weight=800)
-    b += banana(120, 350, 55) + text(200, 365, '3 bananas', 34, DK, 'start', weight=800)
-    rows = [(210, 'have 300 cups', 150, GR), (360, 'have 6 bananas', 2, OR)]
-    x0, scale = 860, 3.6
-    b += text(x0, 90, 'enough for', 34, GR, 'start', weight=700)
-    for y, have, loaves, col in rows:
-        b += text(500, y + 12, have, 34, DK, 'start', weight=700)
-        b += arrow(760, y, 835, GL)
-        b += f'<rect x="{x0}" y="{y-34}" width="{max(loaves*scale, 14)}" height="68" rx="10" fill="{col}"/>'
-        lx = x0 + max(loaves * scale, 14) + 24
-        b += text(lx, y + 14, f'{loaves} loaves', 40, col if col == OR else DK, 'start', weight=800)
-    b += f'<rect x="{x0-20}" y="{360-56}" width="330" height="112" rx="20" fill="none" stroke="{OR}" stroke-width="5" stroke-dasharray="10 8"/>'
+    """Zoom into one node of the network: what is in its warehouse, and what it can bake from it."""
+    W, H = 1660, 560
+    b = ''
+    b += link(250, 150, 410, 280, GR) + link(250, 410, 410, 280, GR)
+    b += text(262, 128, 'flour', 26, GR, 'start', weight=700) + text(262, 452, 'bananas', 26, GR, 'start', weight=700)
+    b += box(140, 150, 'Mill', 220, 70, size=28) + box(140, 410, 'Importer', 220, 70, size=28)
+    b += box(520, 280, 'Bakery', 220, 80, fill=PALE, stroke=OR, size=30)
+    px0, px1 = 720, 1640
+    b += (f'<path d="M630 242 L{px0} 20 M630 318 L{px0} 540" stroke="{OR}" stroke-width="3" stroke-dasharray="8 8"/>'
+          f'<rect x="{px0}" y="20" width="{px1-px0}" height="520" rx="24" fill="{CARD}" stroke="{OR}" stroke-width="5"/>')
+    b += text(px0 + 40, 80, 'inside the bakery', 32, GR, 'start', weight=700)
+    b += text(1120, 80, 'enough for', 32, GR, 'start', weight=700)
+    rows = [(200, 'sack', '300 cups', '2 per loaf', 150, GR), (390, 'banana', '6 bananas', '3 per loaf', 2, OR)]
+    scale = 380 / 150
+    for y, ic, have, per, loaves, col in rows:
+        b += sack(px0 + 80, y, 52) if ic == 'sack' else banana(px0 + 80, y, 50)
+        b += text(px0 + 160, y - 2, have, 38, DK, 'start', weight=800)
+        b += text(px0 + 160, y + 40, per, 30, GR, 'start')
+        w = max(loaves * scale, 14)
+        b += f'<rect x="1120" y="{y-32}" width="{w:.0f}" height="64" rx="10" fill="{col}"/>'
+        if loaves > 20:
+            b += text(1120 + w - 18, y + 12, f'{loaves} loaves', 34, '#fff', 'end', weight=800)
+        else:
+            b += text(1120 + w + 22, y + 12, f'{loaves} loaves', 38, OR, 'start', weight=800)
     return svg(W, H, b)
 
 
@@ -646,16 +730,16 @@ def cascade_vis(step):
 
 def whatif_vis():
     """A dashboard: switch off a source, compare today with the what-if."""
-    W, H = 1600, 500
-    b = f'<rect x="20" y="20" width="1560" height="460" rx="26" fill="{CARD}" stroke="{DK}" stroke-width="4"/>'
+    W, H = 1600, 440
+    b = f'<rect x="20" y="20" width="1560" height="400" rx="26" fill="{CARD}" stroke="{DK}" stroke-width="4"/>'
     for k, (lab, on) in enumerate([('Imports from A', False), ('Region B', True), ('Supplier C', True)]):
-        y = 130 + k * 120
+        y = 110 + k * 110
         b += text(80, y + 12, lab, 32, DK, 'start', weight=700)
         b += f'<rect x="380" y="{y-26}" width="96" height="52" rx="26" fill="{GREEN if on else GL}"/>'
         b += f'<circle cx="{454 if on else 402}" cy="{y}" r="20" fill="#fff"/>'
-    b += f'<line x1="560" y1="60" x2="560" y2="440" stroke="{GL}" stroke-width="3"/>'
+    b += f'<line x1="560" y1="60" x2="560" y2="380" stroke="{GL}" stroke-width="3"/>'
     X = lambda d: 640 + d * 72
-    Y = lambda v: 410 - v * 3
+    Y = lambda v: 360 - v * 2.6
     today = [100, 98, 97, 95, 94, 93, 91, 90, 89, 88, 86]
     whatif = [100, 92, 83, 74, 66, 57, 49, 41, 32, 24, 16]
     for ser, col, dash in [(today, DK, ''), (whatif, OR, 'stroke-dasharray="16 10"')]:
@@ -698,51 +782,67 @@ S = slides.append
 S('''<section class="slide dark center">
   <p class="eyebrow">Part 1</p>
   <h1>Food security<br>on a blockchain</h1>
-  <p class="ref" style="bottom:128px;font-size:32px">with Bar Hoter, Moran Koren, Dorit Nitzan, Stav Shapira</p>
+  <p class="ref" style="bottom:128px;font-size:32px">with Bar Hoter, Moran Koren, Dorit Nitzan, Stav Shapira (+ Adir Even and Max Gluhov)</p>
   <p class="ref">Supported by the Israeli Ministry of Science and Technology</p>
 </section>''')
 
 S(f'''<section class="slide light">
-  <div class="cols">
-    <div><h1 class="huge" style="color:var(--orange)">1 in 4</h1>
-      <p class="big">households in Israel<br>are food insecure</p></div>
-    <div style="flex:none">{houses_vis()}</div>
+  <h2>Pandemics and wars break food supply chains</h2>
+  <div style="margin-block:auto">{crisis_vis()}</div>
+  <div style="display:flex;align-items:center;gap:36px">
+    {houses_small()}
+    <p class="muted" style="font-size:40px">Also today: 1 in 4 households in Israel is food insecure</p>
   </div>
   <p class="ref">National Insurance Institute of Israel, Food Security Report 2024 (published 2025)</p>
 </section>''')
 
+S('''<section class="slide light">
+  <h2>Goal: see the whole food system, live</h2>
+  <div class="flow">
+    <div class="step"><b style="font-size:56px">1 · Record</b><span style="font-size:40px">every hand-off,<br>on-chain</span></div>
+    <span class="arrow" style="font-size:72px">→</span>
+    <div class="step" style="flex:1.6"><b style="font-size:56px">2 · Ask</b>
+      <span style="font-size:40px">How long will it last?<br>What can we still make?<br>What if a source is cut?</span></div>
+  </div>
+</section>''')
+
 S(f'''<section class="slide light">
+  <p class="eyebrow">1 · Record</p>
   <h2>Food moves along a network of hand-offs</h2>
   <div style="margin-block:auto">{network_vis()}</div>
 </section>''')
 
 S(f'''<section class="slide light">
+  <p class="eyebrow">1 · Record</p>
   <h2>Every hand-off is a record</h2>
   <div style="margin-block:auto">{record_vis()}</div>
 </section>''')
 
 S(f'''<section class="slide light">
-  <h2>Why a blockchain?</h2>
-  <div style="margin-block:auto 0">{trust_vis()}</div>
-  <div class="chips" style="margin-block:0 auto">
-    <span class="chip on">On-chain: who, what, when</span>
-    <span class="chip">Off-chain: prices, contracts</span>
-  </div>
+  <p class="eyebrow">1 · Record</p>
+  <h2>Why on-chain, for food?</h2>
+  <div style="margin-block:auto">{trust_vis()}</div>
+  <p class="ref">And the Ministry of Science asked for it</p>
+</section>''')
+
+MILK, MILK_OUT, MILK_NOEXP = milk_vis()
+S(f'''<section class="slide light">
+  <p class="eyebrow">2 · Ask</p>
+  <h2>How long will the milk last?</h2>
+  <div style="margin-block:auto 0">{MILK}</div>
+  <p class="hl big" style="align-self:flex-start;margin-block:0 auto">Expiry counts: out on day {MILK_OUT}, not day {MILK_NOEXP}</p>
 </section>''')
 
 S(f'''<section class="slide light">
-  <h2>How many days of milk do we have?</h2>
-  <div style="margin-block:auto">{milk_vis()}</div>
-</section>''')
-
-S(f'''<section class="slide light">
-  <h2>What can we still bake?</h2>
+  <p class="eyebrow">2 · Ask</p>
+  <h2>What can each producer still make?</h2>
   <div style="margin-block:auto 0">{bread_vis()}</div>
   <p class="hl big" style="align-self:flex-start;margin-block:0 auto">The scarcest input decides</p>
 </section>''')
 
 for k in range(3):
     S(f'''<section class="slide light">
+  <p class="eyebrow">2 · Ask</p>
   <h2>What if we lose Russia?</h2>
   <div style="margin-block:auto 0">{cascade_vis(k)}</div>
   <p class="hl big" style="align-self:flex-start;margin-block:0 auto;{"" if k == 2 else "visibility:hidden"}">Bananas from elsewhere: the bakery is covered</p>
@@ -750,17 +850,22 @@ for k in range(3):
 
 S('''<section class="slide dark">
   <h2>Where it stands</h2>
-  <div class="cards">
-    <div class="card top"><h3>Prototype</h3><p>Ethereum testnet</p></div>
-    <div class="card top"><h3>Data</h3><p>Synthetic, for now</p></div>
-    <div class="card top"><h3>Dashboards</h3><p>Nutrition and flows</p></div>
+  <div style="display:flex;gap:40px;align-items:flex-start;margin-block:auto 0">
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="shot"><img src="img/food-nutrition.png" alt="" style="height:320px"></div>
+      <p class="muted small">Nutrition per person, by city</p></div>
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div class="shot"><img src="img/food-flows.jpg" alt="" style="height:320px"></div>
+      <p class="muted small">Who supplies bananas to whom</p></div>
   </div>
+  <p style="margin-block:0 auto">Prototype on an Ethereum testnet, with synthetic data</p>
   <p class="ref">Hoter, Koren, Nitzan, Shapira, Talmon · IEEE ISCC 2025</p>
 </section>''')
 
 S(f'''<section class="slide light">
   <h2>Now: a real BI with a what-if simulator</h2>
-  <div style="margin-block:auto">{whatif_vis()}</div>
+  <div style="margin-block:auto 0">{whatif_vis()}</div>
+  <p class="hl big" style="align-self:flex-start;margin-block:0 auto">Interested? Let's talk, and stay in touch for updates</p>
 </section>''')
 
 # ===== Part 2: metric-based voting =====
