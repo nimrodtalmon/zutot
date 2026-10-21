@@ -851,15 +851,11 @@ for k in range(3):
 
 S('''<section class="slide dark">
   <h2>Where it stands</h2>
-  <div style="display:flex;gap:40px;align-items:flex-start;margin-block:auto 0">
-    <div style="display:flex;flex-direction:column;gap:16px">
-      <div class="shot"><img src="img/food-nutrition.png" alt="" style="height:320px"></div>
-      <p class="muted small">Nutrition per person, by city</p></div>
-    <div style="display:flex;flex-direction:column;gap:16px">
-      <div class="shot"><img src="img/food-flows.jpg" alt="" style="height:320px"></div>
-      <p class="muted small">Who supplies bananas to whom</p></div>
+  <div class="cards">
+    <div class="card top"><h3>Prototype</h3><p>Ethereum testnet</p></div>
+    <div class="card top"><h3>Data</h3><p>Synthetic, for now</p></div>
+    <div class="card top"><h3>Dashboards</h3><p>Nutrition and flows</p></div>
   </div>
-  <p style="margin-block:0 auto">Prototype on an Ethereum testnet, with synthetic data</p>
   <p class="ref">Hoter, Koren, Nitzan, Shapira, Talmon · IEEE ISCC 2025</p>
 </section>''')
 
