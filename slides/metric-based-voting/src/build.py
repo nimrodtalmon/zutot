@@ -700,7 +700,6 @@ S('''<section class="slide dark center">
   <h1>Food security<br>on a blockchain</h1>
   <p class="ref" style="bottom:128px;font-size:32px">with Bar Hoter, Moran Koren, Dorit Nitzan, Stav Shapira</p>
   <p class="ref">Supported by the Israeli Ministry of Science and Technology</p>
-  <aside>Bar Hoter's MSc thesis (BGU, 2026), co-supervised with Moran Koren; paper at IEEE ISCC 2025.</aside>
 </section>''')
 
 S(f'''<section class="slide light">
@@ -710,19 +709,16 @@ S(f'''<section class="slide light">
     <div style="flex:none">{houses_vis()}</div>
   </div>
   <p class="ref">National Insurance Institute of Israel, Food Security Report 2024 (published 2025)</p>
-  <aside>2024: about 27% of households, about 2.8 million people. And in a crisis (COVID, war), nobody sees the whole food system at once.</aside>
 </section>''')
 
 S(f'''<section class="slide light">
   <h2>Food moves along a network of hand-offs</h2>
   <div style="margin-block:auto">{network_vis()}</div>
-  <aside>Seeds feed chickens; chickens give eggs and meat; everything meets at the store. Many parties, many products, one tangled network.</aside>
 </section>''')
 
 S(f'''<section class="slide light">
   <h2>Every hand-off is a record</h2>
   <div style="margin-block:auto">{record_vis()}</div>
-  <aside>Each transfer of a batch goes through four steps, each one signed and stored on-chain. Put together, these records are the network.</aside>
 </section>''')
 
 S(f'''<section class="slide light">
@@ -732,33 +728,24 @@ S(f'''<section class="slide light">
     <span class="chip on">On-chain: who, what, when</span>
     <span class="chip">Off-chain: prices, contracts</span>
   </div>
-  <aside>Many parties, and no single party everyone wants to own the database. A shared log is tamper-evident, also in a crisis. Commercially sensitive details stay off-chain; dashboards are built on top.</aside>
 </section>''')
 
 S(f'''<section class="slide light">
   <h2>How many days of milk do we have?</h2>
   <div style="margin-block:auto">{milk_vis()}</div>
-  <aside>Day by day: expired batches go to waste, then today's consumption is taken from the batches closest to expiry. Count the days until nothing is left. (Illustrative numbers.)</aside>
 </section>''')
 
 S(f'''<section class="slide light">
   <h2>What can we still bake?</h2>
   <div style="margin-block:auto 0">{bread_vis()}</div>
   <p class="hl big" style="align-self:flex-start;margin-block:0 auto">The scarcest input decides</p>
-  <aside>Plenty of flour does not help without bananas. The same rule gives each producer's capacity, and points to the bottleneck.</aside>
 </section>''')
 
-CASCADE_NOTES = [
-    'A small piece of the network. Bananas come in from Russia, through an importer, to a bakery.',
-    'Cut Russia. The loss travels downstream: the importer has no bananas, the bakery cannot bake. It stops there; the grocery has other goods.',
-    'Then look for another supplier who can cover the importer.',
-]
 for k in range(3):
     S(f'''<section class="slide light">
   <h2>What if we lose Russia?</h2>
   <div style="margin-block:auto 0">{cascade_vis(k)}</div>
   <p class="hl big" style="align-self:flex-start;margin-block:0 auto;{"" if k == 2 else "visibility:hidden"}">Bananas from elsewhere: the bakery is covered</p>
-  <aside>{CASCADE_NOTES[k]}</aside>
 </section>''')
 
 S('''<section class="slide dark">
@@ -774,7 +761,6 @@ S('''<section class="slide dark">
 S(f'''<section class="slide light">
   <h2>Now: a real BI with a what-if simulator</h2>
   <div style="margin-block:auto">{whatif_vis()}</div>
-  <aside>Current work: a real BI layer on top of the records, where a decision-maker switches off a source and sees what happens.</aside>
 </section>''')
 
 # ===== Part 2: metric-based voting =====
@@ -806,7 +792,6 @@ S(f'''<section class="slide dark">
     <span style="position:relative"><span class="chip on">Capped median</span>{BUBBLE}</span>
   </div>
   <p class="ref">Briman, Talmon, Kreitenweis, Idrees 2025</p>
-  <aside>Rounds 1–4. Picking a rule is hard even for a careful community.</aside>
 </section>''')
 
 S(f'''<section class="slide accent center">
@@ -823,7 +808,6 @@ S(f'''<section class="slide light">
   </div>
   <div style="margin-block:0 auto">{phantoms_vis()}</div>
   <p class="ref">Freeman, Pennock, Peters, Wortman Vaughan 2019 · Briman, Talmon, Kreitenweis, Idrees 2025</p>
-  <aside>Rounds 3 and 4 are not strategyproof. Utilitarian moving phantoms: add phantom ballots whose positions move with a single parameter; strategyproof and maximizes L1 welfare.</aside>
 </section>''')
 
 S(f'''<section class="slide dark">
@@ -853,18 +837,10 @@ S('''<section class="slide dark center">
   <h1>Metric-based voting</h1>
 </section>''')
 
-HOW_NOTES = [
-    'Start from the metrics: what counts. Here: helping the planet, fees (money), energy.',
-    'Each voter says how much each metric matters.',
-    'The rule turns the ballots into one weight per metric. This is the object we study: rules that aggregate weights first, metric by metric. (Optimism Round 4 did it the other way: a median per project, then rescaling. Under the mean the order does not matter; under the median it does.)',
-    'Each project has a public value on each metric.',
-    'Each project gets the weighted sum: its values times the weights. Colors show which metric earned what.',
-]
 for k in range(1, 6):
     S(f'''<section class="slide light">
   <h2>How it works</h2>
   <div style="margin-block:auto">{how_it_works(k)}</div>
-  <aside>{HOW_NOTES[k-1]}</aside>
 </section>''')
 
 S(f'''<section class="slide light">
@@ -876,7 +852,6 @@ for show in (False, True):
     S(f'''<section class="slide light">
   <h2>From ballots to one weight: mean or median?</h2>
   <div style="margin-block:auto">{mean_median_vis(show)}</div>
-  <aside>{"Mean: what composite indices typically use. Median: what social choice usually recommends." if show else "Three voters on one metric. How do we get one weight?"}</aside>
 </section>''')
 
 S('''<section class="slide dark">
@@ -886,7 +861,6 @@ S('''<section class="slide dark">
     <div class="card top"><h3>Hitting a target</h3><p>Depends on the ballot</p></div>
     <div class="card top"><h3>Copying metrics</h3><p>Mean often immune</p></div>
   </div>
-  <aside>Lying: no metric-by-metric rule is strategyproof. Hitting a target: which rule is harder to steer depends on the ballot type. Copying metrics: under the mean, copies cannot change any score with cumulative or plurality ballots; the median can be moved.</aside>
 </section>''')
 
 S(f'''<section class="slide dark center">
@@ -899,19 +873,16 @@ S(f'''<section class="slide light">
   <h2>The office thermostat</h2>
   <div style="margin-block:auto">{thermo_pair('mean', False)}</div>
   {deco('thermo', cls='deco sm')}
-  <aside>Everyone states a temperature; the thermostat sets the mean.</aside>
 </section>''')
 
 S(f'''<section class="slide light">
   <h2>Cat says 32°: the mean moves</h2>
   <div style="margin-block:auto">{thermo_pair('mean', True)}</div>
-  <aside>The mean rewards exaggerating. No surprise.</aside>
 </section>''')
 
 S(f'''<section class="slide light">
   <h2>Cat says 32°: the median does not</h2>
   <div style="margin-block:auto">{thermo_pair('median', True)}</div>
-  <aside>On one dimension, nobody gains by lying to the median.</aside>
 </section>''')
 
 S('''<section class="slide accent center">
@@ -921,13 +892,11 @@ S('''<section class="slide accent center">
 S(f'''<section class="slide light">
   <h2>A project worth 1 on Planet and on Energy</h2>
   <div style="margin-block:auto">{ann_table(False)}</div>
-  <aside>Ann truthfully cares only about Planet, so she wants this project's score to be 1. Medians are 0 and 0, score 0.</aside>
 </section>''')
 
 S(f'''<section class="slide light">
   <h2>A project worth 1 on Planet and on Energy</h2>
   <div style="margin-block:auto">{ann_table(True)}</div>
-  <aside>Ann says Energy matters too. The Energy median becomes 1, the score becomes 1: exactly what she wanted.</aside>
 </section>''')
 
 S(f'''<section class="slide dark">
@@ -936,12 +905,10 @@ S(f'''<section class="slide dark">
   <p class="big muted">She lost on Planet, so she bought it back on Energy</p>
   <p class="big hl" style="margin-top:auto;margin-bottom:auto">No sensible metric-by-metric rule is safe from this</p>
   {deco('scale', cls='deco sm')}
-  <aside>Theorem: no rule on fractional ballots is value-blind, metric-wise separable, metric-neutral, anonymous, unanimous, and strategyproof.</aside>
 </section>''')
 
 S('''<section class="slide accent center">
   <h1 class="q">Lying can pay.<br>How hard is it to find the lie?</h1>
-  <aside>Exact score reachability: given a target scorecard, can some ballot produce it? Also an auditor's and a designer's question.</aside>
 </section>''')
 
 S(f'''<section class="slide light">
@@ -951,7 +918,6 @@ S(f'''<section class="slide light">
     <p>One smooth region: <b>easy</b> to search</p>
     <p>Scattered islands: a <b>hard</b> puzzle</p>
   </div>
-  <aside>Mean: finding the ballot is a linear program. Median with cumulative ballots: NP-hard. (Median with fractional ballots is still easy.)</aside>
 </section>''')
 
 S(f'''<section class="slide dark center">
@@ -959,28 +925,24 @@ S(f'''<section class="slide dark center">
   <h1>Duplicate metrics</h1>
   <p class="big muted">Round 4: gas fees, and also log gas fees</p>
   {deco('clone', cls='deco sm')}
-  <aside>Both on 94 of 108 ballots.</aside>
 </section>''')
 
 S(f'''<section class="slide light">
   <h2>Three voters, one Fees metric</h2>
   <div style="margin-block:auto">{clone_vis(False)}</div>
   <p class="hl big" style="align-self:flex-start;visibility:hidden">The median doubled Fees</p>
-  <aside>Cumulative ballots; the rest of each voter's budget is on other metrics.</aside>
 </section>''')
 
 S(f'''<section class="slide light">
   <h2>Add a copy. Same opinions.</h2>
   <div style="margin-block:auto">{clone_vis(True)}</div>
   <p class="hl big" style="align-self:flex-start">The median doubled Fees</p>
-  <aside>Each voter splits the same Fees weight across the two copies. The mean is unchanged by any such split; the median can change. The copy has the same values, so a fee-heavy project gains twice.</aside>
 </section>''')
 
 S(f'''<section class="slide light">
   <h2>Four levers, four ballot types</h2>
   <div style="margin-block:auto">{landscape_vis()}</div>
   <p class="hl big" style="align-self:flex-start">Which rule is harder to steer depends on the ballot</p>
-  <aside>Exact score reachability. Easy: polynomial time. Hard: NP-hard (worst case). No effect: copying cannot change any score. Shared hardness holds already with one voter.</aside>
 </section>''')
 
 S(f'''<section class="slide accent center">
