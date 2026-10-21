@@ -557,21 +557,22 @@ def trust_vis():
     """Competing firms write to one log; the regulator reads it; nobody rewrites it; prices stay off-chain."""
     W, H = 1660, 560
     b = ''
-    writers = [('Farm', 290), ('Importer', 560), ('Dairy', 830), ('Retailer', 1100)]
-    blocks = [200 + k * 175 for k in range(6)]
+    blocks = [180 + k * 230 for k in range(5)]          # left edges; block width 120
+    centers = [x + 60 for x in blocks]
+    writers = list(zip(['Farm', 'Importer', 'Dairy', 'Retailer'], centers[1:]))
     cy = 270
     for lab, x in writers:
         b += f'<line x1="{x}" y1="105" x2="{x}" y2="{cy-62}" stroke="{GL}" stroke-width="5" stroke-dasharray="4 10" stroke-linecap="round"/>'
-        b += f'<path d="M{x} {cy-50} l-12 -20 h24 z" fill="{GL}"/>'
+        b += f'<path d="M{x} {cy-48} l-12 -20 h24 z" fill="{GL}"/>'
     for k, x in enumerate(blocks):
         if k:
-            b += f'<line x1="{x-55}" y1="{cy}" x2="{x}" y2="{cy}" stroke="{DK}" stroke-width="6"/>'
-        b += f'<rect x="{x}" y="{cy-45}" width="120" height="90" rx="14" fill="{OR if k == 5 else CARD}" stroke="{DK}" stroke-width="4"/>'
+            b += f'<line x1="{x-110}" y1="{cy}" x2="{x}" y2="{cy}" stroke="{DK}" stroke-width="6"/>'
+        b += f'<rect x="{x}" y="{cy-45}" width="120" height="90" rx="14" fill="{OR if k == 4 else CARD}" stroke="{DK}" stroke-width="4"/>'
     for lab, x in writers:
-        b += pill(x, 70, lab, 230)
-    b += text(1280, 82, 'competitors write', 34, GR, 'start', weight=700)
+        b += pill(x, 70, lab, 210)
+    b += text(1300, 82, 'competitors write', 34, GR, 'start', weight=700)
     b += lock(1300, cy - 20, 50) + text(1350, cy + 12, 'nobody rewrites', 34, GR, 'start', weight=700)
-    mx = 650
+    mx = centers[2]
     b += f'<line x1="{mx}" y1="{430}" x2="{mx}" y2="{cy+62}" stroke="{GL}" stroke-width="5" stroke-dasharray="4 10" stroke-linecap="round"/>'
     b += f'<path d="M{mx} {cy+50} l-12 20 h24 z" fill="{GL}"/>'
     b += pill(mx, 470, 'Regulator', 260, PALE, OR)
