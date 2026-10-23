@@ -1,13 +1,13 @@
 // zutot talk slides — minimal slide engine (no dependencies), LTR.
 // Keys: →/Space/PageDown = next, ←/PageUp = previous, Home/End,
-// F = fullscreen, N = speaker notes, Esc = back to the home page.
+// F = fullscreen, Esc = back to the home page (also from fullscreen).
+// No speaker-notes key: <aside> notes stay hidden.
 (function () {
   const stage = document.getElementById('stage');
   const slides = Array.from(stage.querySelectorAll('.slide'));
   const progress = document.createElement('div'); progress.id = 'progress';
   const counter = document.createElement('div'); counter.id = 'counter';
-  const notes = document.createElement('div'); notes.id = 'notes';
-  document.body.append(progress, counter, notes);
+  document.body.append(progress, counter);
 
   let i = Math.max(0, Math.min(slides.length - 1, (parseInt(location.hash.slice(1), 10) || 1) - 1));
 
@@ -21,13 +21,22 @@
     slides.forEach((el, k) => el.classList.toggle('active', k === i));
     progress.style.width = `${((i + 1) / slides.length) * 100}%`;
     counter.textContent = `${i + 1} / ${slides.length}`;
-    const aside = slides[i].querySelector('aside');
-    notes.textContent = aside ? aside.textContent.trim() : '';
     history.replaceState(null, '', `#${i + 1}`);
   }
 
+  const home = () => { location.href = '../../'; };
+  let fsByKey = false;
+  // Esc in fullscreen is swallowed by the browser (it exits fullscreen): go home then too,
+  // unless fullscreen was left with F.
+  document.addEventListener('fullscreenchange', () => {
+    if (!document.fullscreenElement && !fsByKey) home();
+    fsByKey = false;
+  });
+  const interactive = (t) => t && t.closest && t.closest('input, select, textarea, .interactive');
+
   document.addEventListener('keydown', (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
+    if (interactive(e.target) && e.key !== 'Escape') return;
     switch (e.key) {
       case 'ArrowRight': case 'ArrowDown': case ' ': case 'PageDown': case 'Enter':
         e.preventDefault(); show(i + 1); break;
@@ -36,23 +45,23 @@
       case 'Home': show(0); break;
       case 'End': show(slides.length - 1); break;
       case 'f': case 'F':
+        fsByKey = true;
         if (document.fullscreenElement) document.exitFullscreen();
         else document.documentElement.requestFullscreen();
         break;
-      case 'n': case 'N': document.body.classList.toggle('show-notes'); break;
-      case 'Escape': if (!document.fullscreenElement) location.href = '../../'; break;
+      case 'Escape': home(); break;
     }
   });
 
   // click: right half = next, left half = previous
   document.addEventListener('click', (e) => {
-    if (e.target.closest('a')) return;
+    if (e.target.closest('a') || interactive(e.target)) return;
     show(e.clientX > window.innerWidth / 2 ? i + 1 : i - 1);
   });
 
   // swipe
   let x0 = null;
-  document.addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+  document.addEventListener('touchstart', (e) => { x0 = interactive(e.target) ? null : e.touches[0].clientX; }, { passive: true });
   document.addEventListener('touchend', (e) => {
     if (x0 === null) return;
     const dx = e.changedTouches[0].clientX - x0; x0 = null;
