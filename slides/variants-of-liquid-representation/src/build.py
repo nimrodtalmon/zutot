@@ -141,14 +141,13 @@ def forest_vis(mode):
                 g += f'<circle cx="{cx}" cy="{y}" r="18" fill="{GR}"/>'
             prev = xs
         r = 26 + 10 * math.sqrt(w)
-        fill = OR if (mode == 'panel' and on) else DK
+        fill = OR if on else DK
         g += f'<circle cx="{x}" cy="120" r="{r:.1f}" fill="{fill}"/>' + text(x, 132, str(w), 34, '#fff' if fill == DK else DK, weight=800)
         b += f'<g opacity="{op}">{g}</g>'
     if mode == 'problem':
         for k in range(4):
             b += (f'<rect x="{1470+k*12}" y="{60+k*14}" width="130" height="170" rx="12" fill="{CARD}" stroke="{DK}" stroke-width="4"/>')
         b += text(1571, 165, 'issue', 30, DK, weight=700)
-        b += text(1535, 300, 'every', 30, GR, weight=700) + text(1535, 340, 'issue', 30, GR, weight=700)
     else:
         b += dice(1530, 140, 110)
     return svg(W, H, b)
@@ -184,9 +183,9 @@ def setting_vis():
         b += text(630, y + 70, sub, 28, GR)
         b += arrow(730, y, 820, y, GR)
         b += box(950, y, 'decision', 230, 90)
-        b += f'<line x1="1070" y1="{y}" x2="1250" y2="{(y + 280) / 2 + (0 if y < 280 else 0)}" stroke="{OR}" stroke-width="5" stroke-dasharray="8 8"/>'
+        b += f'<line x1="1065" y1="{y}" x2="1250" y2="{262 if y < 280 else 298}" stroke="{OR}" stroke-width="5" stroke-dasharray="10 8"/>'
     b += box(1420, 280, 'direct democracy', 340, 96, PALE, OR, 34)
-    b += text(1215, 140, 'how close?', 30, OR, weight=800) + text(1215, 440, 'how close?', 30, OR, weight=800)
+    b += text(1262, 205, 'how close?', 30, OR, 'start', weight=800) + text(1262, 378, 'how close?', 30, OR, 'start', weight=800)
     return svg(W, H, b)
 
 
@@ -213,64 +212,58 @@ def findings_vis():
     b += text(20, 40, 'It depends on the population', 36, GR, 'start', weight=800)
     b += row(115, 'Polarized', line_dots(115, .05), False)
     b += row(215, 'Moderate', line_dots(215, .4), True)
-    b += text(20, 350, 'New: the situation is more nuanced, committee size matters too', 36, GR, 'start', weight=800)
+    b += text(20, 330, 'New: more simulations; same main message, in more detail', 36, GR, 'start', weight=800)
+    b += text(20, 375, 'e.g., in some populations, committee size matters too', 32, GR, 'start')
     b += row(435, 'Small committee', committee(435, 3), False)
     b += row(535, 'Large committee', committee(535, 11), True)
     return svg(W, H, b)
 
 
 def mirror_vis():
-    W, H = 1640, 500
-    b = (f'<ellipse cx="250" cy="230" rx="150" ry="200" fill="{PALE}" stroke="{GOLD}" stroke-width="16"/>'
-         f'<ellipse cx="250" cy="230" rx="122" ry="172" fill="none" stroke="{GOLD}" stroke-width="3"/>'
-         + text(250, 270, '?', 140, GOLD, weight=800))
-    xs = [800, 1100, 1400]
+    W, H = 1640, 520
+    cy = 260
+    b = (f'<ellipse cx="270" cy="{cy}" rx="180" ry="240" fill="{PALE}" stroke="{GOLD}" stroke-width="18"/>'
+         f'<ellipse cx="270" cy="{cy}" rx="148" ry="206" fill="none" stroke="{GOLD}" stroke-width="3"/>'
+         + text(270, cy + 58, '?', 170, GOLD, weight=800))
+    xs = [960, 1210, 1460]
+    ys = [230, 340, 450]
     for j, x in enumerate(xs):
-        b += head(x, 70, 34, DK)
+        b += head(x, 90, 40, TOPICS[j][1])
     for i, (name, col) in enumerate(TOPICS):
-        y = 240 + i * 90
-        b += chip(560, y, name, col, '#fff', w=220, size=32)
+        y = ys[i]
+        b += chip(650, y, name, col, '#fff', w=240, size=34)
         for j, x in enumerate(xs):
-            b += check(x, y, 26) if i == j else f'<line x1="{x-18}" y1="{y}" x2="{x+18}" y2="{y}" stroke="{GL}" stroke-width="6" stroke-linecap="round"/>'
+            b += check(x, y, 28) if i == j else f'<line x1="{x-20}" y1="{y}" x2="{x+20}" y2="{y}" stroke="{GL}" stroke-width="6" stroke-linecap="round"/>'
     return svg(W, H, b)
 
 
-GROUP_COLORS = [GREEN, BLUE, GOLD, '#8E5BB5']
+CURVES = [  # share of the full-specialization gain, b = 1..12 (paper, Fig. cluster budget)
+    [0.0, 0.697, 0.915, 0.98, 0.989, 0.994, 0.997, 0.998, 0.999, 1.0, 1.0, 1.0],
+    [0.0, 0.386, 0.643, 0.848, 0.878, 0.903, 0.924, 0.943, 0.961, 0.976, 0.989, 1.0],
+    [0.0, 0.461, 0.745, 0.979, 0.984, 0.988, 0.991, 0.994, 0.996, 0.998, 0.999, 1.0]]
 
 
-def groups_vis():
-    """12 topics in 4 groups; 1 / 4 / 12 areas and the share of the gain they recover (experiments)."""
-    W, H = 1640, 540
-    sq, gap = 46, 12
-    b = ''
-    rows = [(60, 1, '1 area', 0, 'baseline', '1 delegation'), (230, 4, '4 areas', .9, '85–98%', '4 delegations'),
-            (400, 12, '12 areas', 1, '100%', '12 delegations')]
-    for y, nareas, lab, share, slab, eff in rows:
-        b += text(20, y + 40, lab, 40, DK, 'start', weight=800)
-        x0 = 250
-        xs = [x0 + t * (sq + gap) + (t // 3) * 24 for t in range(12)]
-        for t, x in enumerate(xs):
-            b += f'<rect x="{x}" y="{y}" width="{sq}" height="{sq}" rx="8" fill="{GROUP_COLORS[t // 3]}"/>'
-        if nareas == 1:
-            groups = [list(range(12))]
-        elif nareas == 4:
-            groups = [list(range(3 * g, 3 * g + 3)) for g in range(4)]
-        else:
-            groups = [[t] for t in range(12)]
-        for g in groups:
-            xa, xb = xs[g[0]] - 8, xs[g[-1]] + sq + 8
-            b += f'<rect x="{xa}" y="{y-8}" width="{xb-xa}" height="{sq+16}" rx="12" fill="none" stroke="{DK}" stroke-width="4"/>'
-        bx = 1080
-        b += f'<rect x="{bx}" y="{y+6}" width="360" height="34" rx="17" fill="{LT}" stroke="{GL}" stroke-width="2"/>'
-        if nareas == 4:  # experiments: 85% to 98% depending on the setting
-            b += f'<rect x="{bx}" y="{y+6}" width="{360*.98:.0f}" height="34" rx="17" fill="{PALE}" stroke="{OR}" stroke-width="2"/>'
-            b += f'<rect x="{bx}" y="{y+6}" width="{360*.85:.0f}" height="34" rx="17" fill="{OR}"/>'
-        elif share > 0:
-            b += f'<rect x="{bx}" y="{y+6}" width="{360*share:.0f}" height="34" rx="17" fill="{OR}"/>'
-        b += text(bx + 380, y + 34, slab, 34, DK, 'start', weight=800)
-        b += text(xs[0] - 8, y + sq + 50, eff, 28, GR, 'start')
-    b += text(1260, 30, 'accuracy gain, as a share of the maximum', 28, GR)
-    return svg(W, H, b)
+def gain_vis():
+    W, H = 1640, 560
+    X0, X1, Y0, Y1 = 260, 1500, 470, 40
+    X = lambda b: X0 + (b - 1) / 11 * (X1 - X0)
+    Y = lambda v: Y0 - v * (Y0 - Y1)
+    o = f'<line x1="{X0}" y1="{Y0}" x2="{X1}" y2="{Y0}" stroke="{DK}" stroke-width="3"/>'
+    o += f'<line x1="{X0}" y1="{Y0}" x2="{X0}" y2="{Y1-10}" stroke="{DK}" stroke-width="3"/>'
+    o += f'<line x1="{X(4)}" y1="{Y0}" x2="{X(4)}" y2="{Y1-10}" stroke="{GL}" stroke-width="3" stroke-dasharray="10 8"/>'
+    o += text(X(4) + 16, Y(0.3), '4 groups of topics', 30, GR, 'start', weight=700)
+    o += text(X(8), Y(0.8), 'one line per kind of population', 30, GR, weight=700)
+    for v, lab in ((0, '0%'), (1, '100%')):
+        o += text(X0 - 18, Y(v) + 10, lab, 30, GR, 'end')
+    for b in (1, 4, 12):
+        o += text(X(b), Y0 + 44, str(b), 32, GR)
+    o += text((X0 + X1) / 2, Y0 + 86, 'number of areas', 34, DK, weight=700)
+    o += text(70, (Y0 + Y1) / 2, 'accuracy gain', 34, DK, weight=700, extra=f'transform="rotate(-90 70 {(Y0 + Y1) / 2})"')
+    for c in CURVES:
+        pts = ' '.join(f'{X(b+1):.1f},{Y(v):.1f}' for b, v in enumerate(c))
+        o += f'<polyline points="{pts}" fill="none" stroke="{OR}" stroke-width="6" stroke-linejoin="round" opacity=".85"/>'
+        o += ''.join(f'<circle cx="{X(b+1):.1f}" cy="{Y(v):.1f}" r="7" fill="{OR}"/>' for b, v in enumerate(c))
+    return svg(W, H, o)
 
 
 def nope_vis():
@@ -318,6 +311,13 @@ def divider(eyebrow, title, paper, who):
 </section>'''
 
 
+OVEN = (f'<svg viewBox="0 0 64 64" width="64" height="64" style="vertical-align:-12px">'
+        f'<path d="M22 8c-4 4 4 6 0 10M32 6c-4 4 4 6 0 10M42 8c-4 4 4 6 0 10" stroke="{OR}" stroke-width="3" fill="none" stroke-linecap="round"/>'
+        f'<rect x="6" y="22" width="52" height="38" rx="5" fill="none" stroke="#fff" stroke-width="4"/>'
+        f'<line x1="6" y1="31" x2="58" y2="31" stroke="#fff" stroke-width="3"/>'
+        f'<circle cx="14" cy="26.5" r="2" fill="#fff"/><circle cx="22" cy="26.5" r="2" fill="#fff"/>'
+        f'<rect x="14" y="37" width="36" height="16" rx="3" fill="{OR}"/></svg>')
+
 slides = [TITLE]
 S = slides.append
 
@@ -356,7 +356,7 @@ S(f'''<section class="slide light">
 S(f'''<section class="slide light">
   <p class="eyebrow">Variant 1 · the approach</p>
   <h2>Delegate per area</h2>
-  <p class="paper">Platforms such as LiquidFeedback support this; we study how fine the areas should be</p>
+  <p class="paper">Our question: how fine should the areas be?</p>
   <div style="margin-block:auto">{perarea_vis()}</div>
 </section>''')
 
@@ -369,12 +369,12 @@ S(f'''<section class="slide light">
 S(f'''<section class="slide light">
   <p class="eyebrow">Variant 1 · what we show</p>
   <h2>A few areas go a long way</h2>
-  <p class="paper">More areas never lower accuracy. In our experiments, 12 topics in 4 groups of related expertise:</p>
-  <div style="margin-block:auto">{groups_vis()}</div>
+  <p class="paper">More areas never lower accuracy, but the gain levels off (experiments, 12 topics in 4 groups)</p>
+  <div style="margin-block:auto">{gain_vis()}</div>
 </section>''')
 
 S(divider('Variant 2', 'Sortition on top of delegation', 'Sampled liquid democracy',
-          'with Eyal Briman · 🧪 in the oven'))
+          'with Eyal Briman · ' + OVEN + ' in the oven'))
 
 S(f'''<section class="slide light">
   <p class="eyebrow">Variant 2 · the problem</p>
@@ -404,7 +404,7 @@ S('''<section class="slide light">
   <div class="interactive knobs">
     <div class="kcol">
       <div class="klab">Panel size <b id="kbv"></b> <span class="keys"><i>1</i>◀ ▶<i>2</i></span></div>
-      <input type="range" id="kb" min="1" max="5" step="0.25" value="5">
+      <input type="range" id="kb" min="1" max="5" step="1" value="5">
       <div class="klab">How much delegations count <b id="ksv"></b> <span class="keys"><i>3</i>◀ ▶<i>4</i></span></div>
       <input type="range" id="ks" min="0" max="1" step="0.05" value="1">
       <div class="khint"><span>0: everyone counts 1</span><span>1: full delegation weight</span></div>
@@ -495,34 +495,43 @@ SCRIPT = '''<script>
   }
   const kb = document.getElementById('kb'), ks = document.getElementById('ks');
   const bars = document.getElementById('kbars'), map = document.getElementById('kmap');
-  const NX = 41, NY = 33, X0 = 110, X1 = 800, Y0 = 470, Y1 = 20;
-  const grid = [];
-  let lo = 1, hi = 0;
-  for (let a = 0; a < NX; a++) for (let b = 0; b < NY; b++) {
-    const s = a / (NX - 1), k = 1 + 4 * b / (NY - 1), v = acc(s, k);
-    grid.push([a, b, v]); lo = Math.min(lo, v); hi = Math.max(hi, v);
+  const NX = 41, NY = 5, X0 = 110, X1 = 800, Y0 = 470, Y1 = 20;
+  // rows = panel sizes 1..5; colors are normalized within each row, so the best
+  // "how much delegations count" for each panel size stands out
+  const rows = [];
+  for (let b = 0; b < NY; b++) {
+    const r = [];
+    for (let a = 0; a < NX; a++) r.push(acc(a / (NX - 1), b + 1));
+    rows.push(r);
   }
+  const STOPS = [[250, 240, 222], [247, 148, 29], [122, 52, 8]];
   const mix = (t) => {
-    const c0 = [243, 243, 241], c1 = [247, 148, 29];
-    return 'rgb(' + c0.map((x, j) => Math.round(x + (c1[j] - x) * t)).join(',') + ')';
+    const [c0, c1, u] = t < .5 ? [STOPS[0], STOPS[1], t * 2] : [STOPS[1], STOPS[2], t * 2 - 1];
+    return 'rgb(' + c0.map((x, j) => Math.round(x + (c1[j] - x) * u)).join(',') + ')';
   };
   const cw = (X1 - X0) / NX, ch = (Y0 - Y1) / NY;
   const T = (x, y, s, size, fill, anchor, weight, extra) =>
     `<text x="${x}" y="${y}" font-size="${size}" fill="${fill}" text-anchor="${anchor || 'middle'}" font-weight="${weight || 400}" font-family="Heebo, Arial, sans-serif" ${extra || ''}>${s}</text>`;
   let h = '';
-  for (const [a, b, v] of grid)
-    h += `<rect x="${(X0 + a * cw).toFixed(1)}" y="${(Y0 - (b + 1) * ch).toFixed(1)}" width="${(cw + .6).toFixed(1)}" height="${(ch + .6).toFixed(1)}" fill="${mix((v - lo) / (hi - lo))}"/>`;
+  rows.forEach((r, b) => {
+    const lo = Math.min(...r), hi = Math.max(...r), best = r.indexOf(hi);
+    r.forEach((v, a) => {
+      h += `<rect x="${(X0 + a * cw).toFixed(1)}" y="${(Y0 - (b + 1) * ch).toFixed(1)}" width="${(cw + .6).toFixed(1)}" height="${(ch + .6).toFixed(1)}" fill="${mix((v - lo) / (hi - lo))}"/>`;
+    });
+    const bx = Math.min(X0 + (best + .5) * cw, X1 - 18), by = Y0 - (b + .5) * ch;
+    h += T(bx, by + 14, '★', 40, '#fff', 'middle', 700);
+    h += T(X0 - 16, by + 10, String(b + 1), 30, GR, 'end');
+  });
   h += `<rect x="${X0}" y="${Y1}" width="${X1 - X0}" height="${Y0 - Y1}" fill="none" stroke="${GR}" stroke-width="2"/>`;
   h += T(X0, Y0 + 40, '0', 30, GR) + T(X1, Y0 + 40, '1', 30, GR) + T((X0 + X1) / 2, Y0 + 80, 'how much delegations count', 32, GR, 'middle', 700);
-  h += T(X0 - 16, Y0 + 8, '1', 30, GR, 'end') + T(X0 - 16, Y1 + 22, '5', 30, GR, 'end');
   h += T(44, (Y0 + Y1) / 2, 'panel size', 32, GR, 'middle', 700, `transform="rotate(-90 44 ${(Y0 + Y1) / 2})"`);
-  h += T(X1, Y0 + 124, `light ${(100 * lo).toFixed(0)}% · orange ${(100 * hi).toFixed(1)}% accurate`, 28, GR, 'end');
-  h += '<circle id="kdot" r="16" fill="none" stroke="' + DK + '" stroke-width="6"/>';
+  h += T(X1, Y0 + 124, 'per row: darker = more accurate · ★ = best', 28, GR, 'end');
+  h += '<circle id="kdot" r="22" fill="none" stroke="' + DK + '" stroke-width="6"/>';
   map.innerHTML = h;
   const dot = map.querySelector('#kdot');
   function update() {
     const k = parseFloat(kb.value), s = parseFloat(ks.value);
-    document.getElementById('kbv').textContent = k >= 5 ? '5 (everyone)' : k.toFixed(2).replace(/0$/, '').replace(/\\.0$/, '');
+    document.getElementById('kbv').textContent = k >= 5 ? '5 (everyone)' : String(k);
     document.getElementById('ksv').textContent = s.toFixed(2);
     const [e, pi] = incl(s, k);
     let g = '';
@@ -537,7 +546,7 @@ SCRIPT = '''<script>
     bars.innerHTML = g;
     document.getElementById('kacc').textContent = (100 * acc(s, k)).toFixed(1) + '%';
     dot.setAttribute('cx', X0 + s * (X1 - X0));
-    dot.setAttribute('cy', Y0 - (k - 1) / 4 * (Y0 - Y1));
+    dot.setAttribute('cy', Y0 - (k - .5) * ch);
   }
   kb.addEventListener('input', update); ks.addEventListener('input', update);
   // mouse use should not keep focus on a slider
@@ -546,7 +555,7 @@ SCRIPT = '''<script>
     const r = map.getBoundingClientRect(), sx = (ev.clientX - r.left) / r.width * 820, sy = (ev.clientY - r.top) / r.height * 600;
     if (sx < X0 || sx > X1 || sy < Y1 || sy > Y0) return;
     ks.value = ((sx - X0) / (X1 - X0)).toFixed(2);
-    kb.value = (1 + 4 * (Y0 - sy) / (Y0 - Y1)).toFixed(2);
+    kb.value = String(Math.min(5, 1 + Math.floor((Y0 - sy) / ch)));
     update();
   });
   // keys 1/2 move the panel-size slider, 3/4 the other one (arrows stay for slides)
