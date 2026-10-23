@@ -237,11 +237,10 @@ def mirror_vis():
     return svg(W, H, b)
 
 
-CURVES = [  # (OPT(b) - 1/2) / (OPT(12) - 1/2), b = 1..12: planted-cluster experiment of the paper,
-    # rerun with its code and settings (n=100, m=12, 4 clusters, 50 reps, seed 20260909)
-    ('#FBC07A', [0.807, 0.940, 0.984, 0.997, 0.998, 0.999, 0.999, 1.0, 1.0, 1.0, 1.0, 1.0]),   # Euclidean
-    ('#F7941D', [0.796, 0.875, 0.927, 0.969, 0.975, 0.980, 0.985, 0.989, 0.992, 0.995, 0.998, 1.0]),  # Gaussian
-    ('#B35F00', [0.779, 0.881, 0.944, 0.995, 0.997, 0.997, 0.998, 0.999, 0.999, 1.0, 1.0, 1.0])]  # Mallows
+CURVES = [  # share of the gain from 1 area to one area per topic, b = 1..12 (paper, Fig. cluster budget)
+    ('#FBC07A', [0.0, 0.697, 0.915, 0.98, 0.989, 0.994, 0.997, 0.998, 0.999, 1.0, 1.0, 1.0]),    # Euclidean
+    ('#F7941D', [0.0, 0.386, 0.643, 0.848, 0.878, 0.903, 0.924, 0.943, 0.961, 0.976, 0.989, 1.0]),  # Gaussian
+    ('#B35F00', [0.0, 0.461, 0.745, 0.979, 0.984, 0.988, 0.991, 0.994, 0.996, 0.998, 0.999, 1.0])]  # Mallows
 
 
 def gain_vis():
@@ -252,18 +251,14 @@ def gain_vis():
     o = f'<line x1="{X0}" y1="{Y0}" x2="{X1}" y2="{Y0}" stroke="{DK}" stroke-width="3"/>'
     o += f'<line x1="{X0}" y1="{Y0}" x2="{X0}" y2="{Y1-10}" stroke="{DK}" stroke-width="3"/>'
     o += f'<line x1="{X(4)}" y1="{Y0}" x2="{X(4)}" y2="{Y1-10}" stroke="{GL}" stroke-width="3" stroke-dasharray="10 8"/>'
-    o += text(X(4) + 16, Y(0.08), '4 groups of topics', 30, GR, 'start', weight=700)
-    # theorem: b areas keep at least b/12 of the above-coin-flip accuracy
-    o += f'<line x1="{X(1)}" y1="{Y(1/12):.1f}" x2="{X(12)}" y2="{Y(1)}" stroke="{DK}" stroke-width="5" stroke-dasharray="14 10"/>'
-    o += text(X(9.3), Y(0.6), 'theorem: never below this line', 30, DK, 'start', weight=700)
+    o += text(X(4) + 16, Y(0.3), '4 groups of topics', 30, GR, 'start', weight=700)
     for v, lab in ((0, '0%'), (1, '100%')):
         o += text(X0 - 18, Y(v) + 10, lab, 30, GR, 'end')
     for b in (1, 4, 12):
         o += text(X(b), Y0 + 44, str(b), 32, GR)
     o += text((X0 + X1) / 2, Y0 + 86, 'number of areas', 34, DK, weight=700)
-    o += text(70, (Y0 + Y1) / 2, 'accuracy above a coin flip', 34, DK, weight=700, extra=f'transform="rotate(-90 70 {(Y0 + Y1) / 2})"')
-    o += text(70 + 40, (Y0 + Y1) / 2, '(share of the best possible)', 26, GR, extra=f'transform="rotate(-90 110 {(Y0 + Y1) / 2})"')
-    o += text(X(7.5), Y(0.86), 'experiments: one line per kind of population', 30, OR, weight=700)
+    o += text(70, (Y0 + Y1) / 2, 'accuracy gain', 34, DK, weight=700, extra=f'transform="rotate(-90 70 {(Y0 + Y1) / 2})"')
+    o += text(X(8), Y(0.8), 'one line per kind of population', 30, OR, weight=700)
     for col, c in CURVES:
         pts = ' '.join(f'{X(b+1):.1f},{Y(v):.1f}' for b, v in enumerate(c))
         o += f'<polyline points="{pts}" fill="none" stroke="{col}" stroke-width="6" stroke-linejoin="round"/>'
@@ -374,7 +369,7 @@ S(f'''<section class="slide light">
 S(f'''<section class="slide light">
   <p class="eyebrow">Variant 1 · what we show</p>
   <h2>A few areas go a long way</h2>
-  <p class="paper">More areas never lower accuracy; experiments (12 topics in 4 groups) do far better than the guarantee</p>
+  <p class="paper">More areas never lower accuracy, but the gain levels off (experiments, 12 topics in 4 groups)</p>
   <div style="margin-block:auto">{gain_vis()}</div>
 </section>''')
 
