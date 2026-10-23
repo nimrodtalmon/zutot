@@ -1,7 +1,8 @@
 // zutot talk slides — minimal slide engine (no dependencies), LTR.
 // Keys: →/Space/PageDown = next, ←/PageUp = previous, Home/End,
 // F = fullscreen, Esc = back to the home page (also from fullscreen).
-// No speaker-notes key: <aside> notes stay hidden.
+// No speaker-notes key: <aside> notes stay hidden. Arrow keys always change slides,
+// even when a slider has focus (a deck may add its own non-arrow keys).
 (function () {
   const stage = document.getElementById('stage');
   const slides = Array.from(stage.querySelectorAll('.slide'));
@@ -36,7 +37,6 @@
 
   document.addEventListener('keydown', (e) => {
     if (e.metaKey || e.ctrlKey || e.altKey) return;
-    if (interactive(e.target) && e.key !== 'Escape') return;
     switch (e.key) {
       case 'ArrowRight': case 'ArrowDown': case ' ': case 'PageDown': case 'Enter':
         e.preventDefault(); show(i + 1); break;
