@@ -14,10 +14,13 @@
 html, body { height: 100%; background: #111; overflow: hidden; }
 body { font-family: 'Heebo', Arial, sans-serif; }
 
+/* #view scrolls when zoomed in; #sizer is as big as the scaled slide (or the window) */
+#view { position: fixed; inset: 0; overflow: auto; overscroll-behavior: none; }
+#sizer { position: relative; }
 #stage {
-  position: absolute; top: 50%; left: 50%;
+  position: absolute; top: 0; left: 0;
   width: 1920px; height: 1080px;
-  transform-origin: center center;
+  transform-origin: 0 0;
 }
 
 .slide {
