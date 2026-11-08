@@ -252,24 +252,29 @@ def setting_vis():
 
 
 def perfect_bars_vis():
+    """Chance that all m good papers are accepted, when each is wrongly rejected 1 time in 5."""
     W, H = 720, 560
-    vals = [(1, .8), (5, .8 ** 5), (10, .8 ** 10), (20, .8 ** 20)]
-    Y0, top = 430, 90
+    X0, X1, Y0, Y1, M = 130, 690, 430, 90, 20
+    X = lambda m: X0 + (m - 1) / (M - 1) * (X1 - X0)
+    Y = lambda p: Y0 - p * (Y0 - Y1)
     o = text(20, 40, 'Chance that all are accepted', 34, DK, 'start', weight=800)
-    for j, (m, p) in enumerate(vals):
-        x = 70 + j * 160
-        h = p * (Y0 - top)
-        o += f'<rect x="{x}" y="{Y0-h:.1f}" width="110" height="{max(h, 3):.1f}" rx="10" fill="{GR}"/>'
-        o += text(x + 55, Y0 - h - 14, f'{round(100*p)}%', 34, DK, weight=800)
-        o += text(x + 55, Y0 + 42, str(m), 32, GR, weight=700)
-    o += f'<line x1="50" y1="{Y0}" x2="700" y2="{Y0}" stroke="{DK}" stroke-width="3"/>'
-    o += text(375, Y0 + 96, 'good papers submitted', 32, DK, weight=700)
+    o += f'<line x1="{X0}" y1="{Y0}" x2="{X1}" y2="{Y0}" stroke="{DK}" stroke-width="3"/>'
+    o += f'<line x1="{X0}" y1="{Y0}" x2="{X0}" y2="{Y1-10}" stroke="{DK}" stroke-width="3"/>'
+    for p in (0, .5, 1):
+        o += text(X0 - 16, Y(p) + 10, f'{round(100*p)}%', 28, GR, 'end')
+    pts = ' '.join(f'{X(m):.1f},{Y(.8 ** m):.1f}' for m in range(1, M + 1))
+    o += f'<polyline points="{pts}" fill="none" stroke="{GR}" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>'
+    for m in (1, 5, 10, 20):
+        p = .8 ** m
+        o += f'<circle cx="{X(m):.1f}" cy="{Y(p):.1f}" r="10" fill="{GR}"/>'
+        o += text(X(m) + (16 if m < 20 else 0), Y(p) - 18, f'{round(100*p)}%', 32, DK, 'start' if m < 20 else 'middle', weight=800)
+        o += text(X(m), Y0 + 42, str(m), 28, GR)
+    o += text((X0 + X1) / 2, Y0 + 96, 'good papers submitted', 32, DK, weight=700)
     return svg(W, H, o)
-
 
 def checklist_vis():
     W, H = 560, 420
-    rows = ['More good papers,', 'more credits', 'Always at least one', 'Slow periods: almost free']
+    rows = ['More good papers,', 'more credits', 'No starvation', 'Slow periods: almost free']
     o = check(30, 50, 26) + text(76, 62, rows[0], 36, DK, 'start', weight=700) + text(76, 108, rows[1], 36, DK, 'start', weight=700)
     o += check(30, 200, 26) + text(76, 212, rows[2], 36, DK, 'start', weight=700)
     o += check(30, 320, 26) + text(76, 332, 'Slow periods:', 36, DK, 'start', weight=700) + text(76, 378, 'almost free', 36, DK, 'start', weight=700)
@@ -300,8 +305,8 @@ S(f'''<section class="slide light">
   <div class="cols">
     <div>{aaai_vis()}</div>
     <div class="rows ruled">
-      <div class="row"><span class="n">1</span><p>AI helps: at AAAI-26, each paper got an AI review</p></div>
-      <div class="row"><span class="n">2</span><p>Still, we want human gatekeepers</p></div>
+      <div class="row"><span class="n">1</span><p>AI helps writing</p></div>
+      <div class="row"><span class="n">2</span><p>AI helps reviewing less (and we want human gatekeepers)</p></div>
       <div class="row"><span class="n">3</span><p>Overload makes reviews noisier</p></div>
     </div>
   </div>
@@ -326,7 +331,7 @@ S(f'''<section class="slide light">
       <p class="label">Fair to authors</p>
       <div class="rows ruled tight">
         <div class="row"><span class="n">1</span><p>More good papers, more credits</p></div>
-        <div class="row"><span class="n">2</span><p>Always at least one credit</p></div>
+        <div class="row"><span class="n">2</span><p>No starvation</p></div>
         <div class="row"><span class="n">3</span><p>Slow periods are free</p></div>
       </div>
     </div>
