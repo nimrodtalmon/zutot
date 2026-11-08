@@ -3,7 +3,7 @@
 
 Talk at the ISAC yearly seminar (Shenkar, Nov 2026): credit systems for submissions,
 based on "Who Gets to Submit?" (Rosenfeld, Stone, Milojevic, Talmon).
-Static charts are simulated here (fixed seed), with the paper's rules:
+Static charts are simulated here (fixed seed), with the paper's rules (junk/gate rules kept for reference):
   perfect-round bonus : T' = max(1, T - R + [all T used and R == 0])
   forgive noise       : credible iff R <= rho*m + 1, rho = 1/4 + eps/2
                         T' = max(1, T + [credible and m == T] - [not credible])
@@ -131,36 +131,59 @@ def chart(W, H, series, xmax, ymax, xlab='round', ylab='credits', refs=(), ytick
     return svg(W, H, o)
 
 
+# ---------- data (verified; see notes in the session) ----------
+# AAAI main-track papers reviewed (well-formed / valid), official counts only:
+# 2015-2019 proceedings prefaces (ojs.aaai.org), 2021 chairs' report (arXiv 2202.12273, Phase-1 full papers),
+# 2025 AAAI-26 pilot slides ("active submissions"), 2026 AI-review pilot paper (arXiv 2604.13940, full review).
+# 2020 and 2022-2024 have no official count and are skipped.
+AAAI_SERIES = [(2015, 1991), (2016, 2132), (2017, 2571), (2018, 3800), (2019, 7095),
+               (2021, 7133), (2025, 11263), (2026, 22977)]
+AAAI_NOTE = 'official counts only; some years missing'
+# verified on official calls: IJCAI-ECAI 2026 (cap 8, USD 100 fee), AAAI-27 (cap 10),
+# ERC 2027 reapplication rules, PVLDB vol. 19 (12-month resubmission wait),
+# AAMAS 2027 / ICML 2026 / IJCAI 2027 reciprocal-reviewer rules
+RATION_EX = ['IJCAI: 8 · AAAI: 10', 'ERC · PVLDB: 1 year', 'AAMAS · ICML · IJCAI', 'IJCAI: $100 a paper']
+
+
 # ---------- visuals ----------
-def squeeze_vis():
+def aaai_vis():
     W, H = 820, 640
-    bars = [('NeurIPS', [('2020', 9467), ('2025', 21575)]), ('AAAI', [('2025', 15000), ('2026', 30000)])]
-    labels = {9467: '9.5k', 21575: '21.6k', 15000: '~15k', 30000: '30k+'}
-    Y0, top = 520, 80
-    scale = (Y0 - top) / 30000
-    o = text(20, 40, 'Submissions per year', 36, DK, 'start', weight=800)
-    for g, (venue, pair) in enumerate(bars):
-        gx = 90 + g * 380
-        for j, (yr, v) in enumerate(pair):
-            x = gx + j * 150
-            h = v * scale
-            o += f'<rect x="{x}" y="{Y0-h:.1f}" width="120" height="{h:.1f}" rx="10" fill="{GR if j == 0 else OR}"/>'
-            o += text(x + 60, Y0 - h - 16, labels[v], 34, DK, weight=800)
-            o += text(x + 60, Y0 + 42, yr, 30, GR)
-        o += text(gx + 135, Y0 + 96, venue, 36, DK, weight=800)
-    o += f'<line x1="60" y1="{Y0}" x2="800" y2="{Y0}" stroke="{DK}" stroke-width="3"/>'
+    if not AAAI_SERIES:
+        return svg(W, H, '')
+    y0, y1 = AAAI_SERIES[0][0], AAAI_SERIES[-1][0]
+    top = max(v for _, v in AAAI_SERIES)
+    ymax = 35000 if top > 30000 else 30000
+    X0, X1, Y0, Y1 = 150, W - 40, H - 120, 90
+    X = lambda y: X0 + (y - y0) / (y1 - y0) * (X1 - X0)
+    Y = lambda v: Y0 - v / ymax * (Y0 - Y1)
+    o = text(20, 40, 'AAAI papers reviewed per year', 36, DK, 'start', weight=800)
+    o += f'<line x1="{X0}" y1="{Y0}" x2="{X1}" y2="{Y0}" stroke="{DK}" stroke-width="3"/>'
+    o += f'<line x1="{X0}" y1="{Y0}" x2="{X0}" y2="{Y1-10}" stroke="{DK}" stroke-width="3"/>'
+    for v in range(0, ymax + 1, 10000):
+        o += text(X0 - 16, Y(v) + 10, f'{v//1000}k' if v else '0', 28, GR, 'end')
+    for y in (2015, 2020, 2026):
+        o += text(X(y), Y0 + 42, str(y), 28, GR)
+    pts = ' '.join(f'{X(y):.1f},{Y(v):.1f}' for y, v in AAAI_SERIES)
+    o += f'<polyline points="{pts}" fill="none" stroke="{OR}" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>'
+    for y, v in AAAI_SERIES:
+        o += f'<circle cx="{X(y):.1f}" cy="{Y(v):.1f}" r="9" fill="{OR}"/>'
+    (ya, va), (yb, vb) = AAAI_SERIES[0], AAAI_SERIES[-1]
+    o += text(X(ya) + 6, Y(va) - 24, f'{va/1000:.0f}k', 32, DK, 'start', weight=800)
+    o += text(X(yb) - 10, Y(vb) - 24, f'{vb/1000:.0f}k', 32, DK, 'end', weight=800)
+    if AAAI_NOTE:
+        o += text(X0, Y0 + 96, AAAI_NOTE, 24, GR, 'start')
     return svg(W, H, o)
 
 
 def ration_vis():
-    W, H = 1664, 470
+    W, H = 1664, 520
     items = [('Caps', 'at most N papers'), ('Embargoes', 'rejected? wait'),
              ('Review to submit', 'submit, then review'), ('Fees', 'pay per paper')]
     o = ''
     for k, (name, sub) in enumerate(items):
         x = k * 424
         cx = x + 200
-        o += f'<rect x="{x}" y="10" width="400" height="450" rx="22" fill="{CARD}" stroke="{GL}" stroke-width="2"/>'
+        o += f'<rect x="{x}" y="10" width="400" height="500" rx="22" fill="{CARD}" stroke="{GL}" stroke-width="2"/>'
         o += f'<rect x="{x}" y="10" width="400" height="10" rx="5" fill="{OR}"/>'
         if k == 0:
             for j in range(3):
@@ -177,6 +200,8 @@ def ration_vis():
                   + text(cx, 190, '$', 100, DK, weight=800))
         o += text(cx, 330, name, 44, DK, weight=800)
         o += text(cx, 390, sub, 32, GR)
+        if RATION_EX[k]:
+            o += text(cx, 460, RATION_EX[k], 30, OR, weight=800)
     return svg(W, H, o)
 
 
@@ -184,34 +209,45 @@ def goal_vis():
     W, H = 640, 260
     o = ''
     for j in range(5):
-        o += paper(30 + j * 70, 30, 0.95, '#E6F2E8', GREEN)
-        o += check(70 + j * 70, 120, 20)
-    o += paper(440, 30, 0.95, '#EDEDEB', GR) + cross(480, 120, 20)
+        o += paper(30 + j * 70, 30, 0.95, '#E6F2E8', GREEN) + check(70 + j * 70, 120, 20)
+    o += paper(450, 30, 0.95, '#EDEDEB', GR) + check(490, 120, 20)
     o += text(200, 210, 'many good', 32, GREEN, weight=800)
-    o += text(470, 210, 'few weak', 32, GR, weight=800)
+    o += text(480, 210, 'few bad', 32, GR, weight=800)
     return svg(W, H, o)
 
 
 def setting_vis():
-    W, H = 1664, 580
-    o = head(150, 200, 52, DK)
-    o += text(150, 400, 'author', 34, GR, weight=700)
-    for j, good in enumerate([1, 1, 0, 1]):
-        o += paper(290 + j * 46, 130 + (j % 2) * 10, 1.1, '#E6F2E8' if good else '#EDEDEB', GREEN if good else GR)
-    o += text(390, 300, 'good or weak', 30, GR, weight=700)
+    W, H = 1664, 600
+    G, B = ('#E6F2E8', GREEN), ('#EDEDEB', GR)
+    o = head(110, 170, 52, DK) + text(110, 370, 'author', 34, GR, weight=700)
+    for j, g in enumerate([G, G, B, G]):
+        o += paper(230 + j * 46, 100 + (j % 2) * 10, 1.1, *g)
+    o += text(335, 270, 'good or bad', 30, GR, weight=700)
     for j in range(3):
-        o += coin(330 + j * 52, 360)
-    o += text(380, 430, 'credits', 30, GR, weight=700)
-    o += arrow(530, 200, 820, 200, OR, 7)
-    o += text(675, 170, 'each paper: 1 credit', 30, DK, weight=700)
-    o += (f'<rect x="840" y="110" width="330" height="180" rx="22" fill="{CARD}" stroke="{DK}" stroke-width="4"/>'
-          + text(1005, 190, 'venue', 44, DK, weight=800) + text(1005, 245, 'reviews (noisily)', 30, GR))
-    o += arrow(1190, 200, 1310, 200, GR, 6)
-    o += check(1370, 160, 30) + cross(1370, 245, 30)
-    o += text(1490, 172, 'accept', 30, DK, 'start', weight=700) + text(1490, 257, 'reject', 30, DK, 'start', weight=700)
-    o += f'<path d="M1370 300 C1370 470, 380 470, 380 460" fill="none" stroke="{OR}" stroke-width="7" stroke-dasharray="14 10"/>'
-    o += f'<polygon points="380,452 366,480 394,480" fill="{OR}"/>'
-    o += text(875, 555, 'after each round, the venue refills credits based on the decisions', 32, DK, weight=700)
+        o += coin(285 + j * 52, 330)
+    o += text(337, 396, 'credits', 30, GR, weight=700)
+    o += arrow(470, 180, 700, 180, OR, 7)
+    o += text(585, 150, 'costs 1 credit', 30, DK, weight=700)
+    o += text(585, 222, 'per paper', 30, DK, weight=700)
+    o += (f'<rect x="720" y="100" width="300" height="170" rx="22" fill="{CARD}" stroke="{DK}" stroke-width="4"/>'
+          + text(870, 175, 'venue', 44, DK, weight=800) + text(870, 228, 'reviews, noisily', 30, GR))
+    o += arrow(1040, 185, 1120, 185, GR, 6)
+    # accept / reject piles, each with one mistake
+    rows = [(check, 95, [G, G, G, B]), (cross, 215, [B, B, B, G])]
+    for icon, y, papers in rows:
+        o += icon(1170, y + 32, 30)
+        for j, g in enumerate(papers):
+            o += paper(1230 + j * 62, y, 0.85, *g)
+        o += (f'<rect x="{1230 + 3*62 - 10}" y="{y-10}" width="71" height="86" rx="10" fill="none" '
+              f'stroke="{OR}" stroke-width="4" stroke-dasharray="8 6"/>')
+    o += text(1610, 205, 'noise', 30, OR, 'end', weight=800)
+    # policy: decisions -> next round's credits
+    o += (f'<rect x="560" y="420" width="1080" height="150" rx="22" fill="{PALE}" stroke="{OR}" stroke-width="4"/>'
+          + text(1100, 482, 'Policy (what we design):', 36, DK, weight=800)
+          + text(1100, 532, 'this round’s accepts and rejects → each author’s credits next round', 30, DK))
+    o += arrow(1370, 320, 1370, 412, OR, 7)
+    o += (f'<polyline points="552,495 337,495 337,425" fill="none" stroke="{OR}" stroke-width="7" stroke-linejoin="round"/>'
+          f'<polygon points="337,410 323,434 351,434" fill="{OR}"/>')
     return svg(W, H, o)
 
 
@@ -240,26 +276,10 @@ def checklist_vis():
     return svg(W, H, o)
 
 
-def agenda_vis():
-    W, H = 1664, 300
-    boxes = [('Data', 'real submission records'), ('Theory', 'which wishes fit together'), ('Simulation', 'a sandbox for venues')]
-    o = ''
-    for k, (name, sub) in enumerate(boxes):
-        x = k * 572
-        o += f'<rect x="{x}" y="20" width="500" height="230" rx="24" fill="{CARD}" stroke="{GL}" stroke-width="3"/>'
-        o += text(x + 250, 120, name, 56, DK, weight=800) + text(x + 250, 185, sub, 32, GR)
-        if k < 2:
-            o += arrow(x + 512, 135, x + 562, 135, OR)
-    return svg(W, H, o)
-
-
 # ---------- static charts ----------
 NO_NOISE = mean_path('bonus', 15, k=8, eps=0.0, runs=1)
 BONUS_K20 = mean_path('bonus', 60, k=20, runs=300, seed=2)
 FORGIVE_K20 = mean_path('forgive', 60, k=20, runs=300, seed=3)
-HEAVY = mean_path('forgive', 60, f=0.4, T0=60, runs=300, seed=4)
-LIGHT_F = mean_path('forgive', 500, f=0.2, runs=150, seed=5)
-LIGHT_G = mean_path('gate', 500, f=0.2, runs=150, seed=6)
 
 slides = []
 S = slides.append
@@ -278,27 +298,28 @@ S(TITLE)
 S(f'''<section class="slide light">
   <h2>Writing got cheap; reviewing, much less</h2>
   <div class="cols">
-    <div>{squeeze_vis()}</div>
+    <div>{aaai_vis()}</div>
     <div class="rows ruled">
-      <div class="row"><span class="n">1</span><p>AI reviews help: at AAAI-26, every paper got one</p></div>
-      <div class="row"><span class="n">2</span><p>Still, we want human gatekeepers: judgment, taste</p></div>
+      <div class="row"><span class="n">1</span><p>AI helps: at AAAI-26, each paper got an AI review</p></div>
+      <div class="row"><span class="n">2</span><p>Still, we want human gatekeepers</p></div>
       <div class="row"><span class="n">3</span><p>Overload makes reviews noisier</p></div>
     </div>
   </div>
 </section>''')
 
-S(f'''<section class="slide light">
+for reveal in (False, True):
+    S(f'''<section class="slide light">
   <h2>Venues already ration submissions</h2>
-  <p class="sub">Each of these is a crude credit system</p>
+  <p class="sub" style="color:var(--orange);font-weight:700{'' if reveal else ';visibility:hidden'}">All of these are credit systems</p>
   <div style="margin-block:auto">{ration_vis()}</div>
 </section>''')
 
 S(f'''<section class="slide light">
-  <h2>Let's design the credit system properly</h2>
+  <h2>So let's design one properly</h2>
   <div class="cards">
     <div class="card top">
       <p class="label">The goal</p>
-      <p>Accept as many good papers as possible, and as few weak ones</p>
+      <p>Accept as many good papers as possible, and as few bad ones</p>
       {goal_vis()}
     </div>
     <div class="card top">
@@ -315,15 +336,18 @@ S(f'''<section class="slide light">
 S(f'''<section class="slide light">
   <h2>The simplest setting</h2>
   <p class="paper">Paper: “Who Gets to Submit?” · with Rosenfeld, Stone and Milojević · NeurIPS 2026 Workshop on AI-Native Academia</p>
-  <p class="sub">One venue · one author per paper · each paper is good or weak</p>
-  <div style="margin-block:auto">{setting_vis()}</div>
+  <p class="sub">One venue · one author per paper</p>
+  <p class="sub">Each author can write some good papers per round, and any number of bad ones</p>
+  <div style="margin-top:auto">{setting_vis()}</div>
 </section>''')
 
-S(f'''<section class="slide light">
-  <p class="eyebrow">The perfect-round bonus</p>
+for reveal in (False, True):
+    hid = '' if reveal else ' style="visibility:hidden"'
+    S(f'''<section class="slide light">
+  <p class="eyebrow"{hid}>The perfect-round bonus</p>
   <h2>If we assume no noise, then a solution exists</h2>
-  <p class="sub">Each accepted paper returns its credit; if all are accepted, then +1 bonus</p>
-  <div style="margin-block:auto">{chart(1600, 560, [(NO_NOISE, OR, 8, '', '')], 15, 10,
+  <p class="sub"{hid}>Each accepted paper returns its credit; if all are accepted, then +1 bonus</p>
+  <div style="margin-block:auto{'' if reveal else ';visibility:hidden'}">{chart(1600, 560, [(NO_NOISE, OR, 8, '', '')], 15, 10,
       refs=[(8, 'can write: 8')], yticks=[0, 5, 10], xticks=[0, 5, 10, 15])}</div>
 </section>''')
 
@@ -348,39 +372,12 @@ S(f'''<section class="slide light">
 </section>''')
 
 S('''<section class="slide light">
-  <h2>Try it</h2>
-  <p class="sub">One author, average of 200 runs</p>
-  <div class="interactive knobs">
-    <div class="kcol">
-      <div class="klab">Reviewer error <b id="kev"></b> <span class="keys"><i>1</i>◀ ▶<i>2</i></span></div>
-      <input type="range" id="ke" min="0" max="4" step="1" value="3">
-      <div class="klab" style="margin-top:40px">Good papers per round <b id="kkv"></b> <span class="keys"><i>3</i>◀ ▶<i>4</i></span></div>
-      <input type="range" id="kk" min="0" max="3" step="1" value="2">
-      <div class="klegend"><span class="sw" style="background:#F7941D"></span>forgive noise</div>
-      <div class="klegend"><span class="sw" style="background:#5F6368;height:5px"></span>perfect-round bonus</div>
-    </div>
-    <svg id="kplot" viewBox="0 0 900 560" width="900" height="560"></svg>
-  </div>
-</section>''')
-
-S(f'''<section class="slide light">
-  <h2>Heavy junk drains; light junk stops growing</h2>
-  <p class="sub">For light junk: earning a bonus needs a stricter test than losing a credit</p>
-  <div class="cols">
-    <div>{chart(800, 560, [(HEAVY, OR, 8, '', 'forgive noise')], 60, 60, xlab='round · 40% junk',
-        yticks=[0, 30, 60], xticks=[0, 30, 60])}</div>
-    <div>{chart(800, 560, [(LIGHT_F, GR, 7, '14 10', 'forgive noise'), (LIGHT_G, OR, 8, '', '+ stricter bonus')], 500, 400,
-        xlab='round · 20% junk', yticks=[0, 200, 400], xticks=[0, 250, 500])}</div>
-  </div>
-</section>''')
-
-S(f'''<section class="slide light">
   <h2>Where this goes</h2>
   <p class="sub">From one venue and one author per paper, toward the real system</p>
-  <div style="margin-top:20px">{agenda_vis()}</div>
-  <div class="chips" style="margin-top:40px">
-    <span class="chip">co-authors share credits</span><span class="chip">many venues</span>
-    <span class="chip">credits for reviewing</span><span class="chip on">beyond science: pull requests · app stores</span>
+  <div class="cards three" style="margin-block:auto">
+    <div class="card top"><p class="label">Data-based modeling</p><p>Fit authors, noise and load to real submission records</p></div>
+    <div class="card top"><p class="label">Model relaxations</p><p>Several authors per paper, several venues, credits for reviewing</p></div>
+    <div class="card top"><p class="label">More settings</p><p>Pull requests, bug bounties, app stores</p></div>
   </div>
 </section>''')
 
@@ -390,82 +387,15 @@ STYLE = '''<style>
 .paper { font-size: 30px; color: var(--gray); margin-top: -24px; }
 .sub { font-size: 44px; margin-top: -16px; }
 .paper + .sub { margin-top: -28px; }
+.sub + .sub { margin-top: -36px; }
 .card .label { font-size: 36px; }
 .rows.tight .row { padding: 22px 0; }
 .rows.tight .row .n { width: 60px; font-size: 52px; }
 .card svg { width: 100%; height: auto; }
-.knobs { display: flex; gap: 72px; align-items: center; margin-block: auto; }
-.kcol { display: flex; flex-direction: column; gap: 10px; width: 640px; }
-.klab { font-size: 36px; font-weight: 700; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
-.klab b { color: var(--orange); }
-.keys { margin-left: auto; font-size: 26px; font-weight: 700; color: var(--gray); display: flex; align-items: center; gap: 6px; }
-.keys i { font-style: normal; width: 40px; height: 40px; border-radius: 50%; border: 3px solid var(--gray-light);
-  display: inline-flex; align-items: center; justify-content: center; font-size: 24px; color: var(--dark); }
-.knobs input[type=range] { width: 640px; height: 36px; accent-color: var(--orange); cursor: pointer; }
-.klegend { font-size: 32px; font-weight: 700; display: flex; align-items: center; gap: 16px; margin-top: 18px; }
-.klegend + .klegend { margin-top: 0; }
-.sw { width: 60px; height: 8px; border-radius: 4px; display: inline-block; }
+.cards.three .card { min-height: 380px; }
+.cards.three .card .label { font-size: 44px; color: var(--dark); }
+.cards.three .card p:not(.label) { font-size: 40px; }
 </style>'''
-
-SCRIPT = '''<script>
-(function () {
-  const ERR = [0, 0.05, 0.1, 0.2, 0.3], KS = [5, 10, 20, 30], ROUNDS = 60, RUNS = 200;
-  const OR = '#F7941D', GR = '#5F6368', DK = '#26282C', GL = '#B9BCC1';
-  let seed = 7;
-  const rnd = () => { seed = (seed * 1664525 + 1013904223) >>> 0; return seed / 4294967296; };
-  function path(rule, k, eps) {
-    const acc = new Array(ROUNDS + 1).fill(0), rho = 0.25 + eps / 2;
-    for (let r = 0; r < RUNS; r++) {
-      let T = 1; acc[0] += T;
-      for (let t = 1; t <= ROUNDS; t++) {
-        const m = Math.min(T, k);
-        let R = 0;
-        for (let j = 0; j < m; j++) if (rnd() < eps) R++;
-        if (rule === 'bonus') T = Math.max(1, T - R + ((m === T && R === 0) ? 1 : 0));
-        else { const cred = R <= rho * m + 1; T = Math.max(1, T + ((cred && m === T) ? 1 : 0) - (cred ? 0 : 1)); }
-        acc[t] += T;
-      }
-    }
-    return acc.map(a => a / RUNS);
-  }
-  const ke = document.getElementById('ke'), kk = document.getElementById('kk'), plot = document.getElementById('kplot');
-  const X0 = 130, X1 = 870, Y0 = 450, Y1 = 40, YMAX = 35;
-  const X = t => X0 + t / ROUNDS * (X1 - X0), Y = v => Y0 - Math.min(v, YMAX) / YMAX * (Y0 - Y1);
-  const T = (x, y, s, size, fill, anchor, weight, extra) =>
-    `<text x="${x}" y="${y}" font-size="${size}" fill="${fill}" text-anchor="${anchor || 'middle'}" font-weight="${weight || 400}" font-family="Heebo, Arial, sans-serif" ${extra || ''}>${s}</text>`;
-  function update() {
-    const eps = ERR[+ke.value], k = KS[+kk.value];
-    document.getElementById('kev').textContent = eps === 0 ? 'none' : `1 in ${Math.round(1 / eps)}`;
-    document.getElementById('kkv').textContent = String(k);
-    seed = 7;
-    const a = path('forgive', k, eps), b = path('bonus', k, eps);
-    let h = `<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" stroke="${DK}" stroke-width="3"/>`;
-    h += `<line x1="${X0}" y1="${Y0}" x2="${X0}" y2="${Y1 - 20}" stroke="${DK}" stroke-width="3"/>`;
-    h += `<line x1="${X0}" y1="${Y(k)}" x2="${X1}" y2="${Y(k)}" stroke="${GL}" stroke-width="3" stroke-dasharray="12 9"/>`;
-    h += T(X1, Y(k) + 38, 'can write: ' + k, 28, GR, 'end', 700);
-    [0, 10, 20, 30].forEach(v => { h += T(X0 - 16, Y(v) + 10, v, 28, GR, 'end'); });
-    [0, 30, 60].forEach(t => { h += T(X(t), Y0 + 40, t, 28, GR); });
-    h += T((X0 + X1) / 2, Y0 + 86, 'round', 32, DK, 'middle', 700);
-    h += T(46, (Y0 + Y1) / 2, 'credits', 32, DK, 'middle', 700, `transform="rotate(-90 46 ${(Y0 + Y1) / 2})"`);
-    // orange first, gray (thinner) on top, so both stay visible when they coincide
-    [[a, OR, 8], [b, GR, 5]].forEach(([p, c, w]) => {
-      h += `<polyline points="${p.map((v, t) => X(t).toFixed(1) + ',' + Y(v).toFixed(1)).join(' ')}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"/>`;
-    });
-    plot.innerHTML = h;
-  }
-  ke.addEventListener('input', update); kk.addEventListener('input', update);
-  [ke, kk].forEach(el => el.addEventListener('change', () => el.blur()));
-  // keys 1/2 and 3/4 move the sliders (arrows stay for slides)
-  const slide = ke.closest('.slide');
-  document.addEventListener('keydown', (e) => {
-    if (!slide.classList.contains('active') || e.metaKey || e.ctrlKey || e.altKey) return;
-    const stepIt = (el, d) => { el.value = String(Math.max(+el.min, Math.min(+el.max, +el.value + d))); update(); };
-    if (e.key === '1') stepIt(ke, -1); else if (e.key === '2') stepIt(ke, 1);
-    else if (e.key === '3') stepIt(kk, -1); else if (e.key === '4') stepIt(kk, 1);
-  });
-  update();
-})();
-</script>'''
 
 html = '''<!doctype html>
 <html lang="en">
@@ -484,7 +414,6 @@ html = '''<!doctype html>
 ''' + '\n'.join(f'<!-- {k+1} -->{s}' for k, s in enumerate(slides)) + '''
 </div>
 <script src="../assets/deck.js"></script>
-''' + SCRIPT + '''
 </body>
 </html>
 '''
