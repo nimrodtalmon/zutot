@@ -296,15 +296,21 @@ S(f"""<section class="slide light">
   <div class="cols">
     <div style="flex:none">{pairs_vis()}</div>
     <div class="bignum"><p class="small muted">Try the blend of every pair of proposals</p>
-      <h1 class="huge" style="color:var(--orange)">94%</h1><p class="big">of the gap closed, with 51 members</p></div>
+      <h1 class="huge" style="color:var(--orange)">94%</h1><p class="big">of the gap closed, with 51 members</p>
+      <p class="src">Proposals may also come from deliberation, optimization, or AI</p></div>
   </div>
 </section>""")
 
+GOOD = [('General', 'Officers, budgets, bylaws, …'),
+        ('Unified', 'One rule for all decisions'),
+        ('Polynomial time', 'Even where optima are NP-hard'),
+        ('Self-amending', 'The constitution, by the same rule')]
+good = ''.join(f'<div class="card top"><p class="label">{t}</p><p>{d}</p></div>' for t, d in GOOD)
 S(f"""<section class="slide light">
   <p class="eyebrow">The vision</p>
   <h2>A governance layer for grassroots communities</h2>
   <div class="cols">
-    {layers_vis()}
+    <div class="good">{good}</div>
     <a class="qr" style="flex:none" href="{PW}">{qr_svg(PW, 360)}<span>peoplesweb.org</span></a>
   </div>
 </section>""")
@@ -348,6 +354,11 @@ STYLE = """<style>
 .en { font-size: 40px; font-weight: 800; }
 .em { font-weight: 800; }
 .entry.on .en, .entry.on .em { color: var(--orange); }
+.good { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.good .card { min-height: 0; padding: 32px 36px; }
+.good .label { font-size: 48px; color: var(--dark) !important; }
+.good p { font-size: 34px; white-space: nowrap; }
+.src { font-size: 34px; color: var(--gray); margin-top: 40px; padding-top: 24px; border-top: 2px solid var(--gray-light); }
 .bignum { display: flex; flex-direction: column; gap: 8px; }
 .layers { flex: 1; display: flex; flex-direction: column; gap: 16px; }
 .layer { display: flex; align-items: baseline; gap: 32px; padding: 32px 40px; border-radius: 16px;
