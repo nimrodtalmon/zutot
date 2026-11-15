@@ -70,210 +70,252 @@ def kinds_vis():
     return f'<div class="kinds">{cards}</div>'
 
 
-# ---------- slide 4: one decision on a line ----------
-VOTES_1D = [5, 14, 16, 18, 25]
-TODAY = 10
+# ---------- the 2D example (s4, s5): five members, today at the bottom ----------
+VOTES = [(5 + 3.5 * math.cos(math.radians(90 + 72 * k)), 5.5 + 3.5 * math.sin(math.radians(90 + 72 * k))) for k in range(5)]
+TODAY2 = (5, 1)
+COMP = (5, 6.6)
 
 
-def line_vis():
-    W, H = 1640, 330
-    x0, x1, lo, hi = 80, 1560, 0, 30
-    X = lambda v: x0 + (v - lo) / (hi - lo) * (x1 - x0)
-    y = 220
-    b = f'<line x1="{x0}" y1="{y}" x2="{x1}" y2="{y}" stroke="{DK}" stroke-width="5" stroke-linecap="round"/>'
-    for v in range(0, 31, 5):
-        b += f'<line x1="{X(v)}" y1="{y-12}" x2="{X(v)}" y2="{y+12}" stroke="{DK}" stroke-width="4"/>'
-        b += text(X(v), y + 52, f'{v}%', 30, GR)
-    # today
-    b += f'<rect x="{X(TODAY)-16}" y="{y-16}" width="32" height="32" fill="{GR}"/>'
-    b += text(X(TODAY), y - 40, 'today', 32, GR, weight=700)
-    for v in VOTES_1D:
-        b += head(X(v), 70, 22, OR if v == 16 else DK)
-    b += text(X(16), 30, 'median member', 30, DK, weight=800)
-    b += (f'<line x1="{X(16)}" y1="{y-70}" x2="{X(16)}" y2="{y-20}" stroke="{OR}" stroke-width="6"/>'
-          f'<circle cx="{X(16)}" cy="{y}" r="18" fill="{OR}"/>')
-    b += text(X(16) + 30, y - 30, 'adopted', 32, OR, 'start', weight=800)
+def gains(p):
+    return [math.dist(v, TODAY2) - math.dist(v, p) for v in VOTES]
+
+
+def score(p):
+    return sorted(gains(p), reverse=True)[2]
+
+
+def plane(size, body_fn, axes=True):
+    U = size / 10
+    P = lambda x, y: (40 + x * U, 10 + (10 - y) * U)
+    b = ''
+    if axes:
+        b += (f'<line x1="40" y1="{10+size}" x2="{40+size}" y2="{10+size}" stroke="{DK}" stroke-width="4"/>'
+              f'<line x1="40" y1="{10+size}" x2="40" y2="10" stroke="{DK}" stroke-width="4"/>')
+        b += text(40 + size / 2, size + 56, 'membership fee', 30, GR, weight=700)
+        b += text(22, 10 + size / 2, 'commission rate', 30, GR, weight=700, extra=f'transform="rotate(-90 22 {10+size/2})"')
+    b += body_fn(P)
+    return svg(size + 60, size + 70, b)
+
+
+def member(P, v, fill, cls=''):
+    x, y = P(*v)
+    c = f' class="{cls}"' if cls else ''
+    return f'<g{c}>{head(x, y - 10, 17, fill)}</g>'
+
+
+def today_mark(P, at, label='today', cls=''):
+    x, y = P(*at)
+    c = f' class="{cls}"' if cls else ''
+    return (f'<g{c}><rect x="{x-15}" y="{y-15}" width="30" height="30" fill="{GR}"/>'
+            + text(x, y + 48, label, 28, GR, weight=700) + '</g>')
+
+
+def approach_vis():
+    sup = [k for k, g in enumerate(gains(COMP)) if g > 0]
+
+    def body(P):
+        b = today_mark(P, TODAY2)
+        b += ''.join(member(P, v, DK, 'a1') for v in VOTES)
+        b += ''.join(member(P, VOTES[k], GREEN, 'a3') for k in sup)
+        x, y = P(*COMP)
+        b += f'<g class="a2"><circle cx="{x}" cy="{y}" r="24" fill="{OR}" stroke="{DK}" stroke-width="4"/></g>'
+        b += f'<g class="a3">' + text(x, y + 62, 'adopted', 32, OR, weight=800) + '</g>'
+        return b
+    return plane(560, body)
+
+
+def scoring_plane():
+    def body(P):
+        b = today_mark(P, TODAY2)
+        b += ''.join(member(P, v, DK) for v in VOTES)
+        for lab, pt, cls in (('A', VOTES[0], 'a1'), ('B', COMP, 'a2')):
+            x, y = P(*pt)
+            b += (f'<g class="{cls}"><circle cx="{x}" cy="{y}" r="24" fill="{OR}" stroke="{DK}" stroke-width="4"/>'
+                  + text(x + 60, y + 14, lab, 40, DK, weight=800) + '</g>')
+        return b
+    return plane(460, body, axes=False)
+
+
+def gain_bars(p, lab, win):
+    W, H = 600, 270
+    g = sorted(gains(p), reverse=True)
+    base, U = 150, 16
+    b = f'<line x1="20" y1="{base}" x2="580" y2="{base}" stroke="{DK}" stroke-width="3"/>'
+    for k, v in enumerate(g):
+        x = 50 + k * 105
+        hh = abs(v) * U
+        y = base - hh if v > 0 else base
+        b += f'<rect x="{x}" y="{y:.1f}" width="80" height="{hh:.1f}" rx="6" fill="{OR if k == 2 else GL}"/>'
+    b += text(50 + 2 * 105 + 40, base - g[2] * U - 14, f'{g[2]:.1f}', 34, DK, weight=800)
+    b += text(300, 258, f'{lab}: score {g[2]:.1f}' + (' ✓' if win else ''), 40, OR if win else DK, weight=800)
     return svg(W, H, b)
 
 
-# ---------- slide 8: gap closed by the pairwise heuristic (paper, Table 2, 2D Euclidean, "Combined") ----------
+# ---------- the constitution as a page ----------
+ENTRIES = [('rate', 'Commission rate', 'a number', 'difference', '½'),
+           ('budget', 'Budget', 'a split', 'Euclidean distance', '½'),
+           ('board', 'Board', 'a set of members', 'members that differ', '½'),
+           ('constitution', 'This constitution', 'its own entries', 'per entry', '⅔')]
+
+
+def page_vis():
+    rows = ''
+    for k, (ic, name, opt, dist, maj) in enumerate(ENTRIES):
+        on = ' on' if k == len(ENTRIES) - 1 else ''
+        rows += (f'<div class="entry{on}"><div class="eic">{icon(ic)}</div><div><p class="en">{name}</p>'
+                 f'<p class="ed">{opt} · {dist} · majority {maj}</p></div></div>')
+    return f'<div class="page"><p class="ptitle">Constitution</p>{rows}</div>'
+
+
+# ---------- gap closed by the pairwise heuristic (paper, Table 2, 2D Euclidean, "Combined") ----------
 GAP = [(5, 27), (21, 76), (51, 94)]
 
 
 def gap_vis():
-    W, H = 1100, 560
-    x0, y0, y1 = 170, 460, 60
-    Y = lambda p: y0 - p / 100 * (y0 - y1)
+    W, H = 1500, 400
     b = ''
-    for p in (0, 50, 100):
-        b += f'<line x1="{x0}" y1="{Y(p)}" x2="1060" y2="{Y(p)}" stroke="{GL}" stroke-width="2"/>'
-        b += text(x0 - 20, Y(p) + 10, f'{p}%', 30, GR, 'end')
     for k, (n, p) in enumerate(GAP):
-        x = 260 + k * 290
-        b += f'<rect x="{x}" y="{Y(p)}" width="160" height="{y0-Y(p)}" rx="10" fill="{OR}"/>'
-        b += text(x + 80, Y(p) - 18, f'{p}%', 40, DK, weight=800)
-        b += text(x + 80, y0 + 44, str(n), 34, DK, weight=700)
-    b += text(615, y0 + 94, 'number of members', 32, GR, weight=700)
-    b += text(40, 260, 'share of the gap closed', 32, GR, weight=700, extra='transform="rotate(-90 40 260)"')
+        y = 30 + k * 130
+        b += text(250, y + 58, f'{n} members', 40, DK, 'end', weight=700)
+        b += f'<rect x="290" y="{y}" width="1000" height="84" rx="12" fill="{GL}"/>'
+        b += f'<rect x="290" y="{y}" width="{p*10}" height="84" rx="12" fill="{OR}"/>'
+        b += text(290 + p * 10 + 20, y + 58, f'{p}%', 44, DK, 'start', weight=800)
     return svg(W, H, b)
 
 
+def qr_svg(url, size=380):
+    import qrcode
+    q = qrcode.QRCode(border=0, error_correction=qrcode.constants.ERROR_CORRECT_M)
+    q.add_data(url)
+    q.make(fit=True)
+    m = q.get_matrix()
+    n = len(m)
+    d = ''.join(f'M{x} {y}h1v1h-1z' for y, row in enumerate(m) for x, v in enumerate(row) if v)
+    return (f'<svg viewBox="0 0 {n} {n}" width="{size}" height="{size}" shape-rendering="crispEdges" '
+            f'aria-label="QR code"><path d="{d}" fill="{DK}"/></svg>')
+
+
 # ---------- slides ----------
-TITLE = '''
+TITLE = """
 <section class="slide dark center">
   <p class="eyebrow">Paper · ADT 2026</p>
   <h1>Constitutional Governance<br>in Metric Spaces</h1>
   <p class="ref" style="bottom:128px;font-size:32px">Ehud Shapiro and Nimrod Talmon</p>
   <p class="ref">LSE and Weizmann Institute · Ben-Gurion University · November 2026</p>
   <img class="deco" src="../assets/img/deco-network.svg" alt="">
-</section>'''
+</section>"""
 
+PW = 'https://peoplesweb.org/'
 slides = [TITLE]
 S = slides.append
 
-S('''<section class="slide dark middle">
-  <h1>The Grassroots Project</h1>
-</section>''')
+S(f"""<section class="slide dark split">
+  <div class="col">
+    <h1>The Grassroots Project</h1>
+    <p class="big"><a href="{PW}">peoplesweb.org</a></p>
+  </div>
+  <a class="qr" href="{PW}">{qr_svg(PW)}<span>peoplesweb.org</span></a>
+</section>""")
 
-S(f'''<section class="slide light">
+S(f"""<section class="slide light">
   <p class="eyebrow">The problem</p>
-  <h2>A community decides many kinds of things</h2>
-  <p class="paper">Each is a different kind of object, and there is no single process for all of them</p>
+  <h2>Grassroots community governance</h2>
+  <p class="paper">A community decides many kinds of things, each a different kind of object</p>
   {kinds_vis()}
-</section>''')
+</section>""")
 
-S(f'''<section class="slide light">
-  <p class="eyebrow">How a decision is made</p>
-  <h2>Example: five members set a rate; today it is 10%</h2>
-  <div class="rows ruled steps">
-    <div class="row"><span class="n">1</span><p>Each member votes for their ideal point</p></div>
-    <div class="row"><span class="n">2</span><p>Anyone may add a compromise that a majority prefers to today</p></div>
-    <div class="row"><span class="n">3</span><p>Score: how much the median member gains; best one wins, else today stays</p></div>
-  </div>
-  <div>{line_vis()}</div>
-</section>''')
-
-ROWS = [('Officers', 'a candidate, or vacant', 'same or not', '½'),
-        ('A rate', 'a number', 'difference', '½'),
-        ('A budget', 'a split', 'Euclidean', '½'),
-        ('Priorities', 'a ranking', 'swaps', '½'),
-        ('A board', 'a set of people', 'people that differ', '½'),
-        ('Bylaws', 'a text', 'edits', '½'),
-        ('The constitution', 'these parameters', 'per parameter', '⅔')]
-rows = ''.join(f'<tr{" class=on" if k == len(ROWS) - 1 else ""}><th class="rh">{a}</th><td>{b}</td><td>{c}</td><td>{d}</td></tr>'
-               for k, (a, b, c, d) in enumerate(ROWS))
-S(f'''<section class="slide light">
-  <p class="eyebrow">The constitution</p>
-  <h2>For each kind of decision, it sets the rules</h2>
-  <p class="paper">The constitution is amended the same way, with a higher majority</p>
-  <table class="t ct"><tr><th class="rh"></th><th>Options</th><th>Distance</th><th>Majority (e.g.)</th></tr>{rows}</table>
-</section>''')
-
-S('''<section class="slide light">
-  <p class="eyebrow">Live</p>
-  <h2>A compromise can beat every member's point</h2>
-  <p class="paper">Two issues at once: options are points in the plane. Drag the orange proposal.</p>
-  <div class="interactive demo">
-    <svg id="dplane" viewBox="0 0 640 640" width="600" height="600"></svg>
-    <div class="dcol">
-      <p class="dlab">Score (median member's gain)</p>
-      <p class="dnum" id="dscore"></p>
-      <p class="dlab"><span class="sw g"></span> prefers it to today: <b id="dsup"></b> of 5</p>
-      <p class="dlab muted">Best member's own point: <b id="dpeak"></b></p>
+S(f"""<section class="slide light">
+  <p class="eyebrow">The approach</p>
+  <h2>Example: setting two numbers</h2>
+  <p class="paper">A fee and a rate: each option is a point in the plane</p>
+  <div class="cols">
+    <div class="rows ruled steps">
+      <div class="row a1"><span class="n">1</span><p>Each member votes for their ideal point</p></div>
+      <div class="row a2"><span class="n">2</span><p>Anyone may add proposals</p></div>
+      <div class="row a3"><span class="n">3</span><p>Adopt the best one a majority prefers to today</p></div>
     </div>
+    <div style="flex:none">{approach_vis()}</div>
   </div>
-</section>''')
+</section>""")
 
-S('''<section class="slide light">
-  <p class="eyebrow">What we show</p>
-  <h2>Guarantees</h2>
+S(f"""<section class="slide light">
+  <p class="eyebrow">Which proposal is best?</p>
+  <h2>The median member decides</h2>
+  <p class="paper">My gain: how much closer the proposal is to me than today. Score: the middle gain.</p>
+  <div class="cols">
+    <div style="flex:none">{scoring_plane()}</div>
+    <div class="bars"><div class="a1">{gain_bars(VOTES[0], 'A, a member’s point', False)}</div>
+      <div class="a2">{gain_bars(COMP, 'B, a compromise', True)}</div></div>
+  </div>
+</section>""")
+
+S(f"""<section class="slide light">
+  <p class="eyebrow">The constitution</p>
+  <h2>For each decision: options, distance, majority</h2>
+  <p class="paper">The constitution is one of its own entries, amended with a higher majority</p>
+  {page_vis()}
+</section>""")
+
+S(f"""<section class="slide light">
+  <p class="eyebrow">Simulations</p>
+  <h2>A simple algorithm closes most of the gap</h2>
+  <p class="paper">Gray: how much better the best possible point is than the best member's point.<br>Orange: what an algorithm that blends two proposals recovers.</p>
+  <div style="margin-block:auto">{gap_vis()}</div>
+</section>""")
+
+S("""<section class="slide light">
+  <p class="eyebrow">Guarantees</p>
+  <h2>What else we show</h2>
   <div class="cards">
-    <div class="card top"><p class="label">Always a decision</p><p>Proposals are compared with today, not with each other: no cycles</p></div>
-    <div class="card top"><p class="label">Polynomial time</p><p>In all seven settings, also where the classic optimum is NP-hard (rankings, boards, bylaws)</p></div>
-    <div class="card top"><p class="label">On a line</p><p>The median member's point is optimal, and honest voting is a dominant strategy</p></div>
+    <div class="card top"><p class="label">No cycles</p><p>Everything is compared with today</p></div>
+    <div class="card top"><p class="label">Fast</p><p>Polynomial time in all settings</p></div>
+    <div class="card top"><p class="label">Honest</p><p>On a line, voting your ideal point is best</p></div>
   </div>
-</section>''')
-
-S(f'''<section class="slide light">
-  <p class="eyebrow">What we show · beyond a line</p>
-  <h2>A simple compromise closes most of the gap</h2>
-  <p class="paper">Simulations in 2D: blend two existing proposals, keep the best blend</p>
-  <div style="margin-block:auto;align-self:center">{gap_vis()}</div>
-</section>''')
+</section>""")
 
 slides.append(TITLE)
 
-STYLE = '''<style>
+STYLE = """<style>
 .paper { font-size: 34px; color: var(--gray); margin-top: -24px; }
 .kinds { display: flex; gap: 20px; margin-block: auto; }
 .kind { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; background: var(--card);
   border: 1px solid var(--gray-light); border-radius: 16px; padding: 24px 8px; }
 .kind:last-child { border: 4px solid var(--orange); }
-.card .label { font-size: 44px; color: var(--dark) !important; }
-.card p { font-size: 40px; }
 .kind p { font-size: 32px; font-weight: 700; text-align: center; }
-.steps { margin-block: 0; }
-.steps .row { padding: 10px 0; }
-.steps .row .n { font-size: 52px; }
+.steps { margin-block: auto; }
 .steps .row p { font-size: 40px; }
-table.ct { margin-block: auto; font-size: 34px; border-spacing: 10px 6px; margin-top: -16px; }
-table.ct th.rh { font-size: 36px; padding-right: 32px; }
-table.ct td { padding: 6px 22px; font-weight: 400; }
-table.ct td:last-child { font-weight: 800; }
-table.ct tr.on td { background: var(--orange-pale); border-color: var(--orange); }
-table.ct tr.on th { color: var(--orange); }
-.demo { display: flex; gap: 72px; align-items: center; margin-block: auto; }
-#dplane { cursor: grab; touch-action: none; }
-.dcol { display: flex; flex-direction: column; gap: 20px; }
-.dlab { font-size: 38px; font-weight: 700; display: flex; align-items: center; gap: 14px; }
-.dlab b { color: var(--orange); }
-.dnum { font-size: 140px; font-weight: 800; color: var(--orange); line-height: 1; }
-.sw { width: 30px; height: 30px; border-radius: 50%; display: inline-block; }
-.sw.g { background: #3E9B4F; }
-</style>'''
+.steps { flex: 1 !important; }
+.slide .cols { gap: 64px; }
+.qr { flex: none; text-decoration: none; border: 3px solid var(--orange); }
+.bars { display: flex; flex-direction: column; gap: 16px; }
+.card .label { font-size: 56px; color: var(--dark) !important; }
+.card p { font-size: 40px; }
+.card { min-height: 0; }
+.page { margin-block: auto 0; align-self: center; width: 1240px; background: #fff; border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0,0,0,.18); padding: 20px 64px; display: flex; flex-direction: column; gap: 4px; }
+.ptitle { font-family: Georgia, serif; font-size: 46px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+.entry { display: flex; align-items: center; gap: 28px; padding: 6px 0; border-top: 1px solid var(--gray-light); }
+.eic svg { width: 88px; height: 88px; display: block; }
+.en { font-size: 44px; font-weight: 800; }
+.ed { font-size: 36px; color: var(--gray); }
+.entry.on .en { color: var(--orange); }
+/* builds: play once when the slide is shown */
+@keyframes fin { from { opacity: 0; } to { opacity: 1; } }
+@keyframes fout { from { opacity: 1; } to { opacity: 0; } }
+@keyframes lit { from { opacity: .25; } to { opacity: 1; } }
+.slide.active .a1, .slide.active .a2, .slide.active .a3 { animation: fin .7s ease both; }
+.slide.active .row.a1, .slide.active .row.a2, .slide.active .row.a3 { animation-name: lit; }
+.slide.active .a1 { animation-delay: .4s; }
+.slide.active .a2 { animation-delay: 3s; }
+.slide.active .a3 { animation-delay: 5.5s; }
+.slide.active .a3out { animation: fout .7s ease 5.5s both; }
+body.static .slide * { animation-duration: 0s !important; animation-delay: 0s !important; }
+</style>"""
 
-# the 2D demo: five members on a pentagon, today at the bottom; generalised median at threshold 1/2
-SCRIPT = '''<script>
-(function () {
-  const svg = document.getElementById('dplane');
-  const U = 60, OFF = 20;                        // plane [0,10]^2 -> 600px, y up
-  const P = (x, y) => [OFF + x * U, OFF + (10 - y) * U];
-  const V = [0, 1, 2, 3, 4].map(k => { const a = (90 + 72 * k) * Math.PI / 180; return [5 + 3.5 * Math.cos(a), 5.5 + 3.5 * Math.sin(a)]; });
-  const S0 = [5, 1];
-  const d = (a, b) => Math.hypot(a[0] - b[0], a[1] - b[1]);
-  const gains = p => V.map(v => d(v, S0) - d(v, p));
-  const score = p => gains(p).slice().sort((a, b) => b - a)[2];
-  const peak = Math.max(...V.map(score));
-  let q = V.find(v => score(v) === peak).slice();   // start at the best member's own point
-  const T = (x, y, s, sz, f, w) => `<text x="${x}" y="${y}" font-size="${sz}" fill="${f}" text-anchor="middle" font-weight="${w}" font-family="Heebo, Arial, sans-serif">${s}</text>`;
-  function draw() {
-    const g = gains(q);
-    let h = `<rect x="${OFF}" y="${OFF}" width="600" height="600" rx="12" fill="#FDFDFB" stroke="#B9BCC1" stroke-width="2"/>`;
-    const [sx, sy] = P(...S0);
-    h += `<rect x="${sx - 16}" y="${sy - 16}" width="32" height="32" fill="#5F6368"/>` + T(sx, sy + 50, 'today', 30, '#5F6368', 700);
-    V.forEach((v, k) => {
-      const [x, y] = P(...v), on = g[k] > 0, c = on ? '#3E9B4F' : '#B9BCC1';
-      h += `<circle cx="${x}" cy="${y - 10}" r="18" fill="${c}"/><path d="M${x - 29} ${y + 37} a29 29 0 0 1 58 0 Z" fill="${c}"/>`;
-    });
-    const [qx, qy] = P(...q);
-    h += `<circle cx="${qx}" cy="${qy}" r="26" fill="#F7941D" stroke="#26282C" stroke-width="4"/>`;
-    svg.innerHTML = h;
-    const sc = score(q);
-    document.getElementById('dscore').textContent = sc > 0 ? sc.toFixed(1) : 'not adopted';
-    document.getElementById('dscore').style.fontSize = sc > 0 ? '' : '72px';
-    document.getElementById('dsup').textContent = g.filter(x => x > 0).length;
-  }
-  document.getElementById('dpeak').textContent = peak.toFixed(1);
-  let drag = false;
-  const at = ev => { const r = svg.getBoundingClientRect();
-    const x = ((ev.clientX - r.left) / r.width * 640 - OFF) / U, y = 10 - ((ev.clientY - r.top) / r.height * 640 - OFF) / U;
-    q = [Math.max(0, Math.min(10, x)), Math.max(0, Math.min(10, y))]; draw(); };
-  svg.addEventListener('pointerdown', ev => { drag = true; svg.setPointerCapture(ev.pointerId); at(ev); });
-  svg.addEventListener('pointermove', ev => { if (drag) at(ev); });
-  svg.addEventListener('pointerup', () => { drag = false; });
-  draw();
-})();
-</script>'''
+SCRIPT = """<script>
+// automated exports (PDF backup) show each slide's final state
+if (navigator.webdriver) document.body.classList.add('static');
+</script>"""
 
 html = '''<!doctype html>
 <html lang="en">
