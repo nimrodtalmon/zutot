@@ -248,6 +248,17 @@ S(f"""<section class="slide dark middle gp">
   <a class="qr" href="{PW}">{qr_svg(PW, 560)}<span>peoplesweb.org</span></a>
 </section>""")
 
+S("""<section class="slide dark">
+  <div class="cols apps">
+    <div class="lcol">
+      <p class="eyebrow">The Grassroots Project</p>
+      <h2>Grassroots apps build on each other</h2>
+      <p class="paper">Each app extends, restricts, or composes others</p>
+    </div>
+    <img class="appmap" src="img/grassroots-apps.png" alt="Map of grassroots apps and how they relate">
+  </div>
+</section>""")
+
 S(f"""<section class="slide light">
   <p class="eyebrow">The problem</p>
   <h2>Grassroots community governance</h2>
@@ -334,6 +345,10 @@ STYLE = """<style>
 .qr { flex: none; text-decoration: none; border: 3px solid var(--orange); }
 .qr span { font-size: 34px; }
 .gp { gap: 64px; }
+.apps { align-items: flex-start; height: 100%; }
+.apps .lcol { gap: 32px; }
+.apps .paper { margin-top: 0; }
+.appmap { flex: none; height: 860px; border-radius: 16px; }
 .gp h1 { white-space: nowrap; }
 .sc { padding: 28px 32px; gap: 8px; min-height: 0; }
 .sc .label { font-size: 40px; color: var(--dark) !important; }
