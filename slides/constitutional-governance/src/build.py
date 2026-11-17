@@ -243,17 +243,11 @@ PW = 'https://peoplesweb.org/'
 slides = [TITLE]
 S = slides.append
 
-S(f"""<section class="slide dark middle gp">
-  <h1>The Grassroots Project</h1>
-  <a class="qr" href="{PW}">{qr_svg(PW, 560)}<span>peoplesweb.org</span></a>
-</section>""")
-
-S("""<section class="slide dark">
+S(f"""<section class="slide dark">
   <div class="cols apps">
     <div class="lcol">
-      <p class="eyebrow">The Grassroots Project</p>
-      <h2>Grassroots apps build on each other</h2>
-      <p class="paper">Each app extends, restricts, or composes others</p>
+      <h1>The Grassroots Project</h1>
+      <a class="qr" href="{PW}">{qr_svg(PW, 400)}<span>peoplesweb.org</span></a>
     </div>
     <img class="appmap" src="img/grassroots-apps.png" alt="Map of grassroots apps and how they relate">
   </div>
@@ -345,9 +339,10 @@ STYLE = """<style>
 .qr { flex: none; text-decoration: none; border: 3px solid var(--orange); }
 .qr span { font-size: 34px; }
 .gp { gap: 64px; }
-.apps { align-items: flex-start; height: 100%; }
-.apps .lcol { gap: 32px; }
-.apps .paper { margin-top: 0; }
+.apps { align-items: stretch; height: 100%; }
+.apps .lcol { justify-content: space-between; align-items: flex-start; }
+.apps h1 { font-size: 80px; white-space: nowrap; }
+.apps .qr { margin: 0; align-self: flex-start; }
 .appmap { flex: none; height: 860px; border-radius: 16px; }
 .gp h1 { white-space: nowrap; }
 .sc { padding: 28px 32px; gap: 8px; min-height: 0; }
