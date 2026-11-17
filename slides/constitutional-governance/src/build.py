@@ -247,7 +247,7 @@ S(f"""<section class="slide dark">
   <div class="cols apps">
     <div class="lcol">
       <h1>The Grassroots Project</h1>
-      <a class="qr" href="{PW}">{qr_svg(PW, 400)}<span>peoplesweb.org</span></a>
+      <a class="qr" href="{PW}">{qr_svg(PW, 580)}<span>peoplesweb.org</span></a>
     </div>
     <img class="appmap" src="img/grassroots-apps.png" alt="Map of grassroots apps and how they relate">
   </div>
@@ -343,6 +343,7 @@ STYLE = """<style>
 .apps .lcol { justify-content: space-between; align-items: flex-start; }
 .apps h1 { font-size: 80px; white-space: nowrap; }
 .apps .qr { margin: 0; align-self: flex-start; }
+.apps .qr span { font-size: 48px; }
 .appmap { flex: none; height: 860px; border-radius: 16px; }
 .gp h1 { white-space: nowrap; }
 .sc { padding: 28px 32px; gap: 8px; min-height: 0; }
