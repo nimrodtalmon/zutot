@@ -9,103 +9,129 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#fdfbf7; --fg:#2a2a33; --muted:#77757f; --line:#ebe6dd; --card:#fff;
-          --m0:#c08a3e; --m1:#3a9a83; --m2:#e0775a; --m3:#8a6cc9; --m4:#3f8fd0;
-          --c:var(--m0); }
+  :root { --bg:#fdfbf7; --fg:#2a2a33; --muted:#7a7883; --line:#ebe6dd; --card:#fff;
+          --m0:#b98a45; --m1:#3a9a83; --m2:#df7558; --m3:#8a6cc9; --m4:#3f8fd0; --c:var(--m0); }
   @media (prefers-color-scheme: dark) {
     :root { --bg:#17171b; --fg:#ecebf0; --muted:#a3a1ab; --line:#2d2c33; --card:#1f1f25;
             --m0:#e0b06a; --m1:#62c7ad; --m2:#f2967c; --m3:#b49af0; --m4:#74b4ec; }
   }
   * { box-sizing:border-box; }
-  body { margin:0; color:var(--fg); font:16px/1.65 Rubik, system-ui, Arial, sans-serif; background:var(--bg); }
-  body::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; transition: background .5s;
-         background: radial-gradient(900px 500px at 100% -10%, color-mix(in srgb, var(--c) 16%, transparent), transparent 70%),
-                     radial-gradient(700px 500px at -10% 110%, color-mix(in srgb, var(--m1) 9%, transparent), transparent 70%),
-                     var(--bg); }
-  main { max-width:880px; margin:0 auto; padding:28px 16px 24px; }
-  h1 { font-size:26px; margin:0; font-weight:600; }
+  body { margin:0; color:var(--fg); background:var(--bg); font:16px/1.7 Rubik, system-ui, Arial, sans-serif; }
+  body::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none;
+    background: radial-gradient(900px 520px at 100% -10%, color-mix(in srgb, var(--c) 15%, transparent), transparent 70%),
+                radial-gradient(700px 520px at -10% 110%, color-mix(in srgb, var(--m1) 8%, transparent), transparent 70%); }
+  .wrap { max-width:1000px; margin:0 auto; padding:30px 18px 28px; }
+  header h1 { font-size:26px; margin:0; font-weight:600; }
   .dots { display:inline-flex; gap:5px; margin-inline-start:10px; vertical-align:middle; }
-  .dots i { width:10px; height:10px; border-radius:50%; display:block; }
-  .sub { color:var(--muted); margin:2px 0 0; font-size:15px; }
-  .top { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap; }
-  .tools { display:flex; gap:8px; align-items:center; font-size:14px; color:var(--muted); }
-  button { font:inherit; cursor:pointer; }
-  .tools button { background:var(--card); border:1px solid var(--line); color:var(--fg); border-radius:999px; padding:4px 14px; font-size:14px; }
-  .tabs { display:flex; flex-wrap:wrap; gap:6px; margin:22px 0 12px; }
-  .tabs button { background:color-mix(in srgb, var(--c) 10%, var(--card)); border:1px solid color-mix(in srgb, var(--c) 25%, var(--line));
-                 color:color-mix(in srgb, var(--c) 75%, var(--fg)); border-radius:999px; padding:5px 14px; font-size:15px; transition:all .2s; }
-  .tabs button[aria-selected="true"] { background:var(--c); border-color:var(--c); color:#fff; font-weight:500; }
-  @media (prefers-color-scheme: dark) { .tabs button[aria-selected="true"] { color:#17171b; } }
-  @media (max-width:560px) { .tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; } .tabs button { font-size:13px; padding:5px 4px; }
-                             .tabs button:nth-child(n+4) { grid-column:span 1; } }
-  .chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
-  .chips button { background:var(--card); border:1px solid var(--line); color:var(--fg); border-radius:999px; padding:4px 13px; font-size:14px; }
-  .chips button[aria-pressed="true"] { border-color:var(--c); background:color-mix(in srgb, var(--c) 14%, var(--card)); color:color-mix(in srgb, var(--c) 80%, var(--fg)); }
-  .chips button.done::after { content:" ✓"; color:var(--c); }
-  .card { background:var(--card); border:1px solid color-mix(in srgb, var(--c) 22%, var(--line)); border-radius:16px; padding:20px 24px;
-          box-shadow:0 6px 24px color-mix(in srgb, var(--c) 12%, transparent); position:relative; }
-  .card::before { content:""; position:absolute; inset:0 0 auto 0; height:6px; border-radius:16px 16px 0 0;
-                  background:linear-gradient(90deg, color-mix(in srgb, var(--c) 45%, var(--card)), var(--c)); }
-  @media (min-width:720px) { .card { height:620px; overflow-y:auto; } }
-  .card h2 { margin:0; font-size:23px; font-weight:600; color:color-mix(in srgb, var(--c) 70%, var(--fg)); }
+  .dots i { width:9px; height:9px; border-radius:50%; display:block; }
+  header p { color:var(--muted); margin:2px 0 0; font-size:15px; }
+  .layout { display:grid; grid-template-columns:230px 1fr; gap:28px; margin-top:24px; align-items:start; }
+  button, select { font:inherit; color:inherit; }
+
+  /* side menu */
+  nav.side { position:sticky; top:18px; max-height:calc(100vh - 36px); overflow-y:auto; padding-inline-end:4px; }
+  .count { font-size:13px; color:var(--muted); margin:0 0 6px; }
+  .count b { font-weight:500; color:var(--fg); }
+  .grp { margin-top:14px; }
+  .grp h3 { margin:0 0 3px; font-size:12.5px; font-weight:600; color:var(--g); display:flex; align-items:center; gap:7px; }
+  .grp h3::before { content:""; width:8px; height:8px; border-radius:50%; background:var(--g); }
+  .grp a { display:flex; justify-content:space-between; align-items:center; padding:3px 12px 3px 8px; margin-inline-start:3px;
+           border-inline-start:2px solid var(--line); color:var(--fg); text-decoration:none; font-size:14.5px; line-height:1.5; }
+  .grp a:hover { background:color-mix(in srgb, var(--g) 7%, transparent); }
+  .grp a.on { border-inline-start-color:var(--g); background:color-mix(in srgb, var(--g) 13%, transparent);
+              color:color-mix(in srgb, var(--g) 78%, var(--fg)); font-weight:500; border-radius:0 0 0 0; }
+  .grp a .ok { color:var(--g); font-size:12px; }
+  .printlink { display:inline-block; margin-top:18px; font-size:13px; color:var(--muted); background:none; border:0; padding:0; cursor:pointer; text-decoration:underline; text-underline-offset:3px; }
+
+  /* mobile picker */
+  .picker { display:none; }
+  .picker select { width:100%; padding:10px 12px; border-radius:12px; border:1px solid color-mix(in srgb, var(--c) 35%, var(--line));
+                   background:var(--card); font-size:16px; }
+  .picker .count { margin:8px 2px 0; }
+
+  /* card */
+  .card { background:var(--card); border:1px solid color-mix(in srgb, var(--c) 20%, var(--line)); border-radius:18px; padding:24px 28px 18px;
+          box-shadow:0 8px 28px color-mix(in srgb, var(--c) 11%, transparent); position:relative; overflow:hidden; }
+  .card::before { content:""; position:absolute; inset:0 0 auto 0; height:6px;
+                  background:linear-gradient(90deg, color-mix(in srgb, var(--c) 40%, var(--card)), var(--c)); }
+  .mod { font-size:13px; font-weight:500; color:var(--c); }
+  .card h2 { margin:2px 0 0; font-size:25px; font-weight:600; line-height:1.3; }
   .en { color:var(--muted); font-size:14px; }
-  .what { margin:10px 0 14px; }
-  .lbl { font-size:13px; color:var(--c); margin:14px 0 6px; font-weight:600; }
-  ol { margin:0; padding-inline-start:22px; } li { margin:3px 0; } li::marker { color:var(--c); font-weight:600; }
-  table { border-collapse:separate; border-spacing:0 4px; width:100%; font-size:15px; }
-  td, th { padding:6px 8px; text-align:start; vertical-align:top; }
-  tr:nth-child(odd) td { background:color-mix(in srgb, var(--c) 5%, var(--card)); }
-  td:first-child { border-radius:0 8px 8px 0; } td:last-child { border-radius:8px 0 0 8px; }
-  th { font-weight:500; color:var(--muted); font-size:13px; }
+  .what { margin:14px 0 6px; font-size:16.5px; }
+  .when { margin:0 0 4px; color:var(--muted); font-size:15px; }
+  .when b, .lbl { color:color-mix(in srgb, var(--c) 80%, var(--fg)); font-weight:500; }
+  .lbl { font-size:14px; margin:18px 0 6px; }
+  ol { margin:0; padding-inline-start:22px; } li { margin:4px 0; } li::marker { color:var(--c); font-weight:600; }
+  table { border-collapse:separate; border-spacing:0 3px; width:100%; font-size:15.5px; }
+  td, th { padding:6px 10px; text-align:start; vertical-align:top; }
+  tbody tr:nth-child(odd) td { background:color-mix(in srgb, var(--c) 5%, var(--card)); }
+  td:first-child { border-radius:0 10px 10px 0; } td:last-child { border-radius:10px 0 0 10px; }
+  th { font-weight:500; color:var(--muted); font-size:13px; padding-bottom:0; }
   td.k { width:1%; white-space:nowrap; }
-  td.k b { display:inline-block; min-width:30px; text-align:center; padding:1px 7px; border-radius:8px; font-weight:600; font-size:16px;
-           background:color-mix(in srgb, var(--c) 18%, var(--card)); color:color-mix(in srgb, var(--c) 80%, var(--fg)); }
+  td.k b { display:inline-block; min-width:30px; text-align:center; padding:0 8px; border-radius:8px; font-weight:600;
+           background:color-mix(in srgb, var(--r, var(--c)) 17%, var(--card)); color:color-mix(in srgb, var(--r, var(--c)) 80%, var(--fg)); }
   td.e { color:var(--muted); width:1%; white-space:nowrap; font-size:13px; padding-top:9px; }
-  @media (max-width:560px) { td.e { white-space:normal; } }
-  .practice { background:color-mix(in srgb, var(--c) 11%, var(--card)); border-radius:12px; padding:11px 15px; margin-top:16px; }
-  .practice b { color:color-mix(in srgb, var(--c) 80%, var(--fg)); font-weight:600; }
+  .practice { background:color-mix(in srgb, var(--c) 10%, var(--card)); border-radius:14px; padding:12px 16px; margin-top:20px; }
+  .practice b { color:color-mix(in srgb, var(--c) 80%, var(--fg)); font-weight:500; }
   .note { font-size:14px; color:var(--muted); margin-top:10px; }
-  .done-row { margin-top:14px; font-size:14px; color:var(--muted); display:flex; gap:6px; align-items:center; }
-  .done-row input { accent-color:var(--c); width:16px; height:16px; }
-  .chain { display:flex; flex-wrap:wrap; gap:4px; align-items:center; margin:6px 0 4px; font-size:14px; }
-  .chain span { border-radius:999px; padding:3px 11px; color:var(--fg); }
+  .chain { display:flex; flex-wrap:wrap; gap:6px; align-items:center; margin:12px 0 2px; font-size:14px; }
+  .chain span { border-radius:999px; padding:3px 12px; }
+  .chain em { display:inline-flex; gap:6px; align-items:center; font-style:normal; }
   .chain i { color:var(--muted); font-style:normal; }
-  .chain em { display:inline-flex; gap:4px; align-items:center; font-style:normal; }
-  .grid4 { display:grid; grid-template-columns:auto 1fr 1fr; gap:5px; font-size:14px; max-width:460px; }
-  .grid4 div { border-radius:8px; padding:6px 8px; min-height:44px; }
-  .grid4 .g { background:color-mix(in srgb, var(--m1) 14%, var(--card)); } .grid4 .r { background:color-mix(in srgb, var(--m2) 14%, var(--card)); }
+  .grid4 { display:grid; grid-template-columns:auto 1fr 1fr; gap:6px; font-size:14px; max-width:470px; margin-top:12px; }
+  .grid4 div { border-radius:10px; padding:6px 10px; min-height:46px; }
+  .grid4 .g { background:color-mix(in srgb, var(--m1) 14%, var(--card)); }
+  .grid4 .r { background:color-mix(in srgb, var(--m2) 14%, var(--card)); }
   .grid4 .h { color:var(--muted); font-weight:500; min-height:0; }
-  footer { margin-top:22px; font-size:13px; color:var(--muted); }
-  footer p { margin:4px 0; }
+  .venn { margin:10px 0 0; }
+  svg text { font-family:Rubik, system-ui, Arial, sans-serif; }
+  .foot { display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:20px; padding-top:14px;
+          border-top:1px solid var(--line); font-size:14px; }
+  .foot label { display:flex; gap:7px; align-items:center; color:var(--muted); cursor:pointer; }
+  .foot input { accent-color:var(--c); width:17px; height:17px; }
+  .pn { display:flex; gap:8px; }
+  .pn button { background:none; border:1px solid var(--line); border-radius:999px; padding:4px 14px; cursor:pointer; color:var(--muted); }
+  .pn button:hover:not(:disabled) { border-color:var(--c); color:var(--c); }
+  .pn button:disabled { opacity:.35; cursor:default; }
+  footer { margin-top:18px; font-size:13px; color:var(--muted); }
+  footer p { margin:3px 0; }
   [dir="ltr"] { unicode-bidi:isolate; }
   #all { display:none; }
+
+  @media (max-width:820px) {
+    .layout { grid-template-columns:1fr; gap:14px; margin-top:16px; }
+    nav.side { display:none; }
+    .picker { display:block; }
+    .card { padding:20px 18px 14px; }
+    td.e { display:none; }
+  }
   @media print {
-    body::before { display:none; }
-    .tabs, .chips, .tools, #one, .done-row { display:none !important; }
+    body::before, nav.side, .picker, #one, .foot { display:none !important; }
+    .layout { display:block; }
     #all { display:block; }
-    #all .card { height:auto; overflow:visible; break-inside:avoid; margin-bottom:14px; box-shadow:none; }
-    body { background:#fff; }
+    #all .card { break-inside:avoid; margin-bottom:14px; box-shadow:none; }
   }
 </style>
 </head>
 <body>
-<main>
-  <div class="top">
+<div class="wrap">
+  <header>
+    <h1>ערכת DBT קטנה<span class="dots"><i style="background:var(--m1)"></i><i style="background:var(--m2)"></i><i style="background:var(--m3)"></i><i style="background:var(--m4)"></i></span></h1>
+    <p>כרטיס לכל מיומנות: מה זה, מתי משתמשים, איך עושים, ותרגיל לעשות ביחד.</p>
+  </header>
+  <div class="layout">
+    <nav class="side" id="side" aria-label="מיומנויות"></nav>
     <div>
-      <h1>ערכת DBT קטנה<span class="dots"><i style="background:var(--m1)"></i><i style="background:var(--m2)"></i><i style="background:var(--m3)"></i><i style="background:var(--m4)"></i></span></h1>
-      <p class="sub">כרטיס לכל מיומנות: מה זה, איך עושים, ותרגיל ביחד.</p>
+      <div class="picker"><select id="pick" aria-label="בחירת מיומנות"></select><p class="count" id="count2"></p></div>
+      <div id="one"></div>
+      <div id="all"></div>
+      <footer>
+        <p>מבוסס על מיומנויות ה־DBT של מרשה לינהן, בניסוח חופשי. חומר ללימוד ולתרגול, לא טיפול.</p>
+        <p>להעמקה: לינהאן, <i>מדריך להקניית כישורים</i> (אח, 2006) · מונשיין, <i>טיפול דיאלקטי התנהגותי</i>, כרך ב' (אח, 2016).</p>
+      </footer>
     </div>
-    <div class="tools"><span id="count"></span><button onclick="window.print()">להדפסה</button></div>
   </div>
-  <nav class="tabs" id="tabs" role="tablist"></nav>
-  <div class="chips" id="chips"></div>
-  <div id="one"></div>
-  <div id="all"></div>
-  <footer>
-    <p>מבוסס על מיומנויות ה־DBT של מרשה לינהן, בניסוח חופשי. זה חומר ללימוד ולתרגול, לא טיפול.</p>
-    <p>להעמקה בעברית: מרשה לינהאן, <i>הפרעת אישיות גבולית: מדריך להקניית כישורים</i> (אח, 2006) · קאתי מונשיין, <i>טיפול דיאלקטי התנהגותי</i>, כרך ב' (אח, 2016).</p>
-  </footer>
-</main>
+</div>
 <script>
 const MODS = [
   {id:"m0", he:"מבוא"},
@@ -115,168 +141,197 @@ const MODS = [
   {id:"m4", he:"יעילות בין־אישית"},
 ];
 const L = s => `<span dir="ltr">${s}</span>`;
-const VENN = `<svg viewBox="0 0 360 170" width="340" role="img" aria-label="תודעה נבונה: החפיפה בין תודעה רגשית לתודעה רציונלית">
-  <circle cx="135" cy="85" r="75" fill="var(--m4)" fill-opacity=".18" stroke="var(--m4)"/>
-  <circle cx="225" cy="85" r="75" fill="var(--m2)" fill-opacity=".18" stroke="var(--m2)"/>
-  <text x="250" y="90" text-anchor="middle" font-size="15" fill="var(--fg)">רגשית</text>
-  <text x="110" y="90" text-anchor="middle" font-size="15" fill="var(--fg)">רציונלית</text>
-  <text x="180" y="90" text-anchor="middle" font-size="15" font-weight="700" fill="var(--m3)">נבונה</text>
+const isLat = s => /[A-Za-z]/.test(s);
+
+const VENN = `<svg class="venn" viewBox="0 0 360 170" width="320" role="img" aria-label="תודעה נבונה היא החפיפה בין תודעה רגשית לתודעה רציונלית">
+  <circle cx="135" cy="85" r="75" fill="var(--m4)" fill-opacity=".16" stroke="var(--m4)"/>
+  <circle cx="225" cy="85" r="75" fill="var(--m2)" fill-opacity=".16" stroke="var(--m2)"/>
+  <text x="252" y="90" text-anchor="middle" font-size="15" fill="var(--fg)">רגשית</text>
+  <text x="108" y="90" text-anchor="middle" font-size="15" fill="var(--fg)">רציונלית</text>
+  <text x="180" y="90" text-anchor="middle" font-size="15" font-weight="600" fill="var(--m3)">נבונה</text>
 </svg>`;
+const CHAIN = (() => {
+  const items = [["אירוע","m4"],["פירוש","m3"],["תחושה בגוף","m2"],["דחף","m2"],["מה עשיתי","m1"],["שם לרגש","m0"]];
+  const sp = ([t,c]) => `<span style="background:color-mix(in srgb, var(--${c}) 17%, var(--card))">${t}</span>`;
+  return `<div class="chain">${sp(items[0])}${items.slice(1).map(x => `<em><i>←</i>${sp(x)}</em>`).join("")}</div>`;
+})();
+const GRID = `<div class="grid4"><div class="h"></div><div class="h">יתרונות</div><div class="h">חסרונות</div>
+  <div class="h">לפעול לפי הדחף</div><div class="g"></div><div class="r"></div>
+  <div class="h">לא לפעול לפיו</div><div class="g"></div><div class="r"></div></div>`;
 
 const S = [
- {id:"intro", m:"m0", he:"מה זה DBT?", en:"Dialectical Behavior Therapy",
-  what:"שיטה שפיתחה מרשה לינהן. הרעיון: לקבל את עצמנו כמו שאנחנו, ובאותו זמן לעבוד על שינוי. שני הדברים נכונים יחד.",
-  how:["ארבע קבוצות מיומנויות: קשיבות, עמידות במצוקה, ויסות רגשי ויעילות בין־אישית.",
-       "קשיבות היא הבסיס, וכל השאר נשענות עליה.",
-       "דיאלקטיקה ביומיום: \"וגם\" במקום \"אבל\". \"אני רוצה לנוח וגם אני רוצה לצאת\": שני הדברים נכונים."],
-  practice:"כל אחת כותבת שלושה משפטי \"אבל\" מהשבוע. מחליפות ל\"וגם\" ובודקות מה השתנה."},
- {id:"teach", m:"m0", he:"איך להשתמש בערכה", en:"",
-  what:"שיעור אחד, מיומנות אחת. מתחילים בקשיבות, ואחר כך לפי מה שמעניין.",
-  how:["להסביר בקצרה, במילים שלך.",
-       "להדגים על דוגמה אמיתית ממך.",
-       "לתרגל ביחד את התרגיל שבתחתית הכרטיס.",
-       "לבחור משהו קטן לתרגל עד השיעור הבא, ולפתוח בו את השיעור הבא.",
-       "לסמן ✓ בכרטיס כשתרגלתן."],
-  practice:"שאלה קבועה בתחילת כל שיעור: \"איפה השתמשת במיומנות מהפעם הקודמת, ואיפה שכחת?\""},
+ {id:"intro", m:"m0", he:"מה זה DBT‏?", en:"Dialectical Behavior Therapy",
+  what:"שיטה שפיתחה הפסיכולוגית מרשה לינהן. השם בא מ\"דיאלקטיקה\": שני דברים שנראים הפוכים יכולים להיות נכונים יחד. ב־DBT אלה קבלה ושינוי. מקבלים את עצמנו כמו שאנחנו, ובאותו זמן לומדים לפעול אחרת.",
+  lbl:"ארבע קבוצות מיומנויות",
+  rows:[["קשיבות","Mindfulness","לשים לב למה שקורה עכשיו, בלי לשפוט. הבסיס לכל השאר.","m1"],
+        ["עמידות במצוקה","Distress tolerance","לעבור רגע קשה בלי להחמיר אותו.","m2"],
+        ["ויסות רגשי","Emotion regulation","להבין רגשות ולהשפיע עליהם.","m3"],
+        ["יעילות בין־אישית","Interpersonal effectiveness","לבקש, לסרב ולשמור על קשרים.","m4"]],
+  practice:"כל אחת כותבת שלושה משפטים מהשבוע עם \"אבל\" (\"אני רוצה לצאת, אבל אני עייפה\") ומחליפה אותם ל\"וגם\". מה משתנה בתחושה?"},
+ {id:"teach", m:"m0", he:"איך ללמד עם הערכה", en:"",
+  what:"כל שיעור מתמקד במיומנות אחת. כדאי להתחיל בקשיבות, כי כל השאר נשען עליה.",
+  lbl:"מבנה של שיעור",
+  how:["לפתוח בשאלה: איפה השתמשת במיומנות מהפעם הקודמת, ואיפה שכחת?",
+       "להסביר את המיומנות החדשה בקצרה, במילים שלך.",
+       "לתת דוגמה אמיתית מהחיים שלך.",
+       "לעשות ביחד את התרגיל שבסוף הכרטיס.",
+       "לבחור משימה קטנה לתרגול עד הפעם הבאה, ולסמן \"תרגלנו\"."],
+  plbl:"טיפ:", practice:"עדיף שיעור קצר שנגמר כשעוד יש חשק, משיעור ארוך."},
 
  {id:"wise", m:"m1", he:"תודעה נבונה", en:"Wise Mind",
-  what:"יש בנו שלושה מצבי תודעה: רגשית (הרגש מחליט), רציונלית (רק היגיון ועובדות), ונבונה, שבה שתיהן נפגשות.",
+  what:"ב־DBT מדברים על שלושה מצבי תודעה. ברגשית, הרגש מחליט. ברציונלית, רק ההיגיון והעובדות קובעים. התודעה הנבונה היא המקום שבו שתיהן נפגשות: יודעים מה מרגישים, וגם מה נכון לעשות.",
+  when:"לפני החלטה, ובכל פעם שמרגישים שרק צד אחד מדבר.",
   extra:VENN,
-  how:["לעצור ולנשום כמה נשימות.",
+  how:["לעצור ולנשום כמה נשימות איטיות.",
        "לשאול: \"מה התודעה הנבונה שלי אומרת?\"",
-       "לחכות לתשובה בלי להתווכח איתה. היא בדרך כלל שקטה ובטוחה, לא דחופה."],
-  practice:"כל אחת מספרת על החלטה אחת שקיבלה מתודעה רגשית ואחת מתודעה רציונלית. איך הייתה נראית ההחלטה מתודעה נבונה?"},
+       "להקשיב לתשובה בלי להתווכח איתה. תשובה נבונה בדרך כלל מרגישה שקטה ובטוחה, לא דחופה."],
+  practice:"כל אחת נזכרת בהחלטה שקיבלה מתודעה רגשית ובהחלטה שקיבלה מתודעה רציונלית. ביחד: איך הייתה נראית כל אחת מהן מתודעה נבונה?"},
  {id:"what", m:"m1", he:"מיומנויות ה\"מה\"", en:"What skills",
-  what:"מה עושים כשמתרגלים קשיבות. עושים אחת בכל פעם.",
-  rows:[["להתבונן","Observe","לשים לב למה שקורה, בפנים ובחוץ, בלי לנסות לשנות."],
-        ["לתאר","Describe","לשים במילים את מה שראינו: רק עובדות, בלי פירושים."],
-        ["להשתתף","Participate","להיכנס לגמרי למה שעושים, עד שנשכחים בתוכו."]],
-  practice:"דקה של התבוננות בחפץ (תפוז, כוס). אחר כך כל אחת מתארת אותו בחמישה משפטים של עובדות בלבד. מי שמכניסה שיפוט (\"יפה\", \"מוזר\") מתחילה מחדש."},
+  what:"שלושה דברים שעושים כשמתרגלים קשיבות. בכל רגע עושים רק אחד מהם.",
+  when:"בתרגול קשיבות, וגם סתם באמצע היום.",
+  rows:[["להתבונן","Observe","לשים לב למה שקורה בחוץ ובפנים (מחשבות, רגשות, תחושות), בלי לנסות לשנות."],
+        ["לתאר","Describe","לשים במילים את מה שרואים ומרגישים. רק עובדות, בלי פרשנות."],
+        ["להשתתף","Participate","להיכנס לגמרי לפעילות, עד שנבלעים בה, בלי להסתכל על עצמנו מהצד."]],
+  practice:"מתבוננות דקה בחפץ פשוט (תפוז, כוס). אחר כך כל אחת מתארת אותו בחמישה משפטים של עובדות בלבד. מי שמשתמשת במילה שיפוטית (\"יפה\", \"מוזר\") מתחילה מחדש."},
  {id:"how", m:"m1", he:"מיומנויות ה\"איך\"", en:"How skills",
-  what:"איך עושים את מיומנויות ה\"מה\".",
-  rows:[["בלי שיפוטיות","Non-judgmentally","לתאר עובדות ותחושות, בלי \"טוב\" ו\"רע\" ובלי \"צריך\"."],
-        ["דבר אחד בכל פעם","One-mindfully","כשאוכלים, אוכלים. כשמדברים, מדברים."],
-        ["ביעילות","Effectively","לעשות את מה שעובד, גם אם זה לא מה ש\"צודק\"."]],
-  practice:"להחליף משפטים שיפוטיים בתיאור. למשל: \"הוא מעצבן\" ← \"הוא דיבר בקול רם, והרגשתי כעס\". כל אחת מביאה שלוש דוגמאות משלה."},
+  what:"שלוש דרכים לעשות את מיומנויות ה\"מה\".",
+  when:"תמיד, יחד עם מיומנויות ה\"מה\".",
+  rows:[["בלי שיפוטיות","Non-judgmentally","לתאר מה קרה ומה מרגישים, בלי \"טוב\", \"רע\" ו\"צריך\"."],
+        ["דבר אחד בכל פעם","One-mindfully","כשאוכלים, רק אוכלים. כשמדברים, רק מדברים. כשהמחשבה בורחת, מחזירים אותה בעדינות."],
+        ["ביעילות","Effectively","לעשות את מה שעובד במצב הזה, גם אם זה לא מה ש\"צודק\"."]],
+  practice:"כל אחת מביאה שלושה משפטים שיפוטיים מהשבוע, ומנסחות ביחד כל אחד מחדש כתיאור. למשל: \"הוא מעצבן\" ← \"הוא דיבר בקול רם, והרגשתי כעס\"."},
 
- {id:"stop", m:"m2", he:"STOP", en:"עצירה ברגע של דחף",
-  what:"לרגע שבו הרגש חזק והדחף הוא להגיב מיד.",
-  rows:[["S","Stop","לעצור. לא לזוז, לא להגיב."],
-        ["T","Take a step back","לקחת צעד אחורה ולנשום. לא חייבים להחליט עכשיו."],
-        ["O","Observe","להתבונן: מה קורה סביבי? מה קורה בתוכי? מה אחרים אומרים ועושים?"],
-        ["P","Proceed mindfully","להמשיך בקשיבות: לשאול מה יעזור עכשיו, ולפעול מתודעה נבונה."]],
-  practice:"משחק: אחת אומרת משהו מרגיז (מוסכם מראש), והשנייה עושה STOP בקול, שלב אחרי שלב."},
+ {id:"stop", m:"m2", he:"STOP", en:"עצירה לפני תגובה",
+  what:"ארבעה צעדים שעוצרים תגובה אוטומטית ונותנים לתודעה הנבונה הזדמנות.",
+  when:"כשהרגש חזק והדחף הוא להגיב מיד: לצעוק, לשלוח הודעה, לטרוק דלת.",
+  rows:[["S","Stop","לעצור. לא לזוז ולא להגיב, אפילו לא במבט."],
+        ["T","Take a step back","לקחת צעד אחורה, גם פיזית, ולנשום. ההחלטה יכולה לחכות."],
+        ["O","Observe","להתבונן: מה קורה סביבי ובתוכי? מה אחרים אומרים ועושים בפועל?"],
+        ["P","Proceed mindfully","להמשיך בקשיבות: מה אני רוצה שיקרה, ואיזו תגובה תקרב אותי לזה?"]],
+  practice:"משחק תפקידים: אחת אומרת משפט מרגיז שסיכמתן עליו מראש. השנייה עוברת בקול על ארבעת הצעדים, ורק אז מגיבה."},
  {id:"tipp", m:"m2", he:"TIPP", en:"להוריד עוצמה דרך הגוף",
-  what:"כשהרגש כל כך חזק שאי אפשר לחשוב. משנים משהו בגוף כדי להוריד את העוצמה מהר.",
-  rows:[["T","Temperature","טמפרטורה: מים קרים על הפנים, עם עצירת נשימה קצרה."],
-        ["I","Intense exercise","מאמץ גופני קצר וחזק: ריצה במקום או קפיצות, כמה דקות."],
-        ["P","Paced breathing","נשימה איטית: נשיפה ארוכה מהשאיפה. למשל, לשאוף 4 ולנשוף 6."],
-        ["P","Paired muscle relaxation","הרפיית שרירים: לכווץ שריר בשאיפה ולהרפות בנשיפה."]],
-  note:"מים קרים מורידים את הדופק. אם יש בעיה בלב או בעיה רפואית אחרת, לשאול רופא קודם.",
-  practice:"דקה אחת של נשימה איטית ביחד. לדרג מ־0 עד 10 כמה לחוצות לפני ואחרי."},
+  what:"כשהרגש חזק כל כך שאי אפשר לחשוב, קשה להשתמש במיומנויות אחרות. TIPP משנה משהו בגוף ומוריד את העוצמה תוך דקות.",
+  when:"ברגע של הצפה, כשהעוצמה גבוהה מאוד.",
+  rows:[["T","Temperature","טמפרטורה: לשטוף את הפנים במים קרים ולעצור את הנשימה לכמה שניות."],
+        ["I","Intense exercise","מאמץ קצר וחזק: ריצה במקום, קפיצות או מדרגות, כמה דקות."],
+        ["P","Paced breathing","נשימה איטית: נשיפה ארוכה מהשאיפה. למשל, לשאוף 4 שניות ולנשוף 6."],
+        ["P","Paired muscle relaxation","הרפיית שרירים: לכווץ קבוצת שרירים בשאיפה, ולהרפות בנשיפה."]],
+  note:"מים קרים מאטים את הדופק. אם יש בעיה בלב או בעיה רפואית אחרת, לשאול רופא לפני.",
+  practice:"דקה של נשימה איטית ביחד. כל אחת מדרגת את הלחץ מ־0 עד 10, לפני ואחרי."},
  {id:"accepts", m:"m2", he:"ACCEPTS", en:"הסחת דעת מכוונת",
-  what:"מעבירים את תשומת הלב לזמן מה, עד שהגל עובר. לא בורחים לתמיד, רק עד שאפשר לחשוב.",
-  rows:[["A","Activities","פעילות שממלאת את הראש: לבשל, לצייר, לשחק."],
-        ["C","Contributing","לתרום: לעזור למישהו אחר."],
-        ["C","Comparisons","השוואה: לזכור זמן קשה יותר שעברנו."],
-        ["E","Emotions","רגש אחר: סרט מצחיק, שיר שמח."],
-        ["P","Pushing away","להרחיק: לשים את הבעיה בצד, בדמיון, לזמן מה."],
-        ["T","Thoughts","מחשבות: לספור, לפתור חידה, לקרוא."],
-        ["S","Sensations","תחושות: מקלחת חמה, מוזיקה בקול, לסחוט כדור ספוג."]],
+  what:"לא בורחים מהבעיה לתמיד. רק מעבירים את תשומת הלב לזמן מה, עד שהעוצמה יורדת ואפשר לחשוב שוב.",
+  when:"כשאי אפשר לפתור את הבעיה עכשיו, והמחשבה עליה רק מגבירה את המצוקה.",
+  rows:[["A","Activities","פעילות שממלאת את הראש: לבשל, לצייר, לשחק, לסדר."],
+        ["C","Contributing","לתרום: לעזור למישהו, לעשות משהו טוב בשביל אחר."],
+        ["C","Comparisons","השוואה: להיזכר בתקופה קשה יותר שעברנו."],
+        ["E","Emotions","רגש אחר: לעורר בכוונה רגש הפוך, עם סרט מצחיק או שיר שמח."],
+        ["P","Pushing away","להרחיק: לשים את הבעיה בצד בדמיון, בקופסה על מדף, לזמן מוגדר."],
+        ["T","Thoughts","מחשבות: להעסיק את הראש בספירה, חידה או קריאה."],
+        ["S","Sensations","תחושות: תחושה חזקה ובטוחה, כמו מקלחת חמה או מוזיקה בקול."]],
   practice:"כל אחת בונה רשימה אישית, לפחות דבר אחד לכל אות, ושומרת אותה בטלפון."},
  {id:"soothe", m:"m2", he:"הרגעה בחמשת החושים", en:"Self-soothe",
-  what:"להיות טובות לעצמנו דרך החושים כשקשה.",
+  what:"להרגיע את עצמנו דרך החושים, בעדינות ובנדיבות, כמו שהיינו מרגיעות חברה טובה.",
+  when:"כשקשה, ובמיוחד כשמרגישים לבד.",
   rows:[["ראייה","Vision","להסתכל על משהו יפה: נוף, תמונה, נר."],
         ["שמיעה","Hearing","מוזיקה רגועה, קולות טבע."],
         ["ריח","Smell","ריח אהוב: קרם, תה, פרחים."],
         ["טעם","Taste","לאכול משהו טעים, לאט ובתשומת לב."],
         ["מגע","Touch","שמיכה רכה, מקלחת חמה, ללטף חיה."]],
-  practice:"להכין ביחד \"קופסת הרגעה\": פריט אחד לכל חוש."},
+  practice:"מכינות ביחד \"קופסת הרגעה\" עם פריט אחד לכל חוש: תמונה, שיר, ריח, ממתק, משהו רך."},
  {id:"improve", m:"m2", he:"IMPROVE", en:"לשפר את הרגע",
-  what:"כשאי אפשר לשנות את המצב, אפשר לשפר את הרגע.",
-  rows:[["I","Imagery","דמיון: לדמיין מקום רגוע ובטוח."],
-        ["M","Meaning","משמעות: למצוא משהו טוב או חשוב גם במצב הקשה."],
+  what:"כשאי אפשר לשנות את המצב, אפשר לשנות את הרגע ולהפוך אותו לקצת יותר נסבל.",
+  when:"במצב קשה שנמשך זמן, כמו המתנה לתשובה או יום ארוך.",
+  rows:[["I","Imagery","דמיון: לדמיין מקום רגוע ובטוח, עם כמה שיותר פרטים."],
+        ["M","Meaning","משמעות: לחפש משהו טוב, חשוב או מלמד גם בתוך הקושי."],
         ["P","Prayer","חיבור: תפילה, טבע, או ערכים שחשובים לי."],
-        ["R","Relaxation","הרפיה: נשימות, מתיחות, מקלחת."],
+        ["R","Relaxation","הרפיה: נשימות איטיות, מתיחות, מקלחת."],
         ["O","One thing in the moment","דבר אחד ברגע: להתמקד רק במה שעושים עכשיו."],
-        ["V","Vacation","חופשה קצרה: כמה דקות הפסקה, בלי לעשות כלום."],
-        ["E","Encouragement","עידוד: לדבר לעצמנו כמו לחברה טובה. \"זה יעבור.\""]],
-  practice:"לבחור אות אחת ולנסות אותה השבוע ברגע לא נעים קטן. לספר בשיעור הבא."},
+        ["V","Vacation","חופשה קצרה: כמה דקות של הפסקה מוחלטת, ואז חוזרים."],
+        ["E","Encouragement","עידוד: לדבר לעצמנו כמו לחברה טובה. \"זה יעבור\", \"עברתי דברים קשים יותר\"."]],
+  practice:"כל אחת בוחרת אות אחת ומנסה אותה השבוע ברגע לא נעים קטן. בשיעור הבא מספרות מה קרה."},
  {id:"proscons", m:"m2", he:"יתרונות וחסרונות", en:"Pros and cons",
-  what:"לפני שפועלים לפי דחף, בודקים יתרונות וחסרונות, גם של לפעול לפיו וגם של לא לפעול.",
-  extra:`<div class="grid4"><div class="h"></div><div class="h">יתרונות</div><div class="h">חסרונות</div>
-    <div class="h">לפעול לפי הדחף</div><div class="g"></div><div class="r"></div>
-    <div class="h">לא לפעול לפיו</div><div class="g"></div><div class="r"></div></div>`,
-  how:["למלא את ארבע המשבצות.","לחשוב גם על הטווח הקצר וגם על הטווח הארוך.","להחליט מתודעה נבונה."],
-  practice:"לבחור דחף יומיומי (לדחות שיעורי בית, לענות בעצבים להודעה) ולמלא את הטבלה ביחד."},
+  what:"לפני שפועלים לפי דחף, בודקים מה מרוויחים ומה מפסידים: גם מלפעול לפיו, וגם מלא לפעול.",
+  when:"כשיש דחף חזק לעשות משהו שאולי נצטער עליו.",
+  extra:GRID,
+  how:["למלא את ארבע המשבצות.","לחשוב גם על הטווח הקצר (עכשיו, היום) וגם על הטווח הארוך.","להסתכל על הטבלה ולהחליט מתודעה נבונה."],
+  practice:"בוחרות דחף יומיומי (לדחות שיעורי בית, לענות בעצבים להודעה) וממלאות את הטבלה ביחד."},
  {id:"radical", m:"m2", he:"קבלה רדיקלית", en:"Radical acceptance",
-  what:"לקבל את המציאות כמו שהיא, עד הסוף: בראש, בלב ובגוף. לקבל זה לא להסכים, וזה גם לא לוותר על שינוי.",
-  how:["לשים לב כשנלחמים במציאות (\"זה לא פייר\", \"זה לא אמור לקרות\").",
-       "להזכיר לעצמנו: זה מה שיש עכשיו, וזה קרה מסיבות.",
-       "לבחור לקבל, שוב ושוב. זו החלטה שחוזרים אליה.",
-       "נכונות במקום עקשנות: לעשות את מה שהמצב דורש, ולא לשבת עם ידיים שלובות."],
-  practice:"כל אחת בוחרת משהו קטן שמעצבן ואי אפשר לשנות (פקק, גשם) ומתרגלת לומר: \"זה מה שיש עכשיו\". לשים לב מה קורה לסבל."},
+  what:"לקבל את המציאות כמו שהיא, עד הסוף: בראש, בלב ובגוף. לקבל לא אומר להסכים או לוותר. זה אומר להפסיק להילחם במה שכבר קרה, כדי שיהיה כוח לטפל בו.",
+  when:"כשמשהו כבר קרה ואי אפשר לשנות אותו, ומוצאים את עצמנו חוזרות ל\"זה לא פייר\".",
+  how:["לשים לב למשפטים של מאבק: \"זה לא אמור לקרות\", \"זה לא פייר\".",
+       "להזכיר לעצמנו: זה מה שיש עכשיו, ויש לזה סיבות.",
+       "לבחור לקבל, ולבחור שוב בכל פעם שהמאבק חוזר.",
+       "נכונות במקום עקשנות: לעשות את מה שהמצב דורש, במקום לשבת עם ידיים שלובות."],
+  practice:"כל אחת בוחרת משהו קטן שמעצבן ואי אפשר לשנות (פקק, גשם, תור). כשזה קורה השבוע, היא אומרת לעצמה \"זה מה שיש עכשיו\" ושמה לב מה קורה לכעס."},
 
  {id:"emotion", m:"m3", he:"לזהות ולתת שם לרגש", en:"Model of emotions",
-  what:"רגש הוא שרשרת. כשמפרקים אותה, אפשר להתערב בכל חוליה.",
-  extra:`<div class="chain"><span style="background:color-mix(in srgb, var(--m4) 18%, var(--card))">אירוע</span><em><i>←</i><span style="background:color-mix(in srgb, var(--m3) 18%, var(--card))">פירוש</span></em><em><i>←</i><span style="background:color-mix(in srgb, var(--m2) 18%, var(--card))">תחושה בגוף</span></em><em><i>←</i><span style="background:color-mix(in srgb, var(--m2) 18%, var(--card))">דחף</span></em><em><i>←</i><span style="background:color-mix(in srgb, var(--m1) 18%, var(--card))">מה עשיתי</span></em><em><i>←</i><span style="background:color-mix(in srgb, var(--m0) 18%, var(--card))">שם לרגש</span></em></div>`,
-  how:["מה קרה? רק עובדות.","איך פירשתי את זה?","מה הרגשתי בגוף?","מה רציתי לעשות, ומה עשיתי בפועל?",
-       "איזה שם הכי מתאים לרגש? (כעס, פחד, עצב, בושה, קנאה, שמחה…)"],
-  practice:"לפרק ביחד רגש חזק אחד מהשבוע, חוליה אחרי חוליה."},
+  what:"רגש הוא לא רק תחושה, אלא שרשרת שלמה. כשמפרקים אותה לחוליות, קל יותר להבין מה קרה, ואפשר להתערב בכל חוליה.",
+  when:"אחרי רגש חזק, או כשלא ברור מה בדיוק מרגישים.",
+  extra:CHAIN,
+  how:["מה קרה? רק עובדות, כמו מצלמה.","איך פירשתי את מה שקרה?","מה הרגשתי בגוף? (דופק, חום, מועקה)",
+       "מה היה הדחף, ומה עשיתי בפועל?","איזה שם הכי מתאים לרגש? כעס, פחד, עצב, בושה, קנאה, שמחה…"],
+  practice:"בוחרות רגש חזק אחד מהשבוע ומפרקות אותו ביחד, חוליה אחרי חוליה."},
  {id:"facts", m:"m3", he:"בדיקת העובדות", en:"Check the facts",
-  what:"הרבה פעמים הרגש מגיב לפירוש שלנו ולא למה שקרה. בודקים אם הרגש, והעוצמה שלו, מתאימים לעובדות.",
-  how:["מה הרגש, ומה העוצמה שלו מ־0 עד 10?","מה האירוע? רק עובדות.","מה ההנחות שלי? אילו פירושים אחרים יש?",
-       "יש כאן איום אמיתי? מה הכי גרוע שיכול לקרות, וכמה זה סביר?","האם הרגש והעוצמה מתאימים לעובדות?"],
-  practice:"מקרה: חברה לא עונה להודעה כבר שלוש שעות. לכתוב ביחד חמישה פירושים אפשריים."},
+  what:"הרבה פעמים הרגש מגיב לפירוש שלנו ולא למה שבאמת קרה. בודקים אם הרגש, והעוצמה שלו, מתאימים לעובדות.",
+  when:"כשרגש מרגיש חזק מדי ביחס למה שקרה.",
+  how:["איזה רגש יש, ובאיזו עוצמה מ־0 עד 10?","מה קרה? רק עובדות.","אילו הנחות הוספתי? אילו פירושים אחרים אפשריים?",
+       "האם יש איום אמיתי? מה הכי גרוע שיכול לקרות, וכמה זה סביר?","האם הרגש והעוצמה מתאימים לעובדות? אם לא, עוברים לפעולה הפוכה."],
+  practice:"מקרה: חברה לא עונה להודעה כבר שלוש שעות. כותבות ביחד חמישה פירושים אפשריים, ובודקות איזה רגש מתאים לכל אחד."},
  {id:"opposite", m:"m3", he:"פעולה הפוכה", en:"Opposite action",
-  what:"כשהרגש לא מתאים לעובדות, או לא עוזר, עושים את ההפך ממה שהוא דוחף לעשות. עד הסוף, גם בגוף ובטון.",
+  what:"לכל רגש יש דחף. כשהרגש לא מתאים לעובדות, או לא עוזר, עושים בכוונה את ההפך מהדחף, עד הסוף: בגוף, בטון ובמחשבות.",
+  when:"אחרי בדיקת העובדות, כשהתברר שהרגש לא מתאים למצב.",
   table:{head:["רגש","הדחף","הפעולה ההפוכה"], rows:[
-    ["פחד","לברוח, להימנע","להתקרב, לעשות את מה שמפחיד (כשזה בטוח)"],
+    ["פחד","לברוח, להימנע","להתקרב ולעשות את מה שמפחיד (כשזה בטוח)"],
     ["כעס","לתקוף, לצעוק","לקחת מרחק בעדינות, לדבר בשקט, לנסות להבין"],
     ["עצב","להסתגר, לשכב","לצאת, לפגוש אנשים, לעשות משהו"],
     ["בושה","להסתתר","להמשיך כרגיל ולהרים את הראש (כשאין סיבה אמיתית להתבייש)"]]},
-  practice:"לבחור רגש אחד שחוזר אצל כל אחת, ולתכנן מראש פעולה הפוכה קטנה."},
+  practice:"כל אחת בוחרת רגש שחוזר אצלה, ומתכננות ביחד פעולה הפוכה קטנה."},
  {id:"please", m:"m3", he:"ABC PLEASE", en:"לחזק את עצמנו מראש",
-  what:"דברים שעושים מראש, כדי שרגשות חזקים יפילו אותנו פחות.",
-  rows:[["A","Accumulate positives","לצבור חוויות טובות: משהו נעים כל יום, ומטרות לפי הערכים."],
+  what:"דברים שעושים בימים רגילים, כדי שכשיגיע רגש חזק הוא יפיל אותנו פחות.",
+  when:"כל יום, לא רק ברגעים קשים.",
+  rows:[["A","Accumulate positives","לצבור חוויות טובות: משהו נעים כל יום, ומטרות שמתאימות לערכים."],
         ["B","Build mastery","לבנות מסוגלות: כל יום משהו קצת מאתגר שמצליחים בו."],
-        ["C","Cope ahead","להתכונן מראש: לדמיין מצב קשה שצפוי ולתרגל בראש איך מתמודדים."],
-        ["PL","Treat PhysicaL illness","לטפל בגוף כשהוא חולה או כואב."],
-        ["E","Balanced Eating","לאכול באופן מאוזן וקבוע."],
-        ["A","Avoid mood-Altering substances","להימנע מחומרים שמשנים מצב רוח."],
-        ["S","Balanced Sleep","לישון מספיק ובשעות קבועות."],
+        ["C","Cope ahead","להתכונן מראש: לדמיין מצב קשה שצפוי, ולתרגל בראש איך מתמודדים."],
+        ["PL","PhysicaL illness","לטפל בגוף כשהוא חולה או כואב."],
+        ["E","Eating","לאכול באופן מאוזן וקבוע."],
+        ["A","Avoid mood-altering","להימנע מחומרים שמשנים מצב רוח."],
+        ["S","Sleep","לישון מספיק, בשעות קבועות."],
         ["E","Exercise","לזוז קצת כל יום."]],
-  practice:"כל אחת בוחרת אות אחת לשבוע הקרוב, עם צעד קטן ומדויק (\"הליכה של 10 דקות ביום שלישי\")."},
+  practice:"כל אחת בוחרת אות אחת לשבוע הקרוב, עם צעד קטן ומדויק: \"הליכה של 10 דקות ביום שלישי\", לא \"לזוז יותר\"."},
 
  {id:"dearman", m:"m4", he:"DEAR MAN", en:"לבקש או לסרב",
-  what:"כשרוצים לבקש משהו או לסרב, בצורה ברורה ויעילה.",
-  rows:[["D","Describe","לתאר את המצב: רק עובדות."],
-        ["E","Express","להביע רגש ודעה על המצב, במשפטי \"אני\"."],
+  what:"תסריט לבקשה או לסירוב: ברור, מכבד ויעיל. שבע אותיות, שבעה צעדים.",
+  when:"כשרוצים משהו ממישהו, או כשרוצים לסרב לבקשה.",
+  rows:[["D","Describe","לתאר את המצב. רק עובדות."],
+        ["E","Express","להביע מה מרגישים ומה חושבים על זה, במשפטי \"אני\"."],
         ["A","Assert","לבקש במפורש, או לסרב במפורש. לא לרמוז."],
-        ["R","Reinforce","לחזק: להסביר מה טוב יוצא לצד השני אם יסכים."],
-        ["M","Mindful","להישאר ממוקדות: לחזור על הבקשה כמו \"תקליט שבור\", ולא להיגרר לנושאים אחרים."],
+        ["R","Reinforce","להסביר מה טוב יוצא לצד השני אם יסכים."],
+        ["M","Mindful","להישאר בנושא: לחזור על הבקשה כמו \"תקליט שבור\", ולא להיגרר לוויכוחים אחרים."],
         ["A","Appear confident","להיראות בטוחות: קול ברור, קשר עין."],
-        ["N","Negotiate","משא ומתן: להיות מוכנות לוותר על משהו, ולשאול \"מה כן אפשרי?\""]],
-  practice:"משחק תפקידים: לבקש משכן להנמיך מוזיקה בלילה. אחת מבקשת, השנייה שכן קשוח, ואז מתחלפות."},
+        ["N","Negotiate","להיות מוכנות לוותר על משהו, ולשאול \"מה כן אפשרי?\""]],
+  practice:"משחק תפקידים: לבקש משכן להנמיך מוזיקה בלילה. אחת מבקשת, השנייה משחקת שכן קשוח, ואז מתחלפות."},
  {id:"give", m:"m4", he:"GIVE", en:"לשמור על הקשר",
-  what:"לשמור על הקשר תוך כדי השיחה, גם כשמבקשים וגם כשלא מסכימים.",
+  what:"איך לשמור על הקשר תוך כדי השיחה, גם כשמבקשים משהו וגם כשלא מסכימים.",
+  when:"בשיחה עם מישהו שהקשר איתו חשוב לנו.",
   rows:[["G","Gentle","בעדינות: בלי התקפות, בלי איומים, בלי שיפוט."],
         ["I","Interested","בעניין: להקשיב באמת, לא לקטוע."],
         ["V","Validate","לתקף: להראות שמבינים את הצד השני (\"אני מבינה שזה קשה לך\")."],
         ["E","Easy manner","בקלילות: חיוך, קצת הומור, טון נעים."]],
-  practice:"אחת מספרת על משהו שהרגיז אותה, והשנייה מקשיבה עם GIVE בלבד, בלי עצות. אחר כך מתחלפות."},
+  practice:"אחת מספרת על משהו שהרגיז אותה, והשנייה מקשיבה רק עם GIVE, בלי עצות. אחר כך מתחלפות."},
  {id:"fast", m:"m4", he:"FAST", en:"לשמור על הכבוד העצמי",
-  what:"לצאת מהשיחה עם כבוד לעצמי, בלי קשר לתוצאה.",
+  what:"איך לצאת משיחה עם כבוד לעצמנו, בלי קשר לתוצאה.",
+  when:"כשיש לחץ לוותר על מה שחשוב לנו כדי לרצות.",
   rows:[["F","Fair","הוגנות: גם כלפי הצד השני וגם כלפי עצמי."],
         ["A","no Apologies","בלי התנצלויות מיותרות: לא להתנצל על זה שיש לי בקשה או דעה."],
         ["S","Stick to values","לדבוק בערכים: לא לוותר עליהם כדי שיאהבו אותי."],
         ["T","Truthful","אמת: בלי שקרים, בלי הגזמות, בלי להעמיד פנים שאין ברירה."]],
   practice:"כל אחת נזכרת בפעם שהתנצלה כשלא היה צריך. מנסחות ביחד את המשפט מחדש, בלי ההתנצלות."},
  {id:"validate", m:"m4", he:"תיקוף (ולידציה)", en:"Validation",
-  what:"להעביר לצד השני את המסר שמה שהוא מרגיש או חושב מובן, בהינתן המצב. תיקוף זה לא הסכמה.",
+  what:"להראות לצד השני שמה שהוא מרגיש מובן והגיוני, בהתחשב במצב. תיקוף זה לא הסכמה, וגם לא פתרון בעיות.",
+  when:"כשמישהו משתף בקושי. וגם כלפי עצמנו.",
   how:["להקשיב באמת, בלי טלפון.","לשקף: לחזור במילים שלנו על מה ששמענו.",
-       "לנחש מה הצד השני מרגיש, ולבדוק (\"נשמע שזה ממש תסכל אותך?\").",
-       "להראות שזה מובן: \"בהתחשב במה שקרה, זה הגיוני.\"","לתקף גם את עצמנו."],
+       "לנחש מה הצד השני מרגיש, ולבדוק: \"נשמע שזה ממש תסכל אותך?\"",
+       "להראות שזה מובן: \"בהתחשב במה שקרה, זה הגיוני.\""],
   practice:"אחת מספרת על בעיה קטנה, והשנייה עונה רק בתיקוף, בלי פתרונות. אחר כך: איך זה הרגיש?"},
 ];
 
@@ -284,37 +339,64 @@ const KEY = "dbt-kit-done";
 let done = {};
 try { done = JSON.parse(localStorage.getItem(KEY) || "{}"); } catch (e) {}
 const save = () => { try { localStorage.setItem(KEY, JSON.stringify(done)); } catch (e) {} };
+const modName = id => MODS.find(m => m.id === id).he;
 
-function cardHTML(s, withCheck) {
-  let h = `<h2>${s.he}</h2>${s.en ? `<div class="en">${/[A-Za-z]/.test(s.en) ? L(s.en) : s.en}</div>` : ""}`;
+function cardHTML(s, live) {
+  let h = `<div class="mod">${modName(s.m)}</div><h2>${s.he}</h2>`;
+  if (s.en) h += `<div class="en">${isLat(s.en) ? L(s.en) : s.en}</div>`;
   h += `<p class="what">${s.what}</p>`;
+  if (s.when) h += `<p class="when"><b>מתי:</b> ${s.when}</p>`;
   if (s.extra) h += s.extra;
-  if (s.rows) h += `<table>${s.rows.map(r => `<tr><td class="k"><b>${/[A-Za-z]/.test(r[0]) ? L(r[0]) : r[0]}</b></td><td class="e">${L(r[1])}</td><td>${r[2]}</td></tr>`).join("")}</table>`;
-  if (s.table) h += `<table><tr>${s.table.head.map(x => `<th>${x}</th>`).join("")}</tr>${s.table.rows.map(r => `<tr><td class="k"><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table>`;
-  if (s.how) h += `<div class="lbl">איך</div><ol>${s.how.map(x => `<li>${x}</li>`).join("")}</ol>`;
+  if (s.rows) h += (s.lbl ? `<div class="lbl">${s.lbl}</div>` : `<div class="lbl">איך</div>`) +
+    `<table><tbody>${s.rows.map(r => `<tr${r[3] ? ` style="--r:var(--${r[3]})"` : ""}><td class="k"><b>${isLat(r[0]) ? L(r[0]) : r[0]}</b></td><td class="e">${L(r[1])}</td><td>${r[2]}</td></tr>`).join("")}</tbody></table>`;
+  if (s.table) h += `<div class="lbl">איך</div><table><thead><tr>${s.table.head.map(x => `<th>${x}</th>`).join("")}</tr></thead><tbody>${s.table.rows.map(r => `<tr><td class="k"><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</tbody></table>`;
+  if (s.how) h += `<div class="lbl">${s.rows ? "איך" : (s.lbl || "איך")}</div><ol>${s.how.map(x => `<li>${x}</li>`).join("")}</ol>`;
   if (s.note) h += `<div class="note">${s.note}</div>`;
-  h += `<div class="practice"><b>לתרגל ביחד:</b> ${s.practice}</div>`;
-  if (withCheck) h += `<label class="done-row"><input type="checkbox" id="chk" ${done[s.id] ? "checked" : ""}> תרגלנו</label>`;
-  return `<div class="card" style="--c:var(--${s.m})">${h}</div>`;
+  h += `<div class="practice"><b>${s.plbl || "לתרגל ביחד:"}</b> ${s.practice}</div>`;
+  if (live) {
+    const i = S.indexOf(s);
+    h += `<div class="foot"><label><input type="checkbox" id="chk" ${done[s.id] ? "checked" : ""}> תרגלנו</label>
+      <div class="pn"><button id="prev" ${i === 0 ? "disabled" : ""}>→ הקודם</button><button id="next" ${i === S.length - 1 ? "disabled" : ""}>הבא ←</button></div></div>`;
+  }
+  return `<article class="card" style="--c:var(--${s.m})">${h}</article>`;
 }
 
 let cur = S[0];
-function render() {
-  document.getElementById("tabs").innerHTML = MODS.map(m =>
-    `<button role="tab" style="--c:var(--${m.id})" aria-selected="${m.id === cur.m}" data-m="${m.id}">${m.he}</button>`).join("");
-  document.getElementById("chips").innerHTML = S.filter(s => s.m === cur.m).map(s =>
-    `<button style="--c:var(--${s.m})" aria-pressed="${s === cur}" class="${done[s.id] ? "done" : ""}" data-s="${s.id}">${s.he}</button>`).join("");
-  document.body.style.setProperty("--c", `var(--${cur.m})`);
-  document.getElementById("one").innerHTML = cardHTML(cur, true);
-  const n = S.filter(s => s.m !== "m0" && done[s.id]).length, tot = S.filter(s => s.m !== "m0").length;
-  document.getElementById("count").textContent = `תרגלנו ${n} מתוך ${tot}`;
-  document.getElementById("chk").onchange = e => { done[cur.id] = e.target.checked; save(); render(); };
+function countText() {
+  const real = S.filter(s => s.m !== "m0");
+  return `תרגלנו <b>${real.filter(s => done[s.id]).length}</b> מתוך ${real.length}`;
 }
-function go(id) { const s = S.find(x => x.id === id); if (s) { cur = s; history.replaceState(null, "", "#" + id); render(); } }
-document.getElementById("tabs").onclick = e => { const m = e.target.dataset.m; if (m) go(S.find(s => s.m === m).id); };
-document.getElementById("chips").onclick = e => { const id = e.target.dataset.s; if (id) go(id); };
+function render() {
+  document.body.style.setProperty("--c", `var(--${cur.m})`);
+  document.getElementById("side").innerHTML = `<p class="count">${countText()}</p>` +
+    MODS.map(m => `<div class="grp" style="--g:var(--${m.id})"><h3>${m.he}</h3>${
+      S.filter(s => s.m === m.id).map(s => `<a href="#${s.id}" class="${s === cur ? "on" : ""}" data-s="${s.id}"><span>${s.he}</span>${done[s.id] ? '<span class="ok">✓</span>' : ""}</a>`).join("")
+    }</div>`).join("") + `<button class="printlink" onclick="window.print()">להדפסת כל הכרטיסים</button>`;
+  document.getElementById("pick").innerHTML = MODS.map(m => `<optgroup label="${m.he}">${
+      S.filter(s => s.m === m.id).map(s => `<option value="${s.id}" ${s === cur ? "selected" : ""}>${s.he}${done[s.id] ? " ✓" : ""}</option>`).join("")
+    }</optgroup>`).join("");
+  document.getElementById("count2").innerHTML = countText();
+  document.getElementById("one").innerHTML = cardHTML(cur, true);
+  document.getElementById("chk").onchange = e => { done[cur.id] = e.target.checked; save(); render(); };
+  const i = S.indexOf(cur);
+  document.getElementById("prev").onclick = () => go(S[i - 1].id, true);
+  document.getElementById("next").onclick = () => go(S[i + 1].id, true);
+}
+function go(id, scroll) {
+  const s = S.find(x => x.id === id); if (!s) return;
+  cur = s; history.replaceState(null, "", "#" + id); render();
+  if (scroll && window.matchMedia("(max-width:820px)").matches) document.querySelector(".picker").scrollIntoView({behavior:"smooth"});
+}
+document.getElementById("side").onclick = e => { const a = e.target.closest("a[data-s]"); if (a) { e.preventDefault(); go(a.dataset.s); } };
+document.getElementById("pick").onchange = e => go(e.target.value);
+document.addEventListener("keydown", e => {
+  if (e.target.closest("input, select, textarea")) return;
+  const i = S.indexOf(cur);
+  if (e.key === "ArrowLeft" && i < S.length - 1) go(S[i + 1].id);
+  if (e.key === "ArrowRight" && i > 0) go(S[i - 1].id);
+});
 document.getElementById("all").innerHTML = S.map(s => cardHTML(s, false)).join("");
-if (location.hash) go(location.hash.slice(1)); else render();
+if (location.hash && S.some(s => s.id === location.hash.slice(1))) go(location.hash.slice(1)); else render();
 </script>
 </body>
 </html>
