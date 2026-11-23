@@ -5,62 +5,85 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>ערכת DBT קטנה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-  :root { --bg:#fbfaf7; --fg:#1d1d1b; --muted:#6b6a66; --line:#e4e1da; --card:#fff; --soft:#f3f1ec;
-          --m0:#6b6a66; --m1:#2f7d6d; --m2:#b4520f; --m3:#7a4fa3; --m4:#2c6aa8; }
+  :root { --bg:#fdfbf7; --fg:#2a2a33; --muted:#77757f; --line:#ebe6dd; --card:#fff;
+          --m0:#c08a3e; --m1:#3a9a83; --m2:#e0775a; --m3:#8a6cc9; --m4:#3f8fd0;
+          --c:var(--m0); }
   @media (prefers-color-scheme: dark) {
-    :root { --bg:#161615; --fg:#e9e7e2; --muted:#9b9890; --line:#2e2d2a; --card:#1e1e1c; --soft:#262523;
-            --m0:#9b9890; --m1:#5cbfa9; --m2:#f08a3e; --m3:#b48ae0; --m4:#6aa6e6; }
+    :root { --bg:#17171b; --fg:#ecebf0; --muted:#a3a1ab; --line:#2d2c33; --card:#1f1f25;
+            --m0:#e0b06a; --m1:#62c7ad; --m2:#f2967c; --m3:#b49af0; --m4:#74b4ec; }
   }
   * { box-sizing:border-box; }
-  body { margin:0; background:var(--bg); color:var(--fg); font:16px/1.6 system-ui, "Segoe UI", Arial, sans-serif; }
+  body { margin:0; color:var(--fg); font:16px/1.65 Rubik, system-ui, Arial, sans-serif; background:var(--bg); }
+  body::before { content:""; position:fixed; inset:0; z-index:-1; pointer-events:none; transition: background .5s;
+         background: radial-gradient(900px 500px at 100% -10%, color-mix(in srgb, var(--c) 16%, transparent), transparent 70%),
+                     radial-gradient(700px 500px at -10% 110%, color-mix(in srgb, var(--m1) 9%, transparent), transparent 70%),
+                     var(--bg); }
   main { max-width:880px; margin:0 auto; padding:28px 16px 24px; }
-  h1 { font-size:24px; margin:0; font-weight:600; }
+  h1 { font-size:26px; margin:0; font-weight:600; }
+  .dots { display:inline-flex; gap:5px; margin-inline-start:10px; vertical-align:middle; }
+  .dots i { width:10px; height:10px; border-radius:50%; display:block; }
   .sub { color:var(--muted); margin:2px 0 0; font-size:15px; }
   .top { display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap; }
   .tools { display:flex; gap:8px; align-items:center; font-size:14px; color:var(--muted); }
   button { font:inherit; cursor:pointer; }
-  .tools button { background:none; border:1px solid var(--line); color:var(--fg); border-radius:6px; padding:4px 10px; font-size:14px; }
-  .tabs { display:flex; flex-wrap:wrap; gap:6px; margin:20px 0 10px; border-bottom:1px solid var(--line); }
-  .tabs button { background:none; border:0; border-bottom:3px solid transparent; padding:6px 10px 8px; color:var(--muted); font-size:15px; }
-  .tabs button[aria-selected="true"] { color:var(--c); border-bottom-color:var(--c); font-weight:600; }
-  @media (max-width:560px) { .tabs { display:grid; grid-template-columns:repeat(5,auto); gap:0; } .tabs button { font-size:13px; line-height:1.25; padding:6px 3px 8px; } }
+  .tools button { background:var(--card); border:1px solid var(--line); color:var(--fg); border-radius:999px; padding:4px 14px; font-size:14px; }
+  .tabs { display:flex; flex-wrap:wrap; gap:6px; margin:22px 0 12px; }
+  .tabs button { background:color-mix(in srgb, var(--c) 10%, var(--card)); border:1px solid color-mix(in srgb, var(--c) 25%, var(--line));
+                 color:color-mix(in srgb, var(--c) 75%, var(--fg)); border-radius:999px; padding:5px 14px; font-size:15px; transition:all .2s; }
+  .tabs button[aria-selected="true"] { background:var(--c); border-color:var(--c); color:#fff; font-weight:500; }
+  @media (prefers-color-scheme: dark) { .tabs button[aria-selected="true"] { color:#17171b; } }
+  @media (max-width:560px) { .tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:6px; } .tabs button { font-size:13px; padding:5px 4px; }
+                             .tabs button:nth-child(n+4) { grid-column:span 1; } }
   .chips { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
-  .chips button { background:var(--soft); border:1px solid var(--line); color:var(--fg); border-radius:999px; padding:5px 12px; font-size:14px; }
-  .chips button[aria-pressed="true"] { border-color:var(--c); color:var(--c); }
+  .chips button { background:var(--card); border:1px solid var(--line); color:var(--fg); border-radius:999px; padding:4px 13px; font-size:14px; }
+  .chips button[aria-pressed="true"] { border-color:var(--c); background:color-mix(in srgb, var(--c) 14%, var(--card)); color:color-mix(in srgb, var(--c) 80%, var(--fg)); }
   .chips button.done::after { content:" ✓"; color:var(--c); }
-  .card { background:var(--card); border:1px solid var(--line); border-top:4px solid var(--c); border-radius:8px; padding:18px 22px; }
-  @media (min-width:720px) { .card { height:600px; overflow-y:auto; } }
-  .card h2 { margin:0; font-size:22px; }
+  .card { background:var(--card); border:1px solid color-mix(in srgb, var(--c) 22%, var(--line)); border-radius:16px; padding:20px 24px;
+          box-shadow:0 6px 24px color-mix(in srgb, var(--c) 12%, transparent); position:relative; }
+  .card::before { content:""; position:absolute; inset:0 0 auto 0; height:6px; border-radius:16px 16px 0 0;
+                  background:linear-gradient(90deg, color-mix(in srgb, var(--c) 45%, var(--card)), var(--c)); }
+  @media (min-width:720px) { .card { height:620px; overflow-y:auto; } }
+  .card h2 { margin:0; font-size:23px; font-weight:600; color:color-mix(in srgb, var(--c) 70%, var(--fg)); }
   .en { color:var(--muted); font-size:14px; }
   .what { margin:10px 0 14px; }
-  .lbl { font-size:12px; letter-spacing:1px; color:var(--muted); margin:14px 0 6px; font-weight:600; }
-  ol { margin:0; padding-inline-start:22px; } li { margin:3px 0; }
-  table { border-collapse:collapse; width:100%; font-size:15px; }
-  td, th { border-bottom:1px solid var(--line); padding:6px 8px; text-align:start; vertical-align:top; }
-  th { font-weight:600; color:var(--muted); font-size:13px; }
-  td.k { font-weight:700; color:var(--c); width:1%; white-space:nowrap; font-size:17px; }
-  td.e { color:var(--muted); width:1%; white-space:nowrap; font-size:13px; }
+  .lbl { font-size:13px; color:var(--c); margin:14px 0 6px; font-weight:600; }
+  ol { margin:0; padding-inline-start:22px; } li { margin:3px 0; } li::marker { color:var(--c); font-weight:600; }
+  table { border-collapse:separate; border-spacing:0 4px; width:100%; font-size:15px; }
+  td, th { padding:6px 8px; text-align:start; vertical-align:top; }
+  tr:nth-child(odd) td { background:color-mix(in srgb, var(--c) 5%, var(--card)); }
+  td:first-child { border-radius:0 8px 8px 0; } td:last-child { border-radius:8px 0 0 8px; }
+  th { font-weight:500; color:var(--muted); font-size:13px; }
+  td.k { width:1%; white-space:nowrap; }
+  td.k b { display:inline-block; min-width:30px; text-align:center; padding:1px 7px; border-radius:8px; font-weight:600; font-size:16px;
+           background:color-mix(in srgb, var(--c) 18%, var(--card)); color:color-mix(in srgb, var(--c) 80%, var(--fg)); }
+  td.e { color:var(--muted); width:1%; white-space:nowrap; font-size:13px; padding-top:9px; }
   @media (max-width:560px) { td.e { white-space:normal; } }
-  .practice { background:var(--soft); border-radius:6px; padding:10px 14px; margin-top:16px; }
-  .practice b { color:var(--c); }
+  .practice { background:color-mix(in srgb, var(--c) 11%, var(--card)); border-radius:12px; padding:11px 15px; margin-top:16px; }
+  .practice b { color:color-mix(in srgb, var(--c) 80%, var(--fg)); font-weight:600; }
   .note { font-size:14px; color:var(--muted); margin-top:10px; }
   .done-row { margin-top:14px; font-size:14px; color:var(--muted); display:flex; gap:6px; align-items:center; }
+  .done-row input { accent-color:var(--c); width:16px; height:16px; }
   .chain { display:flex; flex-wrap:wrap; gap:4px; align-items:center; margin:6px 0 4px; font-size:14px; }
-  .chain span { border:1px solid var(--c); color:var(--c); border-radius:6px; padding:3px 8px; }
+  .chain span { border-radius:999px; padding:3px 11px; color:var(--fg); }
   .chain i { color:var(--muted); font-style:normal; }
-  .grid4 { display:grid; grid-template-columns:auto 1fr 1fr; gap:4px; font-size:14px; max-width:460px; }
-  .grid4 div { border:1px solid var(--line); border-radius:4px; padding:6px 8px; min-height:44px; }
-  .grid4 .h { border:0; color:var(--muted); font-weight:600; min-height:0; }
-  svg text { font-family:system-ui, Arial, sans-serif; }
+  .chain em { display:inline-flex; gap:4px; align-items:center; font-style:normal; }
+  .grid4 { display:grid; grid-template-columns:auto 1fr 1fr; gap:5px; font-size:14px; max-width:460px; }
+  .grid4 div { border-radius:8px; padding:6px 8px; min-height:44px; }
+  .grid4 .g { background:color-mix(in srgb, var(--m1) 14%, var(--card)); } .grid4 .r { background:color-mix(in srgb, var(--m2) 14%, var(--card)); }
+  .grid4 .h { color:var(--muted); font-weight:500; min-height:0; }
   footer { margin-top:22px; font-size:13px; color:var(--muted); }
   footer p { margin:4px 0; }
   [dir="ltr"] { unicode-bidi:isolate; }
   #all { display:none; }
   @media print {
+    body::before { display:none; }
     .tabs, .chips, .tools, #one, .done-row { display:none !important; }
     #all { display:block; }
-    #all .card { height:auto; overflow:visible; break-inside:avoid; margin-bottom:14px; }
+    #all .card { height:auto; overflow:visible; break-inside:avoid; margin-bottom:14px; box-shadow:none; }
     body { background:#fff; }
   }
 </style>
@@ -69,7 +92,7 @@
 <main>
   <div class="top">
     <div>
-      <h1>ערכת DBT קטנה</h1>
+      <h1>ערכת DBT קטנה<span class="dots"><i style="background:var(--m1)"></i><i style="background:var(--m2)"></i><i style="background:var(--m3)"></i><i style="background:var(--m4)"></i></span></h1>
       <p class="sub">כרטיס לכל מיומנות: מה זה, איך עושים, ותרגיל ביחד.</p>
     </div>
     <div class="tools"><span id="count"></span><button onclick="window.print()">להדפסה</button></div>
@@ -93,11 +116,11 @@ const MODS = [
 ];
 const L = s => `<span dir="ltr">${s}</span>`;
 const VENN = `<svg viewBox="0 0 360 170" width="340" role="img" aria-label="תודעה נבונה: החפיפה בין תודעה רגשית לתודעה רציונלית">
-  <circle cx="135" cy="85" r="75" fill="var(--c)" fill-opacity=".12" stroke="var(--c)"/>
-  <circle cx="225" cy="85" r="75" fill="var(--c)" fill-opacity=".12" stroke="var(--c)"/>
+  <circle cx="135" cy="85" r="75" fill="var(--m4)" fill-opacity=".18" stroke="var(--m4)"/>
+  <circle cx="225" cy="85" r="75" fill="var(--m2)" fill-opacity=".18" stroke="var(--m2)"/>
   <text x="250" y="90" text-anchor="middle" font-size="15" fill="var(--fg)">רגשית</text>
   <text x="110" y="90" text-anchor="middle" font-size="15" fill="var(--fg)">רציונלית</text>
-  <text x="180" y="90" text-anchor="middle" font-size="15" font-weight="700" fill="var(--c)">נבונה</text>
+  <text x="180" y="90" text-anchor="middle" font-size="15" font-weight="700" fill="var(--m3)">נבונה</text>
 </svg>`;
 
 const S = [
@@ -182,8 +205,8 @@ const S = [
  {id:"proscons", m:"m2", he:"יתרונות וחסרונות", en:"Pros and cons",
   what:"לפני שפועלים לפי דחף, בודקים יתרונות וחסרונות, גם של לפעול לפיו וגם של לא לפעול.",
   extra:`<div class="grid4"><div class="h"></div><div class="h">יתרונות</div><div class="h">חסרונות</div>
-    <div class="h">לפעול לפי הדחף</div><div></div><div></div>
-    <div class="h">לא לפעול לפיו</div><div></div><div></div></div>`,
+    <div class="h">לפעול לפי הדחף</div><div class="g"></div><div class="r"></div>
+    <div class="h">לא לפעול לפיו</div><div class="g"></div><div class="r"></div></div>`,
   how:["למלא את ארבע המשבצות.","לחשוב גם על הטווח הקצר וגם על הטווח הארוך.","להחליט מתודעה נבונה."],
   practice:"לבחור דחף יומיומי (לדחות שיעורי בית, לענות בעצבים להודעה) ולמלא את הטבלה ביחד."},
  {id:"radical", m:"m2", he:"קבלה רדיקלית", en:"Radical acceptance",
@@ -196,7 +219,7 @@ const S = [
 
  {id:"emotion", m:"m3", he:"לזהות ולתת שם לרגש", en:"Model of emotions",
   what:"רגש הוא שרשרת. כשמפרקים אותה, אפשר להתערב בכל חוליה.",
-  extra:`<div class="chain"><span>אירוע</span><i>←</i><span>פירוש</span><i>←</i><span>תחושה בגוף</span><i>←</i><span>דחף</span><i>←</i><span>מה עשיתי</span><i>←</i><span>שם לרגש</span></div>`,
+  extra:`<div class="chain"><span style="background:color-mix(in srgb, var(--m4) 18%, var(--card))">אירוע</span><em><i>←</i><span style="background:color-mix(in srgb, var(--m3) 18%, var(--card))">פירוש</span></em><em><i>←</i><span style="background:color-mix(in srgb, var(--m2) 18%, var(--card))">תחושה בגוף</span></em><em><i>←</i><span style="background:color-mix(in srgb, var(--m2) 18%, var(--card))">דחף</span></em><em><i>←</i><span style="background:color-mix(in srgb, var(--m1) 18%, var(--card))">מה עשיתי</span></em><em><i>←</i><span style="background:color-mix(in srgb, var(--m0) 18%, var(--card))">שם לרגש</span></em></div>`,
   how:["מה קרה? רק עובדות.","איך פירשתי את זה?","מה הרגשתי בגוף?","מה רציתי לעשות, ומה עשיתי בפועל?",
        "איזה שם הכי מתאים לרגש? (כעס, פחד, עצב, בושה, קנאה, שמחה…)"],
   practice:"לפרק ביחד רגש חזק אחד מהשבוע, חוליה אחרי חוליה."},
@@ -266,8 +289,8 @@ function cardHTML(s, withCheck) {
   let h = `<h2>${s.he}</h2>${s.en ? `<div class="en">${/[A-Za-z]/.test(s.en) ? L(s.en) : s.en}</div>` : ""}`;
   h += `<p class="what">${s.what}</p>`;
   if (s.extra) h += s.extra;
-  if (s.rows) h += `<table>${s.rows.map(r => `<tr><td class="k">${/[A-Za-z]/.test(r[0]) ? L(r[0]) : r[0]}</td><td class="e">${L(r[1])}</td><td>${r[2]}</td></tr>`).join("")}</table>`;
-  if (s.table) h += `<table><tr>${s.table.head.map(x => `<th>${x}</th>`).join("")}</tr>${s.table.rows.map(r => `<tr><td class="k">${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table>`;
+  if (s.rows) h += `<table>${s.rows.map(r => `<tr><td class="k"><b>${/[A-Za-z]/.test(r[0]) ? L(r[0]) : r[0]}</b></td><td class="e">${L(r[1])}</td><td>${r[2]}</td></tr>`).join("")}</table>`;
+  if (s.table) h += `<table><tr>${s.table.head.map(x => `<th>${x}</th>`).join("")}</tr>${s.table.rows.map(r => `<tr><td class="k"><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join("")}</table>`;
   if (s.how) h += `<div class="lbl">איך</div><ol>${s.how.map(x => `<li>${x}</li>`).join("")}</ol>`;
   if (s.note) h += `<div class="note">${s.note}</div>`;
   h += `<div class="practice"><b>לתרגל ביחד:</b> ${s.practice}</div>`;
@@ -281,6 +304,7 @@ function render() {
     `<button role="tab" style="--c:var(--${m.id})" aria-selected="${m.id === cur.m}" data-m="${m.id}">${m.he}</button>`).join("");
   document.getElementById("chips").innerHTML = S.filter(s => s.m === cur.m).map(s =>
     `<button style="--c:var(--${s.m})" aria-pressed="${s === cur}" class="${done[s.id] ? "done" : ""}" data-s="${s.id}">${s.he}</button>`).join("");
+  document.body.style.setProperty("--c", `var(--${cur.m})`);
   document.getElementById("one").innerHTML = cardHTML(cur, true);
   const n = S.filter(s => s.m !== "m0" && done[s.id]).length, tot = S.filter(s => s.m !== "m0").length;
   document.getElementById("count").textContent = `תרגלנו ${n} מתוך ${tot}`;
