@@ -199,21 +199,27 @@ def findings_vis():
                   OR if deleg else GR, DK if deleg else '#fff', w=440, size=30)
         return o
 
-    def line_dots(y, a):
-        x0, x1 = 480, 1100
-        o = f'<line x1="{x0}" y1="{y}" x2="{x1}" y2="{y}" stroke="{GL}" stroke-width="6" stroke-linecap="round"/>'
+    x0, x1 = 600, 1100
+    X = lambda p: x0 + p * (x1 - x0)
+
+    def line_dots(y, a, clusters):
+        o = ''
+        for lo, hi in clusters:
+            o += (f'<rect x="{X(lo)-38:.1f}" y="{y-38}" width="{X(hi)-X(lo)+76:.1f}" height="76" rx="38" '
+                  f'fill="{PALE}" stroke="{OR}" stroke-width="4"/>')
+        o += f'<line x1="{x0}" y1="{y}" x2="{x1}" y2="{y}" stroke="{GL}" stroke-width="6" stroke-linecap="round"/>'
         for p in (0, a, .5, 1 - a, 1):
-            o += f'<circle cx="{x0+p*(x1-x0):.1f}" cy="{y}" r="20" fill="{DK}"/>'
+            o += f'<circle cx="{X(p):.1f}" cy="{y}" r="20" fill="{DK}"/>'
         return o
 
     def committee(y, n):
-        return ''.join(f'<circle cx="{500+52*k}" cy="{y}" r="17" fill="{OR}"/>' for k in range(n))
+        return ''.join(f'<circle cx="{x0+20+50*k}" cy="{y}" r="17" fill="{OR}"/>' for k in range(n))
 
-    b += text(20, 40, 'It depends on the population', 36, GR, 'start', weight=800)
-    b += row(115, 'Polarized', line_dots(115, .05), False)
-    b += row(215, 'Moderate', line_dots(215, .4), True)
-    b += text(20, 330, 'New: more simulations; same main message, in more detail', 36, GR, 'start', weight=800)
-    b += text(20, 375, 'e.g., in some populations, committee size matters too', 32, GR, 'start')
+    b += text(X(.5), 40, 'center', 28, GR, weight=700)
+    b += f'<line x1="{X(.5)}" y1="52" x2="{X(.5)}" y2="250" stroke="{GL}" stroke-width="3" stroke-dasharray="8 8"/>'
+    b += row(115, 'Clusters near the center', line_dots(115, .4, [(.4, .6)]), True)
+    b += row(215, 'Clusters far from it', line_dots(215, .05, [(0, .05), (.95, 1)]), False)
+    b += text(20, 350, 'Committee size can flip it', 36, GR, 'start', weight=800)
     b += row(435, 'Small committee', committee(435, 3), False)
     b += row(535, 'Large committee', committee(535, 11), True)
     return svg(W, H, b)
@@ -339,6 +345,7 @@ S(f'''<section class="slide light">
 S(f'''<section class="slide light">
   <p class="eyebrow">Recall · D5.1</p>
   <h2>Which is more accurate?</h2>
+  <p class="paper">Delegation picks representatives inside clusters</p>
   <div style="margin-block:auto">{findings_vis()}</div>
 </section>''')
 
@@ -373,7 +380,7 @@ S(f'''<section class="slide light">
   <div style="margin-block:auto">{gain_vis()}</div>
 </section>''')
 
-S(divider('Variant 2', 'Sortition on top of delegation', 'Sampled liquid democracy',
+S(divider('Variant 2', 'Sortition on top of delegation', '“Sampled Panels of Delegates in Liquid Democracy”',
           'with Eyal Briman · ' + OVEN + ' in the oven'))
 
 S(f'''<section class="slide light">
