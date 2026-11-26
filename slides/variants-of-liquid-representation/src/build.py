@@ -227,10 +227,11 @@ def findings_vis():
 
 def mirror_vis():
     W, H = 1640, 520
-    cy = 260
-    b = (f'<ellipse cx="270" cy="{cy}" rx="180" ry="240" fill="{PALE}" stroke="{GOLD}" stroke-width="18"/>'
-         f'<ellipse cx="270" cy="{cy}" rx="148" ry="206" fill="none" stroke="{GOLD}" stroke-width="3"/>'
-         + text(270, cy + 58, '?', 170, GOLD, weight=800))
+    cx, cy = 320, 340  # spans exactly the three topic rows (chip tops 202 to bottoms 478)
+    b = (f'<ellipse cx="{cx}" cy="{cy}" rx="102" ry="131" fill="{PALE}" stroke="{GOLD}" stroke-width="16"/>'
+         f'<ellipse cx="{cx}" cy="{cy}" rx="80" ry="108" fill="none" stroke="{GOLD}" stroke-width="3"/>'
+         f'<path d="M{cx-52} {cy-40} q8 -36 40 -52" fill="none" stroke="#fff" stroke-width="8" stroke-linecap="round"/>'
+         + text(cx, cy + 40, '?', 116, GOLD, weight=800))
     xs = [960, 1210, 1460]
     ys = [230, 340, 450]
     for j, x in enumerate(xs):
