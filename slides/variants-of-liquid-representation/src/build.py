@@ -323,7 +323,7 @@ TITLE = '''
 <section class="slide dark center">
   <p class="eyebrow">PERYCLES · WP5</p>
   <h1>Variants of Liquid<br>Representation</h1>
-  <p class="ref" style="bottom:128px;font-size:32px">Nimrod Talmon · with Eyal Briman, Davide Grossi, and Joel Van Der Boo</p>
+  <p class="ref" style="bottom:128px;font-size:32px">Nimrod Talmon · with Eyal Briman, Davide Grossi, and Joel van der Boom</p>
   <p class="ref">Ben-Gurion University of the Negev · Rome, December 2026</p>
   <img class="deco" src="../assets/img/deco-network.svg" alt="">
 </section>'''
@@ -402,7 +402,7 @@ S(f'''<section class="slide light">
 </section>''')
 
 S(divider('Variant 2', 'Sortition on top of delegation', '“Sampled Panels of Delegates in Liquid Democracy”',
-          'with Eyal Briman and Joel Van Der Boo · ' + OVEN + ' in the oven'))
+          'with Eyal Briman and Joel van der Boom · ' + OVEN + ' in the oven'))
 
 S(f'''<section class="slide light">
   <p class="eyebrow">Variant 2 · the problem</p>
