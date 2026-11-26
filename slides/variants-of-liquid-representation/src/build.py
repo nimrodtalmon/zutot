@@ -408,7 +408,7 @@ S(f'''<section class="slide light">
   <p class="eyebrow">Variant 2 · the problem</p>
   <h2>Representatives must vote on everything</h2>
   <p class="paper">Some may be busy, absent, or vote without attention</p>
-  <p class="data">Data from six DAOs: even holders of over 1% of the voting power vote on only 45% of proposals, on average</p>
+  <div class="data">Data from six DAOs: even holders of over 1% of the voting power vote on only 45% of proposals, on average</div>
   <div style="margin-block:auto">{forest_vis('problem')}</div>
 </section>''')
 
@@ -441,7 +441,7 @@ S('''<section class="slide light">
     </div>
     <div class="kcol">
       <p class="kacc">Accuracy <b id="kacc"></b></p>
-      <svg id="kmap" viewBox="0 0 820 600" width="580" height="424"></svg>
+      <svg id="kmap" viewBox="0 0 820 560" width="640" height="437"></svg>
     </div>
   </div>
 </section>''')
@@ -459,10 +459,8 @@ S('''<section class="slide dark">
   <p class="eyebrow">Towards D5.3</p>
   <h2>Let's discuss</h2>
   <div class="rows ruled">
-    <div class="row"><span class="n">1</span><p>What suggestions do we want to give?<span class="sub">e.g., how sticky should delegations be?</span></p></div>
-    <div class="row"><span class="n">2</span><p>What would we want implemented?</p></div>
-    <div class="row"><span class="n">3</span><p>Other variants worth studying?</p></div>
-    <div class="row"><span class="n">4</span><p>Where can we try it?<span class="sub">Wikipedia · Consenz · DAOs</span></p></div>
+    <div class="row"><span class="n">1</span><p>What suggestions do we want to give?<span class="sub">lottery or delegation · how many areas · panel rules</span><span class="sub">and beyond: e.g., how sticky should delegations be?</span></p></div>
+    <div class="row"><span class="n">2</span><p>Experiments: which variants, and where?<span class="sub">Wikipedia · Consenz · DAOs</span></p></div>
   </div>
 </section>''')
 
@@ -470,7 +468,8 @@ slides.append(TITLE)
 
 STYLE = '''<style>
 .paper { font-size: 34px; color: var(--gray); margin-top: -24px; }
-.data { font-size: 28px; color: var(--gray); margin-top: -12px; }
+.data { position: absolute; top: 56px; right: 128px; width: 560px; font-size: 28px; line-height: 1.35; color: var(--gray);
+  border: 2px solid var(--gray-light); border-radius: 18px; padding: 18px 24px; }
 .sub { display: block; font-size: 32px; color: var(--gray-light); margin-top: 4px; }
 .knobs { display: flex; gap: 56px; align-items: flex-start; margin-block: auto; }
 .kcol { display: flex; flex-direction: column; gap: 8px; }
@@ -520,40 +519,29 @@ SCRIPT = '''<script>
   }
   const kb = document.getElementById('kb'), ks = document.getElementById('ks');
   const bars = document.getElementById('kbars'), map = document.getElementById('kmap');
-  const NX = 41, NY = 11, X0 = 110, X1 = 800, Y0 = 470, Y1 = 20;
-  // rows = panel sizes 1..5; colors are normalized within each row, so the best
-  // "how much delegations count" for each panel size stands out
-  const rows = [];
-  for (let b = 0; b < NY; b++) {
-    const r = [];
-    for (let a = 0; a < NX; a++) r.push(acc(a / (NX - 1), b + 1));
-    rows.push(r);
-  }
-  const STOPS = [[250, 240, 222], [247, 148, 29], [122, 52, 8]];
-  const mix = (t) => {
-    const [c0, c1, u] = t < .5 ? [STOPS[0], STOPS[1], t * 2] : [STOPS[1], STOPS[2], t * 2 - 1];
-    return 'rgb(' + c0.map((x, j) => Math.round(x + (c1[j] - x) * u)).join(',') + ')';
-  };
-  const cw = (X1 - X0) / NX, ch = (Y0 - Y1) / NY;
+  // line chart: accuracy along the second knob, for the current panel size (fixed axis)
+  const X0 = 130, X1 = 800, Y0 = 470, Y1 = 30, LO = 0.6, HI = 0.85, NX = 201;
+  const X = (t) => X0 + t * (X1 - X0), Y = (v) => Y0 - (v - LO) / (HI - LO) * (Y0 - Y1);
   const T = (x, y, s, size, fill, anchor, weight, extra) =>
     `<text x="${x}" y="${y}" font-size="${size}" fill="${fill}" text-anchor="${anchor || 'middle'}" font-weight="${weight || 400}" font-family="Heebo, Arial, sans-serif" ${extra || ''}>${s}</text>`;
-  let h = '';
-  rows.forEach((r, b) => {
-    const lo = Math.min(...r), hi = Math.max(...r), best = r.indexOf(hi), flat = hi - lo < 1e-9;
-    r.forEach((v, a) => {
-      h += `<rect x="${(X0 + a * cw).toFixed(1)}" y="${(Y0 - (b + 1) * ch).toFixed(1)}" width="${(cw + .6).toFixed(1)}" height="${(ch + .6).toFixed(1)}" fill="${mix(flat ? .5 : (v - lo) / (hi - lo))}"/>`;
-    });
-    const bx = Math.min(X0 + (best + .5) * cw, X1 - 18), by = Y0 - (b + .5) * ch;
-    if (!flat) h += T(bx, by + 14, '★', 40, '#fff', 'middle', 700);
-    if (b % 2 === 0) h += T(X0 - 16, by + 10, String(b + 1), 30, GR, 'end');
-  });
-  h += `<rect x="${X0}" y="${Y1}" width="${X1 - X0}" height="${Y0 - Y1}" fill="none" stroke="${GR}" stroke-width="2"/>`;
+  let h = `<line x1="${X0}" y1="${Y0}" x2="${X1}" y2="${Y0}" stroke="${DK}" stroke-width="3"/>`;
+  h += `<line x1="${X0}" y1="${Y0}" x2="${X0}" y2="${Y1}" stroke="${DK}" stroke-width="3"/>`;
+  for (const v of [0.6, 0.7, 0.8]) h += T(X0 - 14, Y(v) + 10, Math.round(100 * v) + '%', 28, GR, 'end');
+  const ld = acc(0, g);
+  h += `<line x1="${X0}" y1="${Y(ld)}" x2="${X1}" y2="${Y(ld)}" stroke="${GR}" stroke-width="3" stroke-dasharray="10 8"/>`;
+  h += T(X1, Y(ld) - 12, 'everyone votes', 26, GR, 'end');
   h += T(X0, Y0 + 40, '0', 30, GR) + T(X1, Y0 + 40, '1', 30, GR) + T((X0 + X1) / 2, Y0 + 80, 'support buys chance (0) or weight (1)', 32, GR, 'middle', 700);
-  h += T(44, (Y0 + Y1) / 2, 'panel size', 32, GR, 'middle', 700, `transform="rotate(-90 44 ${(Y0 + Y1) / 2})"`);
-  h += T(X1, Y0 + 124, 'per row: darker = more accurate · ★ = best', 28, GR, 'end');
-  h += '<circle id="kdot" r="22" fill="none" stroke="' + DK + '" stroke-width="6"/>';
+  h += '<polyline id="kline" fill="none" stroke="' + OR + '" stroke-width="6" stroke-linejoin="round"/>';
+  h += '<g id="kstar"></g><circle id="kdot" r="16" fill="' + DK + '"/>';
   map.innerHTML = h;
-  const dot = map.querySelector('#kdot');
+  const dot = map.querySelector('#kdot'), line = map.querySelector('#kline'), star = map.querySelector('#kstar');
+  let lastK = -1;
+  function drawLine(k) {
+    const vs = [...Array(NX).keys()].map(i => acc(i / (NX - 1), k));
+    line.setAttribute('points', vs.map((v, i) => `${X(i / (NX - 1)).toFixed(1)},${Y(v).toFixed(1)}`).join(' '));
+    const hi = Math.max(...vs), lo = Math.min(...vs), bi = vs.indexOf(hi);
+    star.innerHTML = hi - lo < 1e-9 ? '' : T(X(bi / (NX - 1)), Y(hi) - 14, '★', 44, OR, 'middle', 700);
+  }
   function update() {
     const k = parseFloat(kb.value), s = parseFloat(ks.value);
     document.getElementById('kbv').textContent = k >= g ? g + ' (everyone)' : String(k);
@@ -571,17 +559,17 @@ SCRIPT = '''<script>
     out += T(700, 24, 'bar: weight when drawn', 26, GR, 'end') + T(700, 58, '%: chance to be drawn', 26, GR, 'end');
     bars.innerHTML = out;
     document.getElementById('kacc').textContent = (100 * acc(s, k)).toFixed(1) + '%';
-    dot.setAttribute('cx', X0 + s * (X1 - X0));
-    dot.setAttribute('cy', Y0 - (k - .5) * ch);
+    if (k !== lastK) { drawLine(k); lastK = k; }
+    dot.setAttribute('cx', X(s));
+    dot.setAttribute('cy', Y(acc(s, k)));
   }
   kb.addEventListener('input', update); ks.addEventListener('input', update);
   // mouse use should not keep focus on a slider
   [kb, ks].forEach(el => el.addEventListener('change', () => el.blur()));
   map.addEventListener('click', (ev) => {
-    const r = map.getBoundingClientRect(), sx = (ev.clientX - r.left) / r.width * 820, sy = (ev.clientY - r.top) / r.height * 600;
+    const r = map.getBoundingClientRect(), sx = (ev.clientX - r.left) / r.width * 820, sy = (ev.clientY - r.top) / r.height * 560;
     if (sx < X0 || sx > X1 || sy < Y1 || sy > Y0) return;
     ks.value = ((sx - X0) / (X1 - X0)).toFixed(2);
-    kb.value = String(Math.min(g, 1 + Math.floor((Y0 - sy) / ch)));
     update();
   });
   // keys 1/2 move the panel-size slider, 3/4 the other one (arrows stay for slides)
