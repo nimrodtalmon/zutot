@@ -266,6 +266,16 @@ def gain_vis():
     o += text((X0 + X1) / 2, Y0 + 86, 'number of areas', 34, DK, weight=700)
     o += text(70, (Y0 + Y1) / 2, 'accuracy gain', 34, DK, weight=700, extra=f'transform="rotate(-90 70 {(Y0 + Y1) / 2})"')
     o += text(X(8), Y(0.8), 'one line per kind of population', 30, OR, weight=700)
+    # inset: who is good at what (topics x people), expertise in clusters
+    cx0, cy0, cs = 1150, 222, 32
+    o += text(cx0 + 3 * cs, cy0 - 22, 'who is good at what', 28, GR, weight=700)
+    for i in range(6):
+        for j in range(6):
+            on = i // 2 == j // 2
+            o += (f'<rect x="{cx0 + j * cs + 2}" y="{cy0 + i * cs + 2}" width="{cs - 4}" height="{cs - 4}" rx="5" '
+                  f'fill="{OR if on else LT}" stroke="{GL}" stroke-width="{0 if on else 1.5}"/>')
+    o += text(cx0 - 14, cy0 + 3 * cs + 10, 'topics', 26, GR, 'end')
+    o += text(cx0 + 3 * cs, cy0 + 6 * cs + 34, 'people', 26, GR)
     for col, c in CURVES:
         pts = ' '.join(f'{X(b+1):.1f},{Y(v):.1f}' for b, v in enumerate(c))
         o += f'<polyline points="{pts}" fill="none" stroke="{col}" stroke-width="6" stroke-linejoin="round"/>'
@@ -323,7 +333,7 @@ TITLE = '''
 <section class="slide dark center">
   <p class="eyebrow">PERYCLES · WP5</p>
   <h1>Variants of Liquid<br>Representation</h1>
-  <p class="ref" style="bottom:128px;font-size:32px">Nimrod Talmon · with Eyal Briman, Davide Grossi, and Joel van der Boom</p>
+  <p class="ref" style="bottom:128px;font-size:32px">Nimrod Talmon · with Joel van der Boom, Eyal Briman, and Davide Grossi</p>
   <p class="ref">Ben-Gurion University of the Negev · Rome, December 2026</p>
   <img class="deco" src="../assets/img/deco-network.svg" alt="">
 </section>'''
@@ -372,7 +382,7 @@ S(f'''<section class="slide light">
 
 S(divider('Variant 1', 'Topic-based delegation',
           '“Topic Bundling for Epistemic Committee Design”',
-          'with Davide Grossi and Eyal Briman · 🤞 AAMAS 2027'))
+          'with Eyal Briman and Davide Grossi · 🤞 AAMAS 2027'))
 
 S(f'''<section class="slide light">
   <p class="eyebrow">Variant 1 · the problem</p>
@@ -402,7 +412,7 @@ S(f'''<section class="slide light">
 </section>''')
 
 S(divider('Variant 2', 'Sortition on top of delegation', '“Sampled Panels of Delegates in Liquid Democracy”',
-          'with Eyal Briman and Joel van der Boom · ' + OVEN + ' in the oven'))
+          'with Joel van der Boom and Eyal Briman · ' + OVEN + ' in the oven'))
 
 S(f'''<section class="slide light">
   <p class="eyebrow">Variant 2 · the problem</p>
