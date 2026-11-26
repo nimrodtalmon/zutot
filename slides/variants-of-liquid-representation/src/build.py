@@ -408,6 +408,7 @@ S(f'''<section class="slide light">
   <p class="eyebrow">Variant 2 · the problem</p>
   <h2>Representatives must vote on everything</h2>
   <p class="paper">Some may be busy, absent, or vote without attention</p>
+  <p class="data">Data from six DAOs: even holders of over 1% of the voting power vote on only 45% of proposals, on average</p>
   <div style="margin-block:auto">{forest_vis('problem')}</div>
 </section>''')
 
@@ -458,9 +459,10 @@ S('''<section class="slide dark">
   <p class="eyebrow">Towards D5.3</p>
   <h2>Let's discuss</h2>
   <div class="rows ruled">
-    <div class="row"><span class="n">1</span><p>What suggestions do we want to give?</p></div>
+    <div class="row"><span class="n">1</span><p>What suggestions do we want to give?<span class="sub">e.g., how sticky should delegations be?</span></p></div>
     <div class="row"><span class="n">2</span><p>What would we want implemented?</p></div>
     <div class="row"><span class="n">3</span><p>Other variants worth studying?</p></div>
+    <div class="row"><span class="n">4</span><p>Where can we try it?<span class="sub">Wikipedia · Consenz · DAOs</span></p></div>
   </div>
 </section>''')
 
@@ -468,6 +470,8 @@ slides.append(TITLE)
 
 STYLE = '''<style>
 .paper { font-size: 34px; color: var(--gray); margin-top: -24px; }
+.data { font-size: 28px; color: var(--gray); margin-top: -12px; }
+.sub { display: block; font-size: 32px; color: var(--gray-light); margin-top: 4px; }
 .knobs { display: flex; gap: 56px; align-items: flex-start; margin-block: auto; }
 .kcol { display: flex; flex-direction: column; gap: 8px; }
 .klab { font-size: 36px; font-weight: 700; display: flex; align-items: center; gap: 14px; }
