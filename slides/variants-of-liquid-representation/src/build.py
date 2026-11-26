@@ -279,6 +279,26 @@ def nope_vis():
                + f'<line x1="20" y1="170" x2="420" y2="50" stroke="{OR}" stroke-width="14" stroke-linecap="round"/>')
 
 
+def keep_vis():
+    W, H = 520, 220
+    return svg(W, H, text(230, 128, '1 person, 1 vote', 52, DK, weight=800) + check(470, 110, 36))
+
+
+def best_vis():
+    """Accuracy along the knob for three populations: best at 0, in between, at 1."""
+    W, H = 520, 220
+    x0, x1, yb = 30, 490, 200
+    o = f'<line x1="{x0}" y1="{yb}" x2="{x1}" y2="{yb}" stroke="{DK}" stroke-width="3"/>'
+    for col, pk, y0 in (('#FBC07A', 0, 40), ('#F7941D', .5, 70), ('#B35F00', 1, 100)):
+        pts = []
+        for j in range(41):
+            t = j / 40
+            pts.append(f'{x0 + t * (x1 - x0):.1f},{y0 + 90 * (t - pk) ** 2:.1f}')
+        o += f'<polyline points="{' '.join(pts)}" fill="none" stroke="{col}" stroke-width="6" stroke-linejoin="round"/>'
+        o += text(x0 + pk * (x1 - x0), y0 - 8, '★', 40, col, weight=700)
+    return svg(W, H, o)
+
+
 def clones_vis():
     W, H = 440, 220
     b = head(70, 90, 30, DK) + arrow(130, 120, 200, 120, GR)
@@ -303,7 +323,7 @@ TITLE = '''
 <section class="slide dark center">
   <p class="eyebrow">PERYCLES · WP5</p>
   <h1>Variants of Liquid<br>Representation</h1>
-  <p class="ref" style="bottom:128px;font-size:32px">Nimrod Talmon · with Eyal Briman and Davide Grossi</p>
+  <p class="ref" style="bottom:128px;font-size:32px">Nimrod Talmon · with Eyal Briman, Davide Grossi, and Joel Van Der Boo</p>
   <p class="ref">Ben-Gurion University of the Negev · Rome, December 2026</p>
   <img class="deco" src="../assets/img/deco-network.svg" alt="">
 </section>'''
@@ -377,12 +397,12 @@ S(f'''<section class="slide light">
 S(f'''<section class="slide light">
   <p class="eyebrow">Variant 1 · what we show</p>
   <h2>A few areas go a long way</h2>
-  <p class="paper">More areas never lower accuracy, but the gain levels off (experiments, 12 topics in 4 groups)</p>
+  <p class="paper">More areas never hurt; most of the gain comes from the first few (experiments: 12 topics in 4 groups)</p>
   <div style="margin-block:auto">{gain_vis()}</div>
 </section>''')
 
 S(divider('Variant 2', 'Sortition on top of delegation', '“Sampled Panels of Delegates in Liquid Democracy”',
-          'with Eyal Briman · ' + OVEN + ' in the oven'))
+          'with Eyal Briman and Joel Van Der Boo · ' + OVEN + ' in the oven'))
 
 S(f'''<section class="slide light">
   <p class="eyebrow">Variant 2 · the problem</p>
@@ -394,29 +414,29 @@ S(f'''<section class="slide light">
 S(f'''<section class="slide light">
   <p class="eyebrow">Variant 2 · the approach</p>
   <h2>Draw a small panel</h2>
-  <p class="paper">Large representatives are drawn more often; drawn votes are scaled up to stand for the others</p>
+  <p class="paper">Each drawn vote is scaled up, so every voter keeps the same expected weight</p>
   <div style="margin-block:auto">{forest_vis('panel')}</div>
 </section>''')
 
 S('''<section class="slide light center">
-  <p class="big">Like a poll: a random sample tracks the whole</p>
-  <h1 class="huge" style="color:var(--orange)">≈ 160</h1>
-  <p class="big">panel members match a 60/40 full vote at least 95% of the time</p>
-  <p class="big" style="font-weight:700">whatever the population size</p>
+  <p class="big">Aggressive sampling, same decision</p>
+  <h1 class="huge" style="color:var(--orange)">≈ 150</h1>
+  <p class="big">drawn delegates match a 60/40 vote 95% of the time</p>
+  <p class="big" style="font-weight:700">at any population size</p>
 </section>''')
 
 S('''<section class="slide light">
   <p class="eyebrow">Variant 2 · two knobs</p>
-  <h2>Panel size, and how much delegations count</h2>
-  <p class="paper">Example: representatives hold 8, 4, 2, 1, 1 citizens and are right 80, 70, 65, 60, 60% of the time</p>
+  <h2>Panel size, and what support buys</h2>
+  <p class="paper">Example: one representative of 5 citizens (right 80%), ten of 1 citizen each (right 60%)</p>
   <div class="interactive knobs">
     <div class="kcol">
       <div class="klab">Panel size <b id="kbv"></b> <span class="keys"><i>1</i>◀ ▶<i>2</i></span></div>
-      <input type="range" id="kb" min="1" max="5" step="1" value="5">
-      <div class="klab">How much delegations count <b id="ksv"></b> <span class="keys"><i>3</i>◀ ▶<i>4</i></span></div>
-      <input type="range" id="ks" min="0" max="1" step="0.05" value="1">
-      <div class="khint"><span>0: everyone counts 1</span><span>1: full delegation weight</span></div>
-      <svg id="kbars" viewBox="0 0 700 250" width="700" height="250"></svg>
+      <input type="range" id="kb" min="1" max="11" step="1" value="5">
+      <div class="klab">Support buys chance (0) or weight (1) <b id="ksv"></b> <span class="keys"><i>3</i>◀ ▶<i>4</i></span></div>
+      <input type="range" id="ks" min="0" max="1" step="0.05" value="0.5">
+      <div class="khint"><span>0: big delegates drawn more often</span><span>1: their votes count more</span></div>
+      <svg id="kbars" viewBox="0 0 700 270" width="700" height="270"></svg>
     </div>
     <div class="kcol">
       <p class="kacc">Accuracy <b id="kacc"></b></p>
@@ -426,12 +446,11 @@ S('''<section class="slide light">
 </section>''')
 
 S(f'''<section class="slide light">
-  <p class="eyebrow">Variant 2</p>
-  <h2>The price of counting delegations less</h2>
+  <p class="eyebrow">Variant 2 · what we show</p>
+  <h2>Fair on average; no setting always wins</h2>
   <div class="cards">
-    <div class="card top">{nope_vis()}</div>
-    <div class="card top">{clones_vis()}<p class="ctitle">Fake identities pay</p></div>
-    <div class="card top">{small_vis()}<p class="ctitle">Small accuracy gains</p></div>
+    <div class="card top">{keep_vis()}<p class="ctitle">Kept, on average</p></div>
+    <div class="card top">{best_vis()}<p class="ctitle">Best setting depends on the population</p></div>
   </div>
 </section>''')
 
@@ -467,43 +486,37 @@ STYLE = '''<style>
 
 SCRIPT = '''<script>
 (function () {
-  const W = [8, 4, 2, 1, 1], P = [0.8, 0.7, 0.65, 0.6, 0.6], n = 5;
+  // paper example (Prop. "explicit intermediate improvement"): one delegate with support W, competence p;
+  // m delegates with support 1, competence q; panel of k; parameter b in [0, 1]
+  const W = 5, m = 10, g = 11, p = 0.8, q = 0.6;
   const OR = '#F7941D', GR = '#5F6368', DK = '#26282C';
-  function incl(s, k) {
-    const e = W.map(w => Math.pow(w, s));
-    if (k >= n - 1e-9) return [e, e.map(() => 1)];
-    const capped = new Set();
-    let thr;
-    for (;;) {
-      const rest = [...Array(n).keys()].filter(i => !capped.has(i));
-      thr = rest.reduce((a, i) => a + e[i], 0) / (k - capped.size);
-      const big = rest.filter(i => e[i] >= thr);
-      if (!big.length) break;
-      capped.add(big.reduce((a, i) => (e[i] > e[a] ? i : a), big[0]));
-    }
-    return [e, e.map(x => Math.min(1, x / thr))];
+  const psi = (x) => (x > 1e-9 ? 1 : x < -1e-9 ? 0 : 0.5);
+  const binom = (a, c) => { let r = 1; for (let i = 1; i <= c; i++) r = r * (a - c + i) / i; return r; };
+  // chances to be drawn: proportional to support^(1-b), capped at 1, summing to k
+  function incl(b, k) {
+    if (k >= g) return [1, 1];
+    const u = Math.pow(W, 1 - b);
+    return (k - 1) * u <= m ? [k * u / (u + m), k / (u + m)] : [1, (k - 1) / m];
   }
-  function acc(s, k) {
-    const [e, pi] = incl(s, k);
-    let tot = 0;
-    for (let c = 0; c < 32; c++) {
-      let pc = 1;
-      for (let i = 0; i < n; i++) pc *= (c >> i & 1) ? P[i] : 1 - P[i];
-      for (let z = 0; z < 32; z++) {
-        let pz = 1, sc = 0;
-        for (let i = 0; i < n; i++) {
-          if (z >> i & 1) { pz *= pi[i]; sc += (e[i] / pi[i]) * ((c >> i & 1) ? 1 : -1); }
-          else pz *= 1 - pi[i];
-        }
-        if (pz === 0) continue;
-        tot += pc * pz * (sc > 1e-9 ? 1 : Math.abs(sc) <= 1e-9 ? 0.5 : 0);
-      }
-    }
-    return tot;
+  function C(l, r) {  // the big delegate is drawn, with l small ones; her relative weight is r
+    let t = 0;
+    for (let j = 0; j <= l; j++)
+      t += binom(l, j) * Math.pow(q, j) * Math.pow(1 - q, l - j) * (p * psi(r + 2 * j - l) + (1 - p) * psi(-r + 2 * j - l));
+    return t;
+  }
+  function M(k) {  // k small delegates, equal weights
+    let t = 0;
+    for (let j = 0; j <= k; j++) t += binom(k, j) * Math.pow(q, j) * Math.pow(1 - q, k - j) * psi(2 * j - k);
+    return t;
+  }
+  function acc(b, k) {
+    if (k >= g) return C(m, W);
+    const [pH, pL] = incl(b, k), r = W * pL / pH;  // weight when drawn = support / chance
+    return pH * C(k - 1, r) + (1 - pH) * M(k);
   }
   const kb = document.getElementById('kb'), ks = document.getElementById('ks');
   const bars = document.getElementById('kbars'), map = document.getElementById('kmap');
-  const NX = 41, NY = 5, X0 = 110, X1 = 800, Y0 = 470, Y1 = 20;
+  const NX = 41, NY = 11, X0 = 110, X1 = 800, Y0 = 470, Y1 = 20;
   // rows = panel sizes 1..5; colors are normalized within each row, so the best
   // "how much delegations count" for each panel size stands out
   const rows = [];
@@ -522,16 +535,16 @@ SCRIPT = '''<script>
     `<text x="${x}" y="${y}" font-size="${size}" fill="${fill}" text-anchor="${anchor || 'middle'}" font-weight="${weight || 400}" font-family="Heebo, Arial, sans-serif" ${extra || ''}>${s}</text>`;
   let h = '';
   rows.forEach((r, b) => {
-    const lo = Math.min(...r), hi = Math.max(...r), best = r.indexOf(hi);
+    const lo = Math.min(...r), hi = Math.max(...r), best = r.indexOf(hi), flat = hi - lo < 1e-9;
     r.forEach((v, a) => {
-      h += `<rect x="${(X0 + a * cw).toFixed(1)}" y="${(Y0 - (b + 1) * ch).toFixed(1)}" width="${(cw + .6).toFixed(1)}" height="${(ch + .6).toFixed(1)}" fill="${mix((v - lo) / (hi - lo))}"/>`;
+      h += `<rect x="${(X0 + a * cw).toFixed(1)}" y="${(Y0 - (b + 1) * ch).toFixed(1)}" width="${(cw + .6).toFixed(1)}" height="${(ch + .6).toFixed(1)}" fill="${mix(flat ? .5 : (v - lo) / (hi - lo))}"/>`;
     });
     const bx = Math.min(X0 + (best + .5) * cw, X1 - 18), by = Y0 - (b + .5) * ch;
-    h += T(bx, by + 14, '★', 40, '#fff', 'middle', 700);
-    h += T(X0 - 16, by + 10, String(b + 1), 30, GR, 'end');
+    if (!flat) h += T(bx, by + 14, '★', 40, '#fff', 'middle', 700);
+    if (b % 2 === 0) h += T(X0 - 16, by + 10, String(b + 1), 30, GR, 'end');
   });
   h += `<rect x="${X0}" y="${Y1}" width="${X1 - X0}" height="${Y0 - Y1}" fill="none" stroke="${GR}" stroke-width="2"/>`;
-  h += T(X0, Y0 + 40, '0', 30, GR) + T(X1, Y0 + 40, '1', 30, GR) + T((X0 + X1) / 2, Y0 + 80, 'how much delegations count', 32, GR, 'middle', 700);
+  h += T(X0, Y0 + 40, '0', 30, GR) + T(X1, Y0 + 40, '1', 30, GR) + T((X0 + X1) / 2, Y0 + 80, 'support buys chance (0) or weight (1)', 32, GR, 'middle', 700);
   h += T(44, (Y0 + Y1) / 2, 'panel size', 32, GR, 'middle', 700, `transform="rotate(-90 44 ${(Y0 + Y1) / 2})"`);
   h += T(X1, Y0 + 124, 'per row: darker = more accurate · ★ = best', 28, GR, 'end');
   h += '<circle id="kdot" r="22" fill="none" stroke="' + DK + '" stroke-width="6"/>';
@@ -539,19 +552,20 @@ SCRIPT = '''<script>
   const dot = map.querySelector('#kdot');
   function update() {
     const k = parseFloat(kb.value), s = parseFloat(ks.value);
-    document.getElementById('kbv').textContent = k >= 5 ? '5 (everyone)' : String(k);
+    document.getElementById('kbv').textContent = k >= g ? g + ' (everyone)' : String(k);
     document.getElementById('ksv').textContent = s.toFixed(2);
-    const [e, pi] = incl(s, k);
-    let g = '';
-    const unit = 20, base = 200;
-    for (let i = 0; i < n; i++) {
-      const x = 40 + i * 130, hh = e[i] * unit;
-      g += `<rect x="${x}" y="${base - hh}" width="80" height="${hh}" rx="8" fill="${i ? GR : OR}"/>`;
-      g += T(x + 40, base - hh - 12, e[i].toFixed(1), 28, DK, 'middle', 700);
-      g += T(x + 40, base + 34, Math.round(100 * pi[i]) + '%', 26, GR);
-    }
-    g += T(700, 24, 'bar: weight', 26, GR, 'end') + T(700, 58, '%: chance to be drawn', 26, GR, 'end');
-    bars.innerHTML = g;
+    const pi = incl(s, k), e = [W / pi[0] * pi[1], 1];  // weight when drawn, relative to a small delegate
+    let out = '';
+    const unit = 30, base = 190;
+    [['the big one', OR], ['each small one', GR]].forEach(([name, col], i) => {
+      const x = 60 + i * 260, hh = e[i] * unit;
+      out += `<rect x="${x}" y="${base - hh}" width="140" height="${hh}" rx="8" fill="${col}"/>`;
+      out += T(x + 70, base - hh - 12, e[i].toFixed(1), 28, DK, 'middle', 700);
+      out += T(x + 70, base + 34, Math.round(100 * pi[i]) + '%', 26, GR);
+      out += T(x + 70, base + 66, name, 26, GR);
+    });
+    out += T(700, 24, 'bar: weight when drawn', 26, GR, 'end') + T(700, 58, '%: chance to be drawn', 26, GR, 'end');
+    bars.innerHTML = out;
     document.getElementById('kacc').textContent = (100 * acc(s, k)).toFixed(1) + '%';
     dot.setAttribute('cx', X0 + s * (X1 - X0));
     dot.setAttribute('cy', Y0 - (k - .5) * ch);
@@ -563,7 +577,7 @@ SCRIPT = '''<script>
     const r = map.getBoundingClientRect(), sx = (ev.clientX - r.left) / r.width * 820, sy = (ev.clientY - r.top) / r.height * 600;
     if (sx < X0 || sx > X1 || sy < Y1 || sy > Y0) return;
     ks.value = ((sx - X0) / (X1 - X0)).toFixed(2);
-    kb.value = String(Math.min(5, 1 + Math.floor((Y0 - sy) / ch)));
+    kb.value = String(Math.min(g, 1 + Math.floor((Y0 - sy) / ch)));
     update();
   });
   // keys 1/2 move the panel-size slider, 3/4 the other one (arrows stay for slides)
