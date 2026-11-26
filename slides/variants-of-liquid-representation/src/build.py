@@ -258,7 +258,7 @@ def gain_vis():
     o = f'<line x1="{X0}" y1="{Y0}" x2="{X1}" y2="{Y0}" stroke="{DK}" stroke-width="3"/>'
     o += f'<line x1="{X0}" y1="{Y0}" x2="{X0}" y2="{Y1-10}" stroke="{DK}" stroke-width="3"/>'
     o += f'<line x1="{X(4)}" y1="{Y0}" x2="{X(4)}" y2="{Y1-10}" stroke="{GL}" stroke-width="3" stroke-dasharray="10 8"/>'
-    o += text(X(4) + 16, Y(0.3), '4 groups of topics', 30, GR, 'start', weight=700)
+    o += text(X(4) + 16, Y(0.3), '12 topics in 4 groups', 30, GR, 'start', weight=700)
     for v, lab in ((0, '0%'), (1, '100%')):
         o += text(X0 - 18, Y(v) + 10, lab, 30, GR, 'end')
     for b in (1, 4, 12):
@@ -396,8 +396,8 @@ S(f'''<section class="slide light">
 
 S(f'''<section class="slide light">
   <p class="eyebrow">Variant 1 · what we show</p>
-  <h2>A few areas go a long way</h2>
-  <p class="paper">More areas never hurt; most of the gain comes from the first few (experiments: 12 topics in 4 groups)</p>
+  <h2>As many areas as groups of topics</h2>
+  <p class="paper">Group topics that share experts; the less expertise overlaps, the more splitting pays</p>
   <div style="margin-block:auto">{gain_vis()}</div>
 </section>''')
 
